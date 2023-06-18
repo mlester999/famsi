@@ -2,7 +2,12 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Admin;
+use App\Models\Applicant;
+use App\Models\HrManager;
+use App\Models\HrStaff;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -37,7 +42,23 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         return array_merge(parent::share($request), [
-            //
+            "user" => [
+                "details" => function () {
+                    $authUser = Auth::user();
+
+                    if($authUser) {
+                        if($authUser->user_type == 1) {
+                            return Applicant::where('user_id', $authUser->id)->first();
+                        } else if($authUser->user_type == 2) {
+                            return HrStaff::where('user_id', $authUser->id)->first();
+                        } else if ($authUser->user_type == 3) {
+                            return HrManager::where('user_id', $authUser->id)->first();
+                        } else if ($authUser->user_type == 4) {
+                            return Admin::where('user_id', $authUser->id)->first();
+                        }
+                    }
+                }
+            ]
         ]);
     }
 }

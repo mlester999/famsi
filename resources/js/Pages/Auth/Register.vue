@@ -9,7 +9,8 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 
 const form = useForm({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
     password_confirmation: "",
@@ -40,21 +41,36 @@ const submit = () => {
         </template>
 
         <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="name" value="Name" />
-                <TextInput
-                    id="name"
-                    v-model="form.name"
-                    type="text"
-                    class="mt-1 block w-full"
-                    required
-                    autofocus
-                    autocomplete="name"
-                />
-                <InputError class="mt-2" :message="form.errors.name" />
+            <div class="flex justify-between space-x-8">
+                <div class="mt-4 flex-1">
+                    <InputLabel for="firstName" value="First Name" />
+                    <TextInput
+                        id="firstName"
+                        v-model="form.firstName"
+                        type="text"
+                        class="mt-1 block w-full"
+                        required
+                        autofocus
+                        autocomplete="firstName"
+                    />
+                    <InputError class="mt-2" :message="form.errors.firstName" />
+                </div>
+
+                <div class="mt-4 flex-1">
+                    <InputLabel for="lastName" value="Last Name" />
+                    <TextInput
+                        id="lastName"
+                        v-model="form.lastName"
+                        type="text"
+                        class="mt-1 block w-full"
+                        required
+                        autocomplete="lastName"
+                    />
+                    <InputError class="mt-2" :message="form.errors.lastName" />
+                </div>
             </div>
 
-            <div class="mt-4">
+            <div class="mt-6">
                 <InputLabel for="email" value="Email" />
                 <TextInput
                     id="email"
@@ -67,41 +83,43 @@ const submit = () => {
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-                <TextInput
-                    id="password"
-                    v-model="form.password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="new-password"
-                />
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
+            <div class="flex justify-between space-x-8">
+                <div class="mt-6 flex-1">
+                    <InputLabel for="password" value="Password" />
+                    <TextInput
+                        id="password"
+                        v-model="form.password"
+                        type="password"
+                        class="mt-1 block w-full"
+                        required
+                        autocomplete="new-password"
+                    />
+                    <InputError class="mt-2" :message="form.errors.password" />
+                </div>
 
-            <div class="mt-4">
-                <InputLabel
-                    for="password_confirmation"
-                    value="Confirm Password"
-                />
-                <TextInput
-                    id="password_confirmation"
-                    v-model="form.password_confirmation"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="new-password"
-                />
-                <InputError
-                    class="mt-2"
-                    :message="form.errors.password_confirmation"
-                />
+                <div class="mt-6 flex-1">
+                    <InputLabel
+                        for="password_confirmation"
+                        value="Confirm Password"
+                    />
+                    <TextInput
+                        id="password_confirmation"
+                        v-model="form.password_confirmation"
+                        type="password"
+                        class="mt-1 block w-full"
+                        required
+                        autocomplete="new-password"
+                    />
+                    <InputError
+                        class="mt-2"
+                        :message="form.errors.password_confirmation"
+                    />
+                </div>
             </div>
 
             <div
                 v-if="$page.props.jetstream.hasTermsAndPrivacyPolicyFeature"
-                class="mt-4"
+                class="mt-6"
             >
                 <InputLabel for="terms">
                     <div class="flex items-center">
@@ -133,21 +151,25 @@ const submit = () => {
                 </InputLabel>
             </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <Link
-                    :href="route('login')"
-                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                    Already registered?
-                </Link>
-
+            <div class="flex mt-6">
                 <PrimaryButton
-                    class="ml-4"
+                    class="w-full"
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
                     Register
                 </PrimaryButton>
+            </div>
+
+            <div class="mb-4 mt-6">
+                <p class="font-light text-gray-500 text-sm md:text-md">
+                    Already registered?
+                    <Link
+                        :href="route('login')"
+                        class="font-medium text-blue-500 hover:text-blue-700 transition-all duration-200"
+                        >Sign in</Link
+                    >
+                </p>
             </div>
         </form>
     </AuthenticationCard>
