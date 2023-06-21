@@ -35,7 +35,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             $this->updateVerifiedUser($user, $input);
         } else {
 
-            if($user->user_type == 1) {
+            if($user->user_type == 0) {
                 Applicant::where('user_id', $user->id)->first()->forceFill([
                     'first_name' => $input['firstName'],
                     'last_name' => $input['lastName'],

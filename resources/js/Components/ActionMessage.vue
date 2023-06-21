@@ -1,21 +1,24 @@
 <script setup>
-defineProps({
+const props = defineProps({
     on: Boolean,
     id: String,
 });
 </script>
 
 <template>
-    <div>
+    <Teleport to="body">
         <transition
+            enter-from-class="opacity-0 translate-x-72"
+            enter-to-class="opacity-100 translate-x-0"
+            enter-active-class="transition ease-in duration-200"
             leave-active-class="transition ease-in duration-1000"
             leave-from-class="opacity-100"
             leave-to-class="opacity-0"
         >
             <div
                 :id="id"
-                v-show="on"
-                class="absolute top-0 right-0 mt-6 mr-8 flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-xl"
+                v-if="on"
+                class="fixed top-0 right-0 mt-6 mr-8 flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-xl"
                 role="alert"
             >
                 <div
@@ -40,6 +43,7 @@ defineProps({
                     <slot />
                 </div>
                 <button
+                    @click="closeMessage"
                     type="button"
                     class="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-8 w-8"
                     data-dismiss-target="#toast-success"
@@ -62,5 +66,5 @@ defineProps({
                 </button>
             </div>
         </transition>
-    </div>
+    </Teleport>
 </template>

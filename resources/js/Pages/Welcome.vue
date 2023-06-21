@@ -28,26 +28,17 @@ defineProps({
 
                 <div v-if="canLogin" class="flex items-center lg:order-2">
                     <Link
-                        v-if="$page.props.auth.user"
-                        :href="route('dashboard')"
+                        :href="route('login')"
                         class="text-gray-800 dark:text-white hover:bg-gray-50 transition-all duration-200 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
                         >Log in</Link
                     >
 
-                    <template v-else>
-                        <Link
-                            :href="route('login')"
-                            class="text-gray-800 dark:text-white hover:bg-gray-50 transition-all duration-200 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
-                            >Log in</Link
-                        >
-
-                        <Link
-                            v-if="canRegister"
-                            :href="route('register')"
-                            class="text-white bg-green-700 hover:bg-green-800 transition-all duration-200 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
-                            >Register</Link
-                        >
-                    </template>
+                    <Link
+                        v-if="canRegister"
+                        :href="route('register')"
+                        class="text-white bg-green-700 hover:bg-green-800 transition-all duration-200 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
+                        >Register</Link
+                    >
                 </div>
                 <div
                     class="hidden justify-between items-center w-full lg:flex lg:w-auto lg:order-1"

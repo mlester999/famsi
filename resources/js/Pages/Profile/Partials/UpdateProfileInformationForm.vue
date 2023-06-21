@@ -210,11 +210,7 @@ const clearPhotoFileInput = () => {
         </template>
 
         <template #actions>
-            <ActionMessage
-                :on="form.recentlySuccessful"
-                id="toaster-success"
-                class="mr-3"
-            >
+            <ActionMessage :on="form.recentlySuccessful">
                 Profile saved successfully.
             </ActionMessage>
 

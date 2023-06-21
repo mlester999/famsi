@@ -47,13 +47,13 @@ class HandleInertiaRequests extends Middleware
                     $authUser = Auth::user();
 
                     if($authUser) {
-                        if($authUser->user_type == 1) {
+                        if($authUser->user_type == 0) {
                             return Applicant::where('user_id', $authUser->id)->first();
-                        } else if($authUser->user_type == 2) {
+                        } else if($authUser->user_type == 1) {
                             return HrStaff::where('user_id', $authUser->id)->first();
-                        } else if ($authUser->user_type == 3) {
+                        } else if ($authUser->user_type == 2) {
                             return HrManager::where('user_id', $authUser->id)->first();
-                        } else if ($authUser->user_type == 4) {
+                        } else if ($authUser->user_type == 3) {
                             return Admin::where('user_id', $authUser->id)->first();
                         }
                     }

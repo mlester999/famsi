@@ -61,7 +61,23 @@ return [
     |
     */
 
-    'home' => RouteServiceProvider::HOME,
+    'home' => function () {
+        if(auth()->user()->user_type == 0) {
+            return RouteServiceProvider::APPLICANT_HOME;
+        }
+
+        if(auth()->user()->user_type == 1) {
+            return RouteServiceProvider::HR_STAFF_HOME;
+        }
+
+        if(auth()->user()->user_type == 2) {
+            return RouteServiceProvider::HR_ADMIN_HOME;
+        }
+
+        if(auth()->user()->user_type == 3) {
+            return RouteServiceProvider::ADMIN_HOME;
+        }
+    },
 
     /*
     |--------------------------------------------------------------------------
