@@ -14,6 +14,13 @@ defineProps({
 
 const showingNavigationDropdown = ref(false);
 
+const users = ref({
+    applicant: 0,
+    hr_staff: 1,
+    hr_manager: 2,
+    admin: 3,
+});
+
 const switchToTeam = (team) => {
     router.put(
         route("current-team.update"),
@@ -46,8 +53,41 @@ const logout = () => {
                             <!-- Logo -->
                             <div class="shrink-0 flex items-center">
                                 <Link
-                                    v-if="$page.props.auth.user.user_type == 0"
+                                    v-if="
+                                        $page.props.auth.user.user_type ==
+                                        users.applicant
+                                    "
                                     :href="route('applicant.dashboard')"
+                                >
+                                    <ApplicationMark class="block h-9 w-auto" />
+                                </Link>
+
+                                <Link
+                                    v-if="
+                                        $page.props.auth.user.user_type ==
+                                        users.hr_staff
+                                    "
+                                    :href="route('hr-staff.dashboard')"
+                                >
+                                    <ApplicationMark class="block h-9 w-auto" />
+                                </Link>
+
+                                <Link
+                                    v-if="
+                                        $page.props.auth.user.user_type ==
+                                        users.hr_manager
+                                    "
+                                    :href="route('hr-manager.dashboard')"
+                                >
+                                    <ApplicationMark class="block h-9 w-auto" />
+                                </Link>
+
+                                <Link
+                                    v-if="
+                                        $page.props.auth.user.user_type ==
+                                        users.admin
+                                    "
+                                    :href="route('admin.dashboard')"
                                 >
                                     <ApplicationMark class="block h-9 w-auto" />
                                 </Link>
@@ -285,11 +325,47 @@ const logout = () => {
                                         <DropdownLink
                                             v-if="
                                                 $page.props.auth.user
-                                                    .user_type == 0
+                                                    .user_type ==
+                                                users.applicant
                                             "
                                             :href="
                                                 route('applicant.profile.show')
                                             "
+                                        >
+                                            Profile
+                                        </DropdownLink>
+
+                                        <DropdownLink
+                                            v-if="
+                                                $page.props.auth.user
+                                                    .user_type == users.hr_staff
+                                            "
+                                            :href="
+                                                route('hr-staff.profile.show')
+                                            "
+                                        >
+                                            Profile
+                                        </DropdownLink>
+
+                                        <DropdownLink
+                                            v-if="
+                                                $page.props.auth.user
+                                                    .user_type ==
+                                                users.hr_manager
+                                            "
+                                            :href="
+                                                route('hr-manager.profile.show')
+                                            "
+                                        >
+                                            Profile
+                                        </DropdownLink>
+
+                                        <DropdownLink
+                                            v-if="
+                                                $page.props.auth.user
+                                                    .user_type == users.admin
+                                            "
+                                            :href="route('admin.profile.show')"
                                         >
                                             Profile
                                         </DropdownLink>

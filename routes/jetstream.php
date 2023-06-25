@@ -30,7 +30,62 @@ Route::group(['middleware' => config('jetstream.middleware', ['web'])], function
 
     Route::group(['middleware' => array_values(array_filter([$authMiddleware, $authSessionMiddleware]))], function () {
 
+        // Applicant user
         Route::group(['middleware' => 'role:applicant', 'prefix' => 'applicant', 'as' => 'applicant.'], function () {
+            // User & Profile...
+            Route::get('/profile', [UserProfileController::class, 'show'])
+                ->name('profile.show');
+
+            Route::delete('/other-browser-sessions', [OtherBrowserSessionsController::class, 'destroy'])
+                ->name('other-browser-sessions.destroy');
+
+            Route::delete('/profile-photo', [ProfilePhotoController::class, 'destroy'])
+                ->name('current-user-photo.destroy');
+
+            if (Jetstream::hasAccountDeletionFeatures()) {
+                Route::delete('/user', [CurrentUserController::class, 'destroy'])
+                    ->name('current-user.destroy');
+            }
+        });
+
+        // HR Staff user
+        Route::group(['middleware' => 'role:hr-staff', 'prefix' => 'hr-staff', 'as' => 'hr-staff.'], function () {
+            // User & Profile...
+            Route::get('/profile', [UserProfileController::class, 'show'])
+                ->name('profile.show');
+
+            Route::delete('/other-browser-sessions', [OtherBrowserSessionsController::class, 'destroy'])
+                ->name('other-browser-sessions.destroy');
+
+            Route::delete('/profile-photo', [ProfilePhotoController::class, 'destroy'])
+                ->name('current-user-photo.destroy');
+
+            if (Jetstream::hasAccountDeletionFeatures()) {
+                Route::delete('/user', [CurrentUserController::class, 'destroy'])
+                    ->name('current-user.destroy');
+            }
+        });
+
+        // HR Manager user
+        Route::group(['middleware' => 'role:hr-manager', 'prefix' => 'hr-manager', 'as' => 'hr-manager.'], function () {
+            // User & Profile...
+            Route::get('/profile', [UserProfileController::class, 'show'])
+                ->name('profile.show');
+
+            Route::delete('/other-browser-sessions', [OtherBrowserSessionsController::class, 'destroy'])
+                ->name('other-browser-sessions.destroy');
+
+            Route::delete('/profile-photo', [ProfilePhotoController::class, 'destroy'])
+                ->name('current-user-photo.destroy');
+
+            if (Jetstream::hasAccountDeletionFeatures()) {
+                Route::delete('/user', [CurrentUserController::class, 'destroy'])
+                    ->name('current-user.destroy');
+            }
+        });
+
+        // Admin user
+        Route::group(['middleware' => 'role:admin', 'prefix' => 'admin', 'as' => 'admin.'], function () {
             // User & Profile...
             Route::get('/profile', [UserProfileController::class, 'show'])
                 ->name('profile.show');

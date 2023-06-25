@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Closure;
 use Illuminate\Http\Request;
@@ -21,8 +22,20 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                if (auth()->user()->user_type == 0) {
+                if (auth()->user()->user_type == User::APPLICANT) {
                     return redirect(RouteServiceProvider::APPLICANT_HOME);
+                }
+
+                if (auth()->user()->user_type == User::HR_STAFF) {
+                    return redirect(RouteServiceProvider::HR_STAFF_HOME);
+                }
+
+                if (auth()->user()->user_type == User::HR_MANAGER) {
+                    return redirect(RouteServiceProvider::HR_MANAGER_HOME);
+                }
+
+                if (auth()->user()->user_type == User::ADMIN) {
+                    return redirect(RouteServiceProvider::ADMIN_HOME);
                 }
             }
         }

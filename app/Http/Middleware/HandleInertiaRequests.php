@@ -6,6 +6,7 @@ use App\Models\Admin;
 use App\Models\Applicant;
 use App\Models\HrManager;
 use App\Models\HrStaff;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Middleware;
@@ -47,13 +48,13 @@ class HandleInertiaRequests extends Middleware
                     $authUser = Auth::user();
 
                     if($authUser) {
-                        if($authUser->user_type == 0) {
+                        if($authUser->user_type == User::APPLICANT) {
                             return Applicant::where('user_id', $authUser->id)->first();
-                        } else if($authUser->user_type == 1) {
+                        } else if($authUser->user_type == User::HR_STAFF) {
                             return HrStaff::where('user_id', $authUser->id)->first();
-                        } else if ($authUser->user_type == 2) {
+                        } else if ($authUser->user_type == User::HR_MANAGER) {
                             return HrManager::where('user_id', $authUser->id)->first();
-                        } else if ($authUser->user_type == 3) {
+                        } else if ($authUser->user_type == User::ADMIN) {
                             return Admin::where('user_id', $authUser->id)->first();
                         }
                     }

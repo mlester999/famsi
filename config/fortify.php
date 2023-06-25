@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Laravel\Fortify\Features;
 
@@ -62,19 +63,19 @@ return [
     */
 
     'home' => function () {
-        if(auth()->user()->user_type == 0) {
+        if(auth()->user()->user_type == User::APPLICANT) {
             return RouteServiceProvider::APPLICANT_HOME;
         }
 
-        if(auth()->user()->user_type == 1) {
+        if(auth()->user()->user_type == User::HR_STAFF) {
             return RouteServiceProvider::HR_STAFF_HOME;
         }
 
-        if(auth()->user()->user_type == 2) {
-            return RouteServiceProvider::HR_ADMIN_HOME;
+        if(auth()->user()->user_type == User::HR_MANAGER) {
+            return RouteServiceProvider::HR_MANAGER_HOME;
         }
 
-        if(auth()->user()->user_type == 3) {
+        if(auth()->user()->user_type == User::ADMIN) {
             return RouteServiceProvider::ADMIN_HOME;
         }
     },
