@@ -51,7 +51,7 @@ const users = ref({
             <div class="flex pt-16 overflow-hidden bg-gray-50 dark:bg-gray-900">
                 <aside
                     id="sidebar"
-                    class="fixed top-0 left-0 z-20 flex flex-col flex-shrink-0 hidden w-64 h-full pt-16 font-normal duration-75 lg:flex transition-width"
+                    class="fixed top-0 left-0 z-20 flex flex-col flex-shrink-0 hidden w-64 h-full pt-16 font-normal duration-0 lg:flex transition-width"
                     aria-label="Sidebar"
                 >
                     <div
@@ -108,7 +108,7 @@ const users = ref({
                                             class="flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100 group dark:text-gray-200 dark:hover:bg-gray-700"
                                         >
                                             <svg
-                                                class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                                class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
                                                 fill="currentColor"
                                                 viewBox="0 0 20 20"
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -120,22 +120,18 @@ const users = ref({
                                                     d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"
                                                 ></path>
                                             </svg>
-                                            <span
-                                                class="ml-3"
-                                                sidebar-toggle-item=""
-                                                >Dashboard</span
-                                            >
+                                            Dashboard
                                         </a>
                                     </li>
                                     <li>
                                         <button
                                             type="button"
-                                            class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
+                                            class="flex items-center w-full p-2 text-base text-gray-900 transition duration-0 rounded-lg group hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
                                             aria-controls="dropdown-layouts"
                                             data-collapse-toggle="dropdown-layouts"
                                         >
                                             <svg
-                                                class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                                class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
                                                 fill="currentColor"
                                                 viewBox="0 0 20 20"
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -171,14 +167,14 @@ const users = ref({
                                             <li>
                                                 <a
                                                     href="https://flowbite-admin-dashboard.vercel.app/layouts/stacked/"
-                                                    class="flex items-center p-2 text-base text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
+                                                    class="flex items-center p-2 text-base text-gray-900 transition duration-0 rounded-lg pl-11 group hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
                                                     >Stacked</a
                                                 >
                                             </li>
                                             <li>
                                                 <a
                                                     href="https://flowbite-admin-dashboard.vercel.app/layouts/sidebar/"
-                                                    class="flex items-center p-2 text-base text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
+                                                    class="flex items-center p-2 text-base text-gray-900 transition duration-0 rounded-lg pl-11 group hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
                                                     >Sidebar</a
                                                 >
                                             </li>
@@ -187,12 +183,12 @@ const users = ref({
                                     <li>
                                         <button
                                             type="button"
-                                            class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
+                                            class="flex items-center w-full p-2 text-base text-gray-900 transition duration-0 rounded-lg group hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
                                             aria-controls="dropdown-crud"
                                             data-collapse-toggle="dropdown-crud"
                                         >
                                             <svg
-                                                class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                                class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
                                                 fill="currentColor"
                                                 viewBox="0 0 20 20"
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -230,14 +226,14 @@ const users = ref({
                                             <li>
                                                 <a
                                                     href="https://flowbite-admin-dashboard.vercel.app/crud/products/"
-                                                    class="text-base text-gray-900 rounded-lg flex items-center p-2 group hover:bg-gray-100 transition duration-75 pl-11 dark:text-gray-200 dark:hover:bg-gray-700"
+                                                    class="text-base text-gray-900 rounded-lg flex items-center p-2 group hover:bg-gray-100 transition duration-0 pl-11 dark:text-gray-200 dark:hover:bg-gray-700"
                                                     >Products</a
                                                 >
                                             </li>
                                             <li>
                                                 <a
                                                     href="https://flowbite-admin-dashboard.vercel.app/crud/users/"
-                                                    class="text-base text-gray-900 rounded-lg flex items-center p-2 group hover:bg-gray-100 transition duration-75 pl-11 dark:text-gray-200 dark:hover:bg-gray-700"
+                                                    class="text-base text-gray-900 rounded-lg flex items-center p-2 group hover:bg-gray-100 transition duration-0 pl-11 dark:text-gray-200 dark:hover:bg-gray-700"
                                                     >Users</a
                                                 >
                                             </li>
@@ -286,7 +282,7 @@ const users = ref({
                             <div
                                 id="tooltip-settings"
                                 role="tooltip"
-                                class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+                                class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-0 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
                                 style="
                                     position: absolute;
                                     inset: auto auto 0px 0px;

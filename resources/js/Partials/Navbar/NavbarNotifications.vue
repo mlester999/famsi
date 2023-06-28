@@ -20,12 +20,12 @@ const hideNotificationsDropdown = () => {
             v-click-outside="hideNotificationsDropdown"
             type="button"
             data-dropdown-toggle="notification-dropdown"
-            class="py-1.5 px-2.5 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700"
+            class="py-1.5 px-2.5 text-gray-500 group rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700"
         >
             <span class="sr-only">View notifications</span>
 
             <svg
-                class="w-6 h-6"
+                class="w-6 h-6 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"

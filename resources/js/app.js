@@ -8,7 +8,7 @@ import { ZiggyVue } from "../../vendor/tightenco/ziggy/dist/vue.m";
 import clickOutside from "./click-outside.js";
 
 const appName =
-    window.document.getElementsByTagName("title")[0]?.innerText || "Laravel";
+    window.document.getElementsByTagName("title")[0]?.innerText || "FAMSI";
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,

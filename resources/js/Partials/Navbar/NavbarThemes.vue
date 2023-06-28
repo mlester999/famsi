@@ -1,26 +1,29 @@
-<script setup></script>
+<script setup>
+import { useDark, useToggle } from "@vueuse/core";
+
+const isDark = useDark({
+    onChanged(isDark) {
+        if (isDark) {
+            document.documentElement.classList.add("dark");
+        } else {
+            document.documentElement.classList.remove("dark");
+            document.documentElement.classList.add("light");
+        }
+    },
+});
+const toggleDark = useToggle(isDark);
+</script>
 
 <template>
     <button
-        id="theme-toggle"
-        data-tooltip-target="tooltip-toggle"
+        @click="toggleDark()"
         type="button"
-        class="text-gray-500 hover:text-gray-900 dark:hover:text-white dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm px-2.5 py-2"
+        class="text-gray-500 hover:text-gray-900 group dark:hover:text-white dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none rounded-lg text-sm px-2.5 py-2"
     >
         <svg
-            id="theme-toggle-dark-icon"
-            class="w-5 h-5"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
-        >
-            <path
-                d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"
-            ></path>
-        </svg>
-        <svg
+            v-if="isDark"
             id="theme-toggle-light-icon"
-            class="hidden w-5 h-5"
+            class="w-5 h-5 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
             fill="currentColor"
             viewBox="0 0 20 20"
             xmlns="http://www.w3.org/2000/svg"
@@ -31,7 +34,20 @@
                 clip-rule="evenodd"
             ></path>
         </svg>
+        <svg
+            v-else
+            id="theme-toggle-dark-icon"
+            class="w-5 h-5 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+        >
+            <path
+                d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"
+            ></path>
+        </svg>
     </button>
+    <!--
     <div
         id="tooltip-toggle"
         role="tooltip"
@@ -54,5 +70,5 @@
                 transform: translate(69px, 0px);
             "
         ></div>
-    </div>
+    </div> -->
 </template>
