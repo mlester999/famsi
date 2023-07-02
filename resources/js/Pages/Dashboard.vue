@@ -1062,6 +1062,15 @@ import DashboardCard from "@/Components/DashboardCard.vue";
                     </div>
                 </div>
             </div>
+            <p class="my-10 text-sm text-center text-gray-500">
+                © 2023
+                <a
+                    href="https://www.facebook.com/FAMSILaguna/"
+                    class="hover:underline"
+                    target="_blank"
+                    >Fully Advanced Manpower Solutions, Inc.</a
+                >. All rights reserved.
+            </p>
         </div>
     </AppLayout>
 </template>

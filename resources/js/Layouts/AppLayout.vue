@@ -24,7 +24,7 @@ const users = ref({
 
         <Banner />
 
-        <div class="min-h-screen bg-gray-100">
+        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
             <!-- Navbar -->
             <AppNavbar :users="users" />
 
@@ -33,7 +33,7 @@ const users = ref({
 
                 <!-- Page Content -->
                 <div
-                    class="relative w-full h-full overflow-y-auto bg-gray-50 lg:ml-64 dark:bg-gray-900"
+                    class="relative w-full h-auto overflow-y-auto bg-gray-50 lg:ml-64 dark:bg-gray-900"
                 >
                     <main>
                         <slot />
