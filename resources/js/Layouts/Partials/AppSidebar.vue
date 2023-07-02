@@ -49,19 +49,10 @@ const currentUserDashboard = computed(() => {
                             ]"
                         >
                             <template #icon>
-                                <svg
+                                <font-awesome-icon
                                     class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-                                    fill="currentColor"
-                                    viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"
-                                    ></path>
-                                    <path
-                                        d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"
-                                    ></path>
-                                </svg>
+                                    :icon="['fas', 'gauge']"
+                                />
                             </template>
 
                             <template #title> Dashboard </template>
@@ -77,19 +68,10 @@ const currentUserDashboard = computed(() => {
                             ]"
                         >
                             <template #icon>
-                                <svg
+                                <font-awesome-icon
                                     class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-                                    fill="currentColor"
-                                    viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"
-                                    ></path>
-                                    <path
-                                        d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"
-                                    ></path>
-                                </svg>
+                                    :icon="['fas', 'house']"
+                                />
                             </template>
 
                             <template #title> Home Page </template>
@@ -105,19 +87,10 @@ const currentUserDashboard = computed(() => {
                             ]"
                         >
                             <template #icon>
-                                <svg
+                                <font-awesome-icon
                                     class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-                                    fill="currentColor"
-                                    viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"
-                                    ></path>
-                                    <path
-                                        d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"
-                                    ></path>
-                                </svg>
+                                    :icon="['fas', 'scroll']"
+                                />
                             </template>
 
                             <template #title> Announcement </template>
@@ -137,19 +110,10 @@ const currentUserDashboard = computed(() => {
                             ]"
                         >
                             <template #icon>
-                                <svg
+                                <font-awesome-icon
                                     class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-                                    fill="currentColor"
-                                    viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"
-                                    ></path>
-                                    <path
-                                        d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"
-                                    ></path>
-                                </svg>
+                                    :icon="['fas', 'user-shield']"
+                                />
                             </template>
 
                             <template #title> HR Admin </template>
@@ -165,19 +129,10 @@ const currentUserDashboard = computed(() => {
                             ]"
                         >
                             <template #icon>
-                                <svg
+                                <font-awesome-icon
                                     class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-                                    fill="currentColor"
-                                    viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"
-                                    ></path>
-                                    <path
-                                        d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"
-                                    ></path>
-                                </svg>
+                                    :icon="['fas', 'user']"
+                                />
                             </template>
 
                             <template #title> HR Staffs </template>
@@ -197,19 +152,10 @@ const currentUserDashboard = computed(() => {
                             ]"
                         >
                             <template #icon>
-                                <svg
+                                <font-awesome-icon
                                     class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-                                    fill="currentColor"
-                                    viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"
-                                    ></path>
-                                    <path
-                                        d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"
-                                    ></path>
-                                </svg>
+                                    :icon="['fas', 'user-check']"
+                                />
                             </template>
 
                             <template #title> Applicants </template>
@@ -225,19 +171,10 @@ const currentUserDashboard = computed(() => {
                             ]"
                         >
                             <template #icon>
-                                <svg
+                                <font-awesome-icon
                                     class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-                                    fill="currentColor"
-                                    viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"
-                                    ></path>
-                                    <path
-                                        d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"
-                                    ></path>
-                                </svg>
+                                    :icon="['fas', 'file']"
+                                />
                             </template>
 
                             <template #title> Files </template>

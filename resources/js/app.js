@@ -7,6 +7,32 @@ import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy/dist/vue.m";
 import clickOutside from "./click-outside.js";
 
+/* import the fontawesome core */
+import { library } from "@fortawesome/fontawesome-svg-core";
+
+/* import font awesome icon component */
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+
+/* import specific icons */
+import {
+    faGauge,
+    faScroll,
+    faHouse,
+    faUser,
+    faUserShield,
+    faUserCheck,
+    faFile,
+} from "@fortawesome/free-solid-svg-icons";
+
+/* add icons to the library */
+library.add(faGauge);
+library.add(faHouse);
+library.add(faScroll);
+library.add(faUser);
+library.add(faUserShield);
+library.add(faUserCheck);
+library.add(faFile);
+
 const appName =
     window.document.getElementsByTagName("title")[0]?.innerText || "FAMSI";
 
@@ -19,6 +45,7 @@ createInertiaApp({
         ),
     setup({ el, App, props, plugin }) {
         return createApp({ render: () => h(App, props) })
+            .component("font-awesome-icon", FontAwesomeIcon)
             .use(clickOutside)
             .use(plugin)
             .use(ZiggyVue, Ziggy)
