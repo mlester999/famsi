@@ -51,6 +51,14 @@ Route::middleware([
         Route::get('/dashboard', function () {
             return Inertia::render('Dashboard');
         })->name('dashboard');
+
+        Route::get('/homepage', function () {
+            return Inertia::render('HomePage');
+        })->name('homepage');
+
+        Route::get('/announcement', function () {
+            return Inertia::render('Announcement');
+        })->name('announcement');
     });
 });
 

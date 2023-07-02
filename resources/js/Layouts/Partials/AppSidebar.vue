@@ -38,7 +38,10 @@ const currentUserDashboard = computed(() => {
         <div
             class="relative flex flex-col flex-1 min-h-0 py-5 bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700"
         >
-            <SidebarCategory name="Menu">
+            <SidebarCategory
+                v-if="$page.props.auth.user.user_type == users.admin"
+                name="Menu"
+            >
                 <template #tab>
                     <li>
                         <SidebarTab
@@ -61,9 +64,9 @@ const currentUserDashboard = computed(() => {
 
                     <li>
                         <SidebarTab
-                            href="#"
+                            :href="route('admin.homepage')"
                             :class="[
-                                $page.url.includes('home-page') &&
+                                $page.url.includes('homepage') &&
                                     'bg-gray-100 dark:bg-gray-700',
                             ]"
                         >
@@ -80,7 +83,7 @@ const currentUserDashboard = computed(() => {
 
                     <li>
                         <SidebarTab
-                            href="#"
+                        :href="route('admin.announcement')"
                             :class="[
                                 $page.url.includes('announcement') &&
                                     'bg-gray-100 dark:bg-gray-700',
@@ -99,9 +102,15 @@ const currentUserDashboard = computed(() => {
                 </template>
             </SidebarCategory>
 
-            <SidebarCategory name="Employees">
+            <SidebarCategory
+                v-if="
+                    $page.props.auth.user.user_type == users.admin ||
+                    $page.props.auth.user.user_type == users.hr_manager
+                "
+                name="Employees"
+            >
                 <template #tab>
-                    <li>
+                    <li v-if="$page.props.auth.user.user_type == users.admin">
                         <SidebarTab
                             href="#"
                             :class="[
