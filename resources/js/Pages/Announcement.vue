@@ -4,22 +4,21 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 </script>
 
 <template>
-    <AppLayout title="Dashboard">
+    <AppLayout title="Announcement">
         <TableCrud name="announcement">
-            <template #first-tab>    
-                
-                <p class="inline-flex items-center text-gray-700 dark:text-gray-300">
+            <template #first-tab>
+                <p
+                    class="inline-flex items-center text-gray-700 dark:text-gray-300"
+                >
                     <font-awesome-icon
-                    class="w-5 h-5 mr-2.5"
-                    :icon="['fas', 'house']"
-                                />
+                        class="w-5 h-5 mr-2.5"
+                        :icon="['fas', 'house']"
+                    />
                     Menu
                 </p>
             </template>
 
-            <template #second-tab>
-                Announcement
-            </template>
+            <template #second-tab> Announcement </template>
 
             <template #title>Announcement</template>
             <template #description

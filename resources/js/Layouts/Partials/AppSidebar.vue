@@ -10,21 +10,21 @@ defineProps({
 
 const page = usePage();
 
-const currentUserDashboard = computed(() => {
+const currentUser = computed(() => {
     if (page.url.includes("admin")) {
-        return "admin.dashboard";
+        return "admin";
     }
 
     if (page.url.includes("manager")) {
-        return "hr-manager.dashboard";
+        return "hr-manager";
     }
 
     if (page.url.includes("staff")) {
-        return "hr-staff.dashboard";
+        return "hr-staff";
     }
 
     if (page.url.includes("applicant")) {
-        return "applicant.dashboard";
+        return "applicant";
     }
 });
 </script>
@@ -45,7 +45,7 @@ const currentUserDashboard = computed(() => {
                 <template #tab>
                     <li>
                         <SidebarTab
-                            :href="route(currentUserDashboard)"
+                            :href="route(`${currentUser}.dashboard`)"
                             :class="[
                                 $page.url.includes('dashboard') &&
                                     'bg-gray-100 dark:bg-gray-700',
@@ -64,7 +64,7 @@ const currentUserDashboard = computed(() => {
 
                     <li>
                         <SidebarTab
-                            :href="route('admin.homepage')"
+                            :href="route(`${currentUser}.homepage`)"
                             :class="[
                                 $page.url.includes('homepage') &&
                                     'bg-gray-100 dark:bg-gray-700',
@@ -83,7 +83,7 @@ const currentUserDashboard = computed(() => {
 
                     <li>
                         <SidebarTab
-                        :href="route('admin.announcement')"
+                            :href="route(`${currentUser}.announcement`)"
                             :class="[
                                 $page.url.includes('announcement') &&
                                     'bg-gray-100 dark:bg-gray-700',
@@ -112,9 +112,9 @@ const currentUserDashboard = computed(() => {
                 <template #tab>
                     <li v-if="$page.props.auth.user.user_type == users.admin">
                         <SidebarTab
-                            href="#"
+                            :href="route(`${currentUser}.hr-managers`)"
                             :class="[
-                                $page.url.includes('manager') &&
+                                $page.url.includes('managers') &&
                                     'bg-gray-100 dark:bg-gray-700',
                             ]"
                         >
@@ -125,15 +125,15 @@ const currentUserDashboard = computed(() => {
                                 />
                             </template>
 
-                            <template #title> HR Admin </template>
+                            <template #title> HR Managers </template>
                         </SidebarTab>
                     </li>
 
                     <li>
                         <SidebarTab
-                            href="#"
+                            :href="route(`${currentUser}.hr-staffs`)"
                             :class="[
-                                $page.url.includes('home-page') &&
+                                $page.url.includes('staffs') &&
                                     'bg-gray-100 dark:bg-gray-700',
                             ]"
                         >
@@ -150,13 +150,13 @@ const currentUserDashboard = computed(() => {
                 </template>
             </SidebarCategory>
 
-            <SidebarCategory name="Recruitment">
+            <SidebarCategory name="Recruitments">
                 <template #tab>
                     <li>
                         <SidebarTab
-                            href="#"
+                            :href="route(`${currentUser}.applicants`)"
                             :class="[
-                                $page.url.includes('manager') &&
+                                $page.url.includes('applicants') &&
                                     'bg-gray-100 dark:bg-gray-700',
                             ]"
                         >
@@ -173,9 +173,9 @@ const currentUserDashboard = computed(() => {
 
                     <li>
                         <SidebarTab
-                            href="#"
+                            :href="route(`${currentUser}.files`)"
                             :class="[
-                                $page.url.includes('home-page') &&
+                                $page.url.includes('files') &&
                                     'bg-gray-100 dark:bg-gray-700',
                             ]"
                         >

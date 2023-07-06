@@ -37,19 +37,15 @@ const submit = () => {
             <AuthenticationCardLogo />
         </template>
 
-        <template #title>
-            <h2
-                class="my-6 text-center text-3xl font-bold leading-9 tracking-tight text-gray-900"
-            >
-                Sign in to your account
-            </h2>
-        </template>
-
         <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
             {{ status }}
         </div>
 
-        <form @submit.prevent="submit">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+            Sign in to platform
+        </h2>
+
+        <form class="mt-8 space-y-6" @submit.prevent="submit">
             <div class="mt-4">
                 <InputLabel for="email" value="Email" />
                 <TextInput
@@ -80,7 +76,8 @@ const submit = () => {
             <div class="mt-6 flex justify-between">
                 <label class="flex items-center">
                     <Checkbox v-model:checked="form.remember" name="remember" />
-                    <span class="ml-2 text-sm md:text-md text-gray-600"
+                    <span
+                        class="ml-2 text-sm md:text-md font-medium text-gray-900 dark:text-white"
                         >Remember me</span
                     >
                 </label>
@@ -105,7 +102,7 @@ const submit = () => {
             </div>
 
             <div class="mb-4 mt-6">
-                <p class="font-light text-gray-500 text-sm md:text-md">
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
                     Don’t have an account yet?
                     <Link
                         :href="route('register')"

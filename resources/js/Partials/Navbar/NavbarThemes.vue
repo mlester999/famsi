@@ -4,8 +4,11 @@ import { useDark, useToggle } from "@vueuse/core";
 const isDark = useDark({
     onChanged(isDark) {
         if (isDark) {
+            localStorage.setItem("theme", "dark");
+            document.documentElement.classList.remove("light");
             document.documentElement.classList.add("dark");
         } else {
+            localStorage.setItem("theme", "light");
             document.documentElement.classList.remove("dark");
             document.documentElement.classList.add("light");
         }

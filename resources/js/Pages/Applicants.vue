@@ -4,8 +4,8 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 </script>
 
 <template>
-    <AppLayout title="Home Page">
-        <TableCrud name="homepage">
+    <AppLayout title="Applicants">
+        <TableCrud name="applicants">
             <template #first-tab>
                 <p
                     class="inline-flex items-center text-gray-700 dark:text-gray-300"
@@ -14,16 +14,15 @@ import AppLayout from "@/Layouts/AppLayout.vue";
                         class="w-5 h-5 mr-2.5"
                         :icon="['fas', 'house']"
                     />
-
-                    Menu
+                    Recruitments
                 </p>
             </template>
 
-            <template #second-tab> Home Page </template>
+            <template #second-tab> Applicants </template>
 
-            <template #title>Home Page</template>
+            <template #title>Applicants</template>
             <template #description
-                >This is the layout of the Home Page of the website</template
+                >This is the layout of the Applicants of the website</template
             >
         </TableCrud>
     </AppLayout>

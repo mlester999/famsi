@@ -36,6 +36,14 @@ library.add(faFile);
 const appName =
     window.document.getElementsByTagName("title")[0]?.innerText || "FAMSI";
 
+if (localStorage.getItem("theme") == "dark") {
+    document.documentElement.classList.remove("light");
+    document.documentElement.classList.add("dark");
+} else {
+    document.documentElement.classList.remove("dark");
+    document.documentElement.classList.add("light");
+}
+
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) =>

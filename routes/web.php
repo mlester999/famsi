@@ -59,6 +59,22 @@ Route::middleware([
         Route::get('/announcement', function () {
             return Inertia::render('Announcement');
         })->name('announcement');
+
+        Route::get('/hr-managers', function () {
+            return Inertia::render('HRManagers');
+        })->name('hr-managers');
+
+        Route::get('/hr-staffs', function () {
+            return Inertia::render('HRStaffs');
+        })->name('hr-staffs');
+
+        Route::get('/applicants', function () {
+            return Inertia::render('Applicants');
+        })->name('applicants');
+
+        Route::get('/files', function () {
+            return Inertia::render('Files');
+        })->name('files');
     });
 });
 
