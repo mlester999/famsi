@@ -32,15 +32,20 @@ class HrManagerController extends Controller
             ];
         }
 
+        $links[] = [
+            'url' => $hrManagers->url(1),
+            'label' => 1,
+        ];
+
         if ($currentPage > 3) {
             $links[] = [
-                'url' => $hrManagers->url(1),
-                'label' => 1,
+                'url' => $hrManagers->url($currentPage - 1),
+                'label' => '...',
             ];
         }
 
-        $rangeStart = max(1, $currentPage - 1);
-        $rangeEnd = min($lastPage, $currentPage + 1);
+        $rangeStart = max(2, $currentPage - 1);
+        $rangeEnd = min($lastPage - 1, $currentPage + 1);
 
         for ($i = $rangeStart; $i <= $rangeEnd; $i++) {
             $links[] = [
@@ -51,10 +56,15 @@ class HrManagerController extends Controller
 
         if ($currentPage < $lastPage - 2) {
             $links[] = [
-                'url' => $hrManagers->url($lastPage),
-                'label' => $lastPage,
+                'url' => $hrManagers->url($currentPage + 1),
+                'label' => '...',
             ];
         }
+
+        $links[] = [
+            'url' => $hrManagers->url($lastPage),
+            'label' => $lastPage,
+        ];
 
         if ($nextPage !== null) {
             $links[] = [

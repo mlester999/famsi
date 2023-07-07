@@ -285,7 +285,11 @@ defineProps({
             >
                 <Link
                     :href="link.url"
-                    v-if="parseInt(link.label)"
+                    v-if="
+                        link.label !== '...' &&
+                        link.label !== 'Previous' &&
+                        link.label !== 'Next'
+                    "
                     class="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-black dark:text-white rounded-lg hover:bg-gray-300 focus:ring-4 focus:ring-primary-300 dark:hover:bg-gray-700 dark:focus:ring-gray-800"
                     :class="{
                         'bg-gray-200 dark:bg-gray-600':
@@ -295,6 +299,14 @@ defineProps({
                     >{{ link.label }}</Link
                 >
 
+                <button
+                    v-else-if="link.label === '...'"
+                    class="inline-flex items-center justify-center flex-1 px-1 py-2 text-sm font-medium text-center text-black dark:text-white rounded-lg"
+                    disabled
+                >
+                    ...
+                </button>
+
                 <Link
                     :href="link.url"
                     v-else
@@ -303,6 +315,7 @@ defineProps({
                     >{{ link.label }}</Link
                 >
             </li>
+
             <li
                 class="list-none"
                 v-if="
