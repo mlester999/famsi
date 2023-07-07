@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\HrManager;
 use App\Http\Requests\StoreHrManagerRequest;
 use App\Http\Requests\UpdateHrManagerRequest;
+use App\Models\User;
+use Inertia\Inertia;
 
 class HrManagerController extends Controller
 {
@@ -13,7 +15,63 @@ class HrManagerController extends Controller
      */
     public function index()
     {
-        //
+
+        $hrManagers = HrManager::with('user')->paginate(10);
+        $currentPage = $hrManagers->currentPage();
+        $lastPage = $hrManagers->lastPage();
+
+        $previousPage = $currentPage - 1 > 0 ? $currentPage - 1 : null;
+        $nextPage = $currentPage + 1 <= $lastPage ? $currentPage + 1 : null;
+
+        $links = [];
+
+        if ($previousPage !== null) {
+            $links[] = [
+                'url' => $hrManagers->url($previousPage),
+                'label' => 'Previous',
+            ];
+        }
+
+        if ($currentPage > 3) {
+            $links[] = [
+                'url' => $hrManagers->url(1),
+                'label' => 1,
+            ];
+        }
+
+        $rangeStart = max(1, $currentPage - 1);
+        $rangeEnd = min($lastPage, $currentPage + 1);
+
+        for ($i = $rangeStart; $i <= $rangeEnd; $i++) {
+            $links[] = [
+                'url' => $hrManagers->url($i),
+                'label' => $i,
+            ];
+        }
+
+        if ($currentPage < $lastPage - 2) {
+            $links[] = [
+                'url' => $hrManagers->url($lastPage),
+                'label' => $lastPage,
+            ];
+        }
+
+        if ($nextPage !== null) {
+            $links[] = [
+                'url' => $hrManagers->url($nextPage),
+                'label' => 'Next',
+            ];
+        }
+
+
+        return Inertia::render('HRManagers', [
+            'hrManagers' => $hrManagers,
+            'pagination' => [
+                'current_page' => $currentPage,
+                'last_page' => $lastPage,
+                'links' => $links,
+            ],
+        ]);
     }
 
     /**

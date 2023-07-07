@@ -1,4 +1,11 @@
-<script setup></script>
+<script setup>
+import { Link } from "@inertiajs/vue3";
+
+defineProps({
+    roles: Object,
+    pagination: Object,
+});
+</script>
 
 <template>
     <div
@@ -98,38 +105,27 @@
                                     scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
-                                    Product Name
+                                    First Name
                                 </th>
                                 <th
                                     scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
-                                    Technology
+                                    Last Name
                                 </th>
                                 <th
                                     scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
-                                    Description
+                                    Email Address
                                 </th>
                                 <th
                                     scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
-                                    ID
+                                    Created At
                                 </th>
-                                <th
-                                    scope="col"
-                                    class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                                >
-                                    Price
-                                </th>
-                                <th
-                                    scope="col"
-                                    class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                                >
-                                    Discount
-                                </th>
+
                                 <th
                                     scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
@@ -142,64 +138,55 @@
                             class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700"
                         >
                             <tr
+                                v-for="role in roles.data"
+                                :key="role.id"
                                 class="hover:bg-gray-100 dark:hover:bg-gray-700"
                             >
-                                <td class="w-4 p-4">
-                                    <div class="flex items-center">
-                                        <input
-                                            id="checkbox-194556"
-                                            aria-describedby="checkbox-1"
-                                            type="checkbox"
-                                            class="w-4 h-4 border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:focus:ring-primary-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
-                                        />
-                                        <label
-                                            for="checkbox-194556"
-                                            class="sr-only"
-                                            >checkbox</label
-                                        >
+                                <td
+                                    class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400"
+                                >
+                                    <div
+                                        class="text-base text-center font-semibold text-gray-900 dark:text-white"
+                                    >
+                                        {{ role.id }}
                                     </div>
                                 </td>
                                 <td
                                     class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400"
                                 >
                                     <div
-                                        class="text-base font-semibold text-gray-900 dark:text-white"
+                                        class="text-base text-gray-900 dark:text-white"
                                     >
-                                        Education Dashboard
-                                    </div>
-                                    <div
-                                        class="text-sm font-normal text-gray-500 dark:text-gray-400"
-                                    >
-                                        Html templates
+                                        {{ role.first_name }}
                                     </div>
                                 </td>
                                 <td
                                     class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
-                                    Angular
+                                    <div
+                                        class="text-base text-gray-900 dark:text-white"
+                                    >
+                                        {{ role.last_name }}
+                                    </div>
                                 </td>
                                 <td
                                     class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
                                 >
-                                    Start developing with an open-source library
-                                    of over 450+ UI components, sections, and
-                                    pages built with the utility classes from
-                                    Tailwind CSS and designed in Figma.
+                                    <div
+                                        class="text-base text-gray-900 dark:text-white"
+                                    >
+                                        {{ role.user.email }}
+                                    </div>
                                 </td>
+
                                 <td
                                     class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
-                                    #194556
-                                </td>
-                                <td
-                                    class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                                >
-                                    $149
-                                </td>
-                                <td
-                                    class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                                >
-                                    No
+                                    {{
+                                        new Date(
+                                            role.created_at
+                                        ).toLocaleDateString("en-PH")
+                                    }}
                                 </td>
 
                                 <td class="p-4 space-x-2 whitespace-nowrap">
@@ -250,7 +237,7 @@
                                                 clip-rule="evenodd"
                                             ></path>
                                         </svg>
-                                        Delete item
+                                        Delete
                                     </button>
                                 </td>
                             </tr>
@@ -265,40 +252,6 @@
         class="sticky bottom-0 right-0 items-center w-full p-4 bg-white border-t border-gray-200 sm:flex sm:justify-between dark:bg-gray-800 dark:border-gray-700"
     >
         <div class="flex items-center mb-4 sm:mb-0">
-            <a
-                href="#"
-                class="inline-flex justify-center p-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"
-            >
-                <svg
-                    class="w-7 h-7"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        fill-rule="evenodd"
-                        d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                        clip-rule="evenodd"
-                    ></path>
-                </svg>
-            </a>
-            <a
-                href="#"
-                class="inline-flex justify-center p-1 mr-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"
-            >
-                <svg
-                    class="w-7 h-7"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        fill-rule="evenodd"
-                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                        clip-rule="evenodd"
-                    ></path>
-                </svg>
-            </a>
             <span class="text-sm font-normal text-gray-500 dark:text-gray-400"
                 >Showing
                 <span class="font-semibold text-gray-900 dark:text-white"
@@ -311,42 +264,89 @@
             >
         </div>
         <div class="flex items-center space-x-3">
-            <a
-                href="#"
-                class="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-primary-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-primary-800"
+            <li
+                class="list-none"
+                v-if="pagination.links[0].label !== 'Previous'"
             >
-                <svg
-                    class="w-5 h-5 mr-1 -ml-1"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
+                <button
+                    @click.prevent="$inertia.visit(pagination.links[0].url)"
+                    class="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-400 dark:bg-blue-900 hover:cursor-not-allowed"
+                    disabled
                 >
-                    <path
-                        fill-rule="evenodd"
-                        d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                        clip-rule="evenodd"
-                    ></path>
-                </svg>
-                Previous
-            </a>
-            <a
-                href="#"
-                class="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-primary-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-primary-800"
+                    Previous
+                </button>
+            </li>
+
+            <li
+                class="list-none"
+                v-for="(link, index) in pagination.links"
+                :key="index"
+                :class="{ active: link.label === pagination.current_page }"
             >
-                Next
-                <svg
-                    class="w-5 h-5 ml-1 -mr-1"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
+                <Link
+                    :href="link.url"
+                    v-if="parseInt(link.label)"
+                    class="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-black dark:text-white rounded-lg hover:bg-gray-300 focus:ring-4 focus:ring-primary-300 dark:hover:bg-gray-700 dark:focus:ring-gray-800"
+                    :class="{
+                        'bg-gray-200 dark:bg-gray-600':
+                            link.label === pagination.current_page,
+                    }"
+                    @click.prevent="$inertia.visit(link.url)"
+                    >{{ link.label }}</Link
                 >
-                    <path
-                        fill-rule="evenodd"
-                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                        clip-rule="evenodd"
-                    ></path>
-                </svg>
-            </a>
+
+                <Link
+                    :href="link.url"
+                    v-else
+                    class="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-primary-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-primary-800"
+                    @click.prevent="$inertia.visit(link.url)"
+                    >{{ link.label }}</Link
+                >
+            </li>
+            <li
+                class="list-none"
+                v-if="
+                    pagination.links[pagination.links.length - 1].label !==
+                    'Next'
+                "
+            >
+                <button
+                    :href="pagination.links[pagination.links.length - 1].url"
+                    @click.prevent="
+                        $inertia.visit(
+                            pagination.links[pagination.links.length - 1].url
+                        )
+                    "
+                    class="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-400 dark:bg-blue-900 hover:cursor-not-allowed"
+                    disabled
+                >
+                    Next
+                </button>
+            </li>
+            <!--
+            <li
+                class="list-none"
+                v-for="(link, index) in pagination.links"
+                :key="index"
+            >
+                <Link
+                    :href="link.url"
+                    v-html="link.label"
+                    v-if="parseInt(link.label)"
+                    class="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-black dark:text-white rounded-lg hover:bg-gray-300 focus:ring-4 focus:ring-primary-300 dark:hover:bg-gray-700 dark:focus:ring-gray-800"
+                    :class="{
+                        'bg-gray-200 dark:bg-gray-600':
+                            link === pagination.current_page,
+                    }"
+                />
+
+                <Link
+                    :href="link.url"
+                    v-html="link.label"
+                    v-else
+                    class="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-primary-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-primary-800"
+                />
+            </li> -->
         </div>
     </div>
 

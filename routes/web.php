@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HrManagerController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -60,9 +61,7 @@ Route::middleware([
             return Inertia::render('Announcement');
         })->name('announcement');
 
-        Route::get('/hr-managers', function () {
-            return Inertia::render('HRManagers');
-        })->name('hr-managers');
+        Route::get('/hr-managers', [HrManagerController::class, 'index'])->name('hr-managers');
 
         Route::get('/hr-staffs', function () {
             return Inertia::render('HRStaffs');
