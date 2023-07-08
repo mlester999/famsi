@@ -56,6 +56,7 @@ class HrManagerController extends Controller
 
         $currentPage = $hrManagers->currentPage();
         $lastPage = $hrManagers->lastPage();
+        $firstPage = 1;
 
         $previousPage = $currentPage - 1 > 0 ? $currentPage - 1 : null;
         $nextPage = $currentPage + 1 <= $lastPage ? $currentPage + 1 : null;
@@ -91,6 +92,7 @@ class HrManagerController extends Controller
             ];
         }
 
+
         if ($currentPage < $lastPage - 2) {
             $links[] = [
                 'url' => $hrManagers->url($currentPage + 1),
@@ -98,10 +100,12 @@ class HrManagerController extends Controller
             ];
         }
 
-        $links[] = [
-            'url' => $hrManagers->url($lastPage),
-            'label' => $lastPage,
-        ];
+        if ($firstPage !== $lastPage) {
+            $links[] = [
+                'url' => $hrManagers->url($lastPage),
+                'label' => $lastPage,
+            ];
+        }
 
         if ($nextPage !== null) {
             $links[] = [

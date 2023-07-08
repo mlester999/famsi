@@ -44,7 +44,8 @@ defineProps({
                 v-if="
                     link.label !== '...' &&
                     link.label !== 'Previous' &&
-                    link.label !== 'Next'
+                    link.label !== 'Next' &&
+                    pagination.links.length !== 1
                 "
                 class="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm text-center text-black dark:text-white rounded-lg hover:bg-gray-300 focus:ring-4 focus:ring-primary-300 dark:hover:bg-gray-700 dark:focus:ring-gray-800"
                 :class="{
@@ -78,6 +79,14 @@ defineProps({
             >
                 {{ link.label }}
             </NextButton>
+
+            <button
+                v-else
+                class="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm text-center text-black dark:text-white rounded-lg bg-gray-200 dark:bg-gray-600 font-black"
+                disabled
+            >
+                {{ link.label }}
+            </button>
         </li>
 
         <li
