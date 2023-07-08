@@ -1,0 +1,98 @@
+<script setup>
+import { Link } from "@inertiajs/vue3";
+import PreviousButton from "@/Components/PreviousButton.vue";
+import NextButton from "@/Components/NextButton.vue";
+
+defineProps({
+    roles: Object,
+    pagination: Object,
+});
+</script>
+
+<template>
+    <div class="flex items-center mb-4 sm:mb-0">
+        <span class="text-sm font-normal text-gray-500 dark:text-gray-400"
+            >Showing
+            <span class="font-semibold text-gray-900 dark:text-white"
+                >{{ roles.from }} - {{ roles.to }}</span
+            >
+            of
+            <span class="font-semibold text-gray-900 dark:text-white">{{
+                roles.total
+            }}</span></span
+        >
+    </div>
+    <div class="flex items-center space-x-3">
+        <li class="list-none" v-if="pagination.links[0].label !== 'Previous'">
+            <PreviousButton
+                element="button"
+                :link="pagination.links[0].url"
+                :disabled="true"
+            >
+                Previous
+            </PreviousButton>
+        </li>
+
+        <li
+            class="list-none"
+            v-for="(link, index) in pagination.links"
+            :key="index"
+            :class="{ active: link.label === pagination.current_page }"
+        >
+            <Link
+                :href="link.url"
+                v-if="
+                    link.label !== '...' &&
+                    link.label !== 'Previous' &&
+                    link.label !== 'Next'
+                "
+                class="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm text-center text-black dark:text-white rounded-lg hover:bg-gray-300 focus:ring-4 focus:ring-primary-300 dark:hover:bg-gray-700 dark:focus:ring-gray-800"
+                :class="{
+                    'bg-gray-200 dark:bg-gray-600 font-black':
+                        link.label === pagination.current_page,
+                }"
+                @click.prevent="$inertia.visit(link.url)"
+                >{{ link.label }}</Link
+            >
+
+            <button
+                v-else-if="link.label === '...'"
+                class="inline-flex items-center justify-center flex-1 px-1 py-2 text-sm font-medium text-center text-black dark:text-white rounded-lg"
+                disabled
+            >
+                ...
+            </button>
+
+            <PreviousButton
+                v-else-if="link.label === 'Previous'"
+                element="link"
+                :link="link.url"
+            >
+                {{ link.label }}
+            </PreviousButton>
+
+            <NextButton
+                v-else-if="link.label === 'Next'"
+                element="link"
+                :link="link.url"
+            >
+                {{ link.label }}
+            </NextButton>
+        </li>
+
+        <li
+            class="list-none"
+            v-if="
+                pagination.links[pagination.links.length - 1].label !== 'Next'
+            "
+        >
+            <NextButton
+                element="button"
+                :link="pagination.links[pagination.links.length - 1].url"
+                :disabled="true"
+            >
+                Next
+            </NextButton>
+        </li>
+    </div>
+</template>

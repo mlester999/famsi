@@ -58,6 +58,26 @@ class HandleInertiaRequests extends Middleware
                             return Admin::where('user_id', $authUser->id)->first();
                         }
                     }
+                },
+
+                "role" => function () {
+                    $authUser = Auth::user();
+
+                    if ($authUser->user_type == User::ADMIN) {
+                        return "admin";
+                    }
+
+                    if ($authUser->user_type == User::HR_MANAGER) {
+                        return "hr-manager";
+                    }
+
+                    if ($authUser->user_type == User::HR_STAFF) {
+                        return "hr-staff";
+                    }
+
+                    if ($authUser->user_type == User::APPLICANT) {
+                        return "applicant";
+                    }
                 }
             ]
         ]);

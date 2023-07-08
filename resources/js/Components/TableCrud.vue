@@ -1,9 +1,29 @@
 <script setup>
-import { Link } from "@inertiajs/vue3";
+import { router, usePage } from "@inertiajs/vue3";
+import { ref, watch } from "vue";
+import Pagination from "../Partials/Table/Pagination.vue";
 
-defineProps({
+const props = defineProps({
     roles: Object,
     pagination: Object,
+    filters: Object,
+    linkName: String,
+});
+
+let search = ref(props.filters.search);
+
+const page = usePage();
+
+watch(search, (value) => {
+    const query = {};
+    if (value) {
+        query.search = value;
+    }
+
+    router.get(`/${page.props.user.role}/${props.linkName}`, query, {
+        preserveState: true,
+        replace: true,
+    });
 });
 </script>
 
@@ -63,11 +83,12 @@ defineProps({
                         >
                         <div class="relative w-48 mt-1 sm:w-64 xl:w-96">
                             <input
+                                v-model="search"
                                 type="text"
                                 name="email"
                                 id="products-search"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                placeholder="Search for products"
+                                placeholder="Search..."
                             />
                         </div>
                     </form>
@@ -76,12 +97,12 @@ defineProps({
                     id="createProductButton"
                     class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-primary-800"
                     type="button"
-                    data-drawer-target="drawer-create-product-default"
-                    data-drawer-show="drawer-create-product-default"
-                    aria-controls="drawer-create-product-default"
-                    data-drawer-placement="right"
                 >
-                    Add new product
+                    <font-awesome-icon
+                        class="mr-2 -ml-1"
+                        :icon="['fas', 'plus']"
+                    />
+                    Add new HR Manager
                 </button>
             </div>
         </div>
@@ -175,7 +196,7 @@ defineProps({
                                     <div
                                         class="text-base text-gray-900 dark:text-white"
                                     >
-                                        {{ role.user.email }}
+                                        {{ role.email }}
                                     </div>
                                 </td>
 
@@ -251,116 +272,7 @@ defineProps({
     <div
         class="sticky bottom-0 right-0 items-center w-full p-4 bg-white border-t border-gray-200 sm:flex sm:justify-between dark:bg-gray-800 dark:border-gray-700"
     >
-        <div class="flex items-center mb-4 sm:mb-0">
-            <span class="text-sm font-normal text-gray-500 dark:text-gray-400"
-                >Showing
-                <span class="font-semibold text-gray-900 dark:text-white"
-                    >1-20</span
-                >
-                of
-                <span class="font-semibold text-gray-900 dark:text-white"
-                    >2290</span
-                ></span
-            >
-        </div>
-        <div class="flex items-center space-x-3">
-            <li
-                class="list-none"
-                v-if="pagination.links[0].label !== 'Previous'"
-            >
-                <button
-                    @click.prevent="$inertia.visit(pagination.links[0].url)"
-                    class="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-400 dark:bg-blue-900 hover:cursor-not-allowed"
-                    disabled
-                >
-                    Previous
-                </button>
-            </li>
-
-            <li
-                class="list-none"
-                v-for="(link, index) in pagination.links"
-                :key="index"
-                :class="{ active: link.label === pagination.current_page }"
-            >
-                <Link
-                    :href="link.url"
-                    v-if="
-                        link.label !== '...' &&
-                        link.label !== 'Previous' &&
-                        link.label !== 'Next'
-                    "
-                    class="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-black dark:text-white rounded-lg hover:bg-gray-300 focus:ring-4 focus:ring-primary-300 dark:hover:bg-gray-700 dark:focus:ring-gray-800"
-                    :class="{
-                        'bg-gray-200 dark:bg-gray-600':
-                            link.label === pagination.current_page,
-                    }"
-                    @click.prevent="$inertia.visit(link.url)"
-                    >{{ link.label }}</Link
-                >
-
-                <button
-                    v-else-if="link.label === '...'"
-                    class="inline-flex items-center justify-center flex-1 px-1 py-2 text-sm font-medium text-center text-black dark:text-white rounded-lg"
-                    disabled
-                >
-                    ...
-                </button>
-
-                <Link
-                    :href="link.url"
-                    v-else
-                    class="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-primary-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-primary-800"
-                    @click.prevent="$inertia.visit(link.url)"
-                    >{{ link.label }}</Link
-                >
-            </li>
-
-            <li
-                class="list-none"
-                v-if="
-                    pagination.links[pagination.links.length - 1].label !==
-                    'Next'
-                "
-            >
-                <button
-                    :href="pagination.links[pagination.links.length - 1].url"
-                    @click.prevent="
-                        $inertia.visit(
-                            pagination.links[pagination.links.length - 1].url
-                        )
-                    "
-                    class="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-400 dark:bg-blue-900 hover:cursor-not-allowed"
-                    disabled
-                >
-                    Next
-                </button>
-            </li>
-            <!--
-            <li
-                class="list-none"
-                v-for="(link, index) in pagination.links"
-                :key="index"
-            >
-                <Link
-                    :href="link.url"
-                    v-html="link.label"
-                    v-if="parseInt(link.label)"
-                    class="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-black dark:text-white rounded-lg hover:bg-gray-300 focus:ring-4 focus:ring-primary-300 dark:hover:bg-gray-700 dark:focus:ring-gray-800"
-                    :class="{
-                        'bg-gray-200 dark:bg-gray-600':
-                            link === pagination.current_page,
-                    }"
-                />
-
-                <Link
-                    :href="link.url"
-                    v-html="link.label"
-                    v-else
-                    class="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-primary-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-primary-800"
-                />
-            </li> -->
-        </div>
+        <Pagination :roles="roles" :pagination="pagination" />
     </div>
 
     <!-- Edit Product Drawer -->

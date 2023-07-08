@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\HrManager;
 use App\Http\Requests\StoreHrManagerRequest;
 use App\Http\Requests\UpdateHrManagerRequest;
-use App\Models\User;
+use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
 
 class HrManagerController extends Controller
@@ -16,7 +16,44 @@ class HrManagerController extends Controller
     public function index()
     {
 
-        $hrManagers = HrManager::with('user')->paginate(10);
+        $filters = Request::only(['search']);
+        $searchReq = Request::input('search');
+
+        $hrManagers = HrManager::query()
+        ->with('user')
+        ->when($searchReq, function($query, $search) {
+            $query->where(function ($query) use ($search) {
+                $query->whereRaw('LOWER(first_name) LIKE LOWER(?)', ['%' . $search . '%'])
+                      ->orWhereRaw('LOWER(last_name) LIKE LOWER(?)', ['%' . $search . '%']);
+            });
+
+            // Use this if we like to perform a case-insensitive and approximate matching search
+
+            // $query->where(function ($query) use ($search) {
+            //     $lowerSearch = strtolower($search);
+            //     $query->whereRaw('LOWER(first_name) LIKE LOWER(?)', ['%' . $search . '%'])
+            //           ->orWhereRaw('SOUNDEX(last_name) = SOUNDEX(?)', [$lowerSearch]);
+            // })
+            // ->orWhere(function ($query) use ($search) {
+            //     $lowerSearch = strtolower($search);
+            //     $query->whereRaw('LOWER(last_name) LIKE LOWER(?)', ['%' . $search . '%'])
+            //           ->orWhereRaw('SOUNDEX(first_name) = SOUNDEX(?)', [$lowerSearch]);
+            // });
+        })
+        ->paginate(10)
+        ->withQueryString()
+        ->through(fn($hrManager) => [
+            'id' => $hrManager->id,
+            'first_name' => $hrManager->first_name,
+            'last_name' => $hrManager->last_name,
+            'email' => $hrManager->user->email,
+            'created_at' => $hrManager->created_at,
+        ]);
+
+        if (empty($searchReq)) {
+            unset($filters['search']);
+        }
+
         $currentPage = $hrManagers->currentPage();
         $lastPage = $hrManagers->lastPage();
 
@@ -76,6 +113,7 @@ class HrManagerController extends Controller
 
         return Inertia::render('HRManagers', [
             'hrManagers' => $hrManagers,
+            'filters' => $filters,
             'pagination' => [
                 'current_page' => $currentPage,
                 'last_page' => $lastPage,

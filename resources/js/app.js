@@ -22,6 +22,7 @@ import {
     faUserShield,
     faUserCheck,
     faFile,
+    faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 
 /* add icons to the library */
@@ -32,6 +33,7 @@ library.add(faUser);
 library.add(faUserShield);
 library.add(faUserCheck);
 library.add(faFile);
+library.add(faPlus);
 
 const appName =
     window.document.getElementsByTagName("title")[0]?.innerText || "FAMSI";

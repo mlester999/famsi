@@ -11,21 +11,7 @@ defineProps({
 const page = usePage();
 
 const currentUser = computed(() => {
-    if (page.url.includes("admin")) {
-        return "admin";
-    }
-
-    if (page.url.includes("manager")) {
-        return "hr-manager";
-    }
-
-    if (page.url.includes("staff")) {
-        return "hr-staff";
-    }
-
-    if (page.url.includes("applicant")) {
-        return "applicant";
-    }
+    return page.props.user.role;
 });
 </script>
 

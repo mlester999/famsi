@@ -5,6 +5,7 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 defineProps({
     hrManagers: Object,
     pagination: Object,
+    filters: Object,
 });
 </script>
 
@@ -13,7 +14,8 @@ defineProps({
         <TableCrud
             :roles="hrManagers"
             :pagination="pagination"
-            name="hr-managers"
+            :filters="filters"
+            linkName="hr-managers"
         >
             <template #first-tab>
                 <p
@@ -31,7 +33,7 @@ defineProps({
 
             <template #title>HR Managers</template>
             <template #description
-                >This is tabs for HR Managers of the website</template
+                >This is the section of HR Manager accounts</template
             >
         </TableCrud>
     </AppLayout>
