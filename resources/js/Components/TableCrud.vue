@@ -1,6 +1,8 @@
 <script setup>
 import { router, usePage } from "@inertiajs/vue3";
 import { ref, watch } from "vue";
+import debounce from "lodash.debounce";
+
 import Pagination from "../Partials/Table/Pagination.vue";
 
 const props = defineProps({
@@ -14,17 +16,20 @@ let search = ref(props.filters.search);
 
 const page = usePage();
 
-watch(search, (value) => {
-    const query = {};
-    if (value) {
-        query.search = value;
-    }
+watch(
+    search,
+    debounce((value) => {
+        const query = {};
+        if (value) {
+            query.search = value;
+        }
 
-    router.get(`/${page.props.user.role}/${props.linkName}`, query, {
-        preserveState: true,
-        replace: true,
-    });
-});
+        router.get(`/${page.props.user.role}/${props.linkName}`, query, {
+            preserveState: true,
+            replace: true,
+        });
+    }, 500)
+);
 </script>
 
 <template>
