@@ -63,20 +63,22 @@ class HandleInertiaRequests extends Middleware
                 "role" => function () {
                     $authUser = Auth::user();
 
-                    if ($authUser->user_type == User::ADMIN) {
-                        return "admin";
-                    }
+                    if($authUser) {
+                        if ($authUser->user_type == User::ADMIN) {
+                            return "admin";
+                        }
 
-                    if ($authUser->user_type == User::HR_MANAGER) {
-                        return "hr-manager";
-                    }
+                        if ($authUser->user_type == User::HR_MANAGER) {
+                            return "hr-manager";
+                        }
 
-                    if ($authUser->user_type == User::HR_STAFF) {
-                        return "hr-staff";
-                    }
+                        if ($authUser->user_type == User::HR_STAFF) {
+                            return "hr-staff";
+                        }
 
-                    if ($authUser->user_type == User::APPLICANT) {
-                        return "applicant";
+                        if ($authUser->user_type == User::APPLICANT) {
+                            return "applicant";
+                        }
                     }
                 }
             ]

@@ -16,6 +16,7 @@ defineProps({
             :pagination="pagination"
             :filters="filters"
             linkName="hr-managers"
+            title="HR Manager"
         >
             <template #first-tab>
                 <p
