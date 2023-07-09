@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\HrManager;
 use App\Http\Requests\StoreHrManagerRequest;
 use App\Http\Requests\UpdateHrManagerRequest;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 
 class HrManagerController extends Controller
@@ -40,13 +43,17 @@ class HrManagerController extends Controller
             //           ->orWhereRaw('SOUNDEX(first_name) = SOUNDEX(?)', [$lowerSearch]);
             // });
         })
+        ->orderByDesc('id')
         ->paginate(10)
         ->withQueryString()
         ->through(fn($hrManager) => [
             'id' => $hrManager->id,
             'first_name' => $hrManager->first_name,
+            'middle_name' => $hrManager->middle_name,
             'last_name' => $hrManager->last_name,
+            'gender' => $hrManager->gender,
             'email' => $hrManager->user->email,
+            'contact_number' => $hrManager->contact_number,
             'created_at' => $hrManager->created_at,
         ]);
 
@@ -137,9 +144,33 @@ class HrManagerController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreHrManagerRequest $request)
+    public function store()
     {
-        //
+        $hrManagerValidate = Request::validate([
+            'first_name' => ['required', 'max:50'],
+            'middle_name' => ['required', 'max:50'],
+            'last_name' => ['required', 'max:50'],
+            'gender' => ['required'],
+            'email' => ['required', 'max:50', 'email'],
+            'contact_number' => ['required', 'digits:11'],
+        ]);
+
+        $user = User::create([
+            'email' => $hrManagerValidate['email'],
+            'password' => Hash::make('12345678'),
+            'user_type' => 2
+        ]);
+
+        HrManager::create([
+            'user_id' => $user['id'],
+            'first_name' => $hrManagerValidate['first_name'],
+            'middle_name' => $hrManagerValidate['middle_name'],
+            'last_name' => $hrManagerValidate['last_name'],
+            'gender' => $hrManagerValidate['gender'],
+            'contact_number' => $hrManagerValidate['contact_number'],
+        ]);
+
+        return redirect(URL::current());
     }
 
     /**

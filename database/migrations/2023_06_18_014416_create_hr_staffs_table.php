@@ -15,7 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->references('id')->on('users');
             $table->string('first_name');
+            $table->string('middle_name');
             $table->string('last_name');
+            $table->string('gender');
+            $table->string('contact_number');
             $table->timestamps();
         });
     }

@@ -1,6 +1,6 @@
 <script setup>
-import { router, usePage } from "@inertiajs/vue3";
-import { ref, watch } from "vue";
+import { router, usePage, useForm } from "@inertiajs/vue3";
+import { ref, watch, Transition, Teleport } from "vue";
 import debounce from "lodash.debounce";
 
 import Pagination from "../Partials/Table/Pagination.vue";
@@ -13,18 +13,69 @@ const props = defineProps({
     title: String,
 });
 
+const form = useForm({
+    first_name: "",
+    middle_name: "",
+    last_name: "",
+    gender: "",
+    email: "",
+    contact_number: "",
+});
+
 const page = usePage();
+
+const submit = () => {
+    form.post(`/${page.props.user.role}/${props.linkName}`, {
+        onSuccess: () => {
+            updateModalVisibility.value = false;
+            addModalVisibility.value = false;
+            form.reset();
+            clearErrors();
+        },
+    });
+};
 
 let search = ref(props.filters.search);
 
 let updateModalVisibility = ref(false);
+let addModalVisibility = ref(false);
 
-const showUpdateModal = () => {
+const showUpdateModal = (data) => {
+    form.first_name = data.first_name;
+    form.middle_name = data.middle_name;
+    form.last_name = data.last_name;
+    form.gender = data.gender;
+    form.email = data.email;
+    form.contact_number = data.contact_number;
+
+    document.body.classList.add("overflow-hidden");
+
     updateModalVisibility.value = true;
 };
 
 const hideUpdateModal = () => {
+    document.body.classList.remove("overflow-hidden");
+
     updateModalVisibility.value = false;
+};
+
+const showAddModal = () => {
+    form.first_name = "";
+    form.middle_name = "";
+    form.last_name = "";
+    form.gender = "";
+    form.email = "";
+    form.contact_number = "";
+
+    document.body.classList.add("overflow-hidden");
+
+    addModalVisibility.value = true;
+};
+
+const hideAddModal = () => {
+    document.body.classList.remove("overflow-hidden");
+
+    addModalVisibility.value = false;
 };
 
 watch(
@@ -52,6 +103,12 @@ watch(
             <div
                 v-if="updateModalVisibility"
                 @click="hideUpdateModal"
+                class="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-30 transition duration-200"
+            ></div>
+
+            <div
+                v-else-if="addModalVisibility"
+                @click="hideAddModal"
                 class="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-30 transition duration-200"
             ></div>
         </Teleport>
@@ -111,14 +168,15 @@ watch(
                             type="text"
                             name="search"
                             id="products-search"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             placeholder="Search..."
                         />
                     </div>
                 </div>
                 <button
-                    id="createProductButton"
-                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-primary-800"
+                    id="addNewButton"
+                    @click="showAddModal"
+                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                     type="button"
                 >
                     <font-awesome-icon
@@ -155,13 +213,31 @@ watch(
                                     scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
+                                    Middle Name
+                                </th>
+                                <th
+                                    scope="col"
+                                    class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                                >
                                     Last Name
                                 </th>
                                 <th
                                     scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
+                                    Gender
+                                </th>
+                                <th
+                                    scope="col"
+                                    class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                                >
                                     Email Address
+                                </th>
+                                <th
+                                    scope="col"
+                                    class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                                >
+                                    Contact Number
                                 </th>
                                 <th
                                     scope="col"
@@ -182,7 +258,7 @@ watch(
                             class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700"
                         >
                             <tr
-                                v-for="role in roles.data"
+                                v-for="(role, index) in roles.data"
                                 :key="role.id"
                                 class="hover:bg-gray-100 dark:hover:bg-gray-700"
                             >
@@ -210,7 +286,25 @@ watch(
                                     <div
                                         class="text-base text-gray-900 dark:text-white"
                                     >
+                                        {{ role.middle_name }}
+                                    </div>
+                                </td>
+                                <td
+                                    class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                                >
+                                    <div
+                                        class="text-base text-gray-900 dark:text-white"
+                                    >
                                         {{ role.last_name }}
+                                    </div>
+                                </td>
+                                <td
+                                    class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                                >
+                                    <div
+                                        class="text-base text-gray-900 dark:text-white"
+                                    >
+                                        {{ role.gender }}
                                     </div>
                                 </td>
                                 <td
@@ -220,6 +314,15 @@ watch(
                                         class="text-base text-gray-900 dark:text-white"
                                     >
                                         {{ role.email }}
+                                    </div>
+                                </td>
+                                <td
+                                    class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
+                                >
+                                    <div
+                                        class="text-base text-gray-900 dark:text-white"
+                                    >
+                                        {{ role.contact_number }}
                                     </div>
                                 </td>
 
@@ -237,8 +340,10 @@ watch(
                                     <button
                                         type="button"
                                         id="updateProductButton"
-                                        @click="showUpdateModal"
-                                        class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-primary-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-primary-800"
+                                        @click="
+                                            showUpdateModal(roles.data[index])
+                                        "
+                                        class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                                     >
                                         <svg
                                             class="w-4 h-4 mr-2"
@@ -296,157 +401,181 @@ watch(
     </div>
 
     <!-- Edit Product Drawer -->
-    <div
-        id="drawer-update-product-default"
-        class="fixed top-0 right-0 z-40 w-full h-screen max-w-xs p-4 overflow-y-auto transition-transform bg-white dark:bg-gray-800"
-        :class="[updateModalVisibility ? 'transform-none' : 'translate-x-full']"
-        tabindex="-1"
-        aria-labelledby="drawer-label"
-        aria-hidden="true"
+    <Transition
+        enter-from-class="translate-x-full"
+        enter-active-class="transition-transform translate-x-0"
+        leave-active-class="transition-transform translate-x-0"
+        leave-to-class="translate-x-full"
     >
-        <h5
-            id="drawer-label"
-            class="inline-flex items-center mb-6 text-sm font-semibold text-gray-500 uppercase dark:text-gray-400"
+        <div
+            v-if="updateModalVisibility"
+            id="drawer-update-product-default"
+            class="fixed top-0 right-0 z-40 w-full h-screen max-w-xs p-4 overflow-y-auto bg-white dark:bg-gray-800"
+            tabindex="-1"
+            aria-labelledby="drawer-label"
+            aria-hidden="true"
         >
-            Update {{ title }}
-        </h5>
-        <button
-            type="button"
-            @click="hideUpdateModal"
-            aria-controls="drawer-update-product-default"
-            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 absolute top-2.5 right-2.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-        >
-            <svg
-                aria-hidden="true"
-                class="w-5 h-5"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
+            <h5
+                id="drawer-label"
+                class="inline-flex items-center mb-6 text-sm font-semibold text-gray-500 uppercase dark:text-gray-400"
             >
-                <path
-                    fill-rule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clip-rule="evenodd"
-                ></path>
-            </svg>
-            <span class="sr-only">Close menu</span>
-        </button>
-        <form action="#">
-            <div class="space-y-4">
-                <div>
-                    <label
-                        for="name"
-                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >Name</label
-                    >
-                    <input
-                        type="text"
-                        name="title"
-                        id="name"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                        value="Education Dashboard"
-                        placeholder="Type product name"
-                        required=""
-                    />
-                </div>
-                <div>
-                    <label
-                        for="category"
-                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >Technology</label
-                    >
-                    <select
-                        id="category"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                    >
-                        <option selected="">Flowbite</option>
-                        <option value="RE">React</option>
-                        <option value="AN">Angular</option>
-                        <option value="VU">Vue JS</option>
-                    </select>
-                </div>
-                <div>
-                    <label
-                        for="price"
-                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >Price</label
-                    >
-                    <input
-                        type="number"
-                        name="price"
-                        id="price"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                        value="2999"
-                        placeholder="$149"
-                        required=""
-                    />
-                </div>
-                <div>
-                    <label
-                        for="description"
-                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >Description</label
-                    >
-                    <textarea
-                        id="description"
-                        rows="4"
-                        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                        placeholder="Enter event description here"
-                    >
-                        Start developing with an open-source library of over 450+ UI components, sections, and pages built with the utility classes from Tailwind CSS and designed in Figma.</textarea
-                    >
-                </div>
-                <div>
-                    <label
-                        for="discount"
-                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >Discount</label
-                    >
-                    <select
-                        id="discount"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                    >
-                        <option selected="">No</option>
-                        <option value="5">5%</option>
-                        <option value="10">10%</option>
-                        <option value="20">20%</option>
-                        <option value="30">30%</option>
-                        <option value="40">40%</option>
-                        <option value="50">50%</option>
-                    </select>
-                </div>
-            </div>
-            <div
-                class="bottom-0 left-0 flex justify-center w-full pb-4 mt-4 space-x-4 sm:absolute sm:px-4 sm:mt-0"
+                Update {{ title }}
+            </h5>
+            <button
+                type="button"
+                @click="hideUpdateModal"
+                aria-controls="drawer-update-product-default"
+                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 absolute top-2.5 right-2.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
             >
-                <button
-                    type="submit"
-                    class="w-full justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-primary-800"
+                <svg
+                    aria-hidden="true"
+                    class="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg"
                 >
-                    Update
-                </button>
-                <button
-                    type="button"
-                    class="w-full justify-center text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
+                    <path
+                        fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd"
+                    ></path>
+                </svg>
+                <span class="sr-only">Close</span>
+            </button>
+            <form action="#">
+                <div class="space-y-4">
+                    <div>
+                        <label
+                            for="firstName"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >First Name</label
+                        >
+                        <input
+                            type="text"
+                            v-model="form.first_name"
+                            name="firstName"
+                            id="firstName"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="First Name"
+                        />
+                    </div>
+                    <div>
+                        <label
+                            for="firstName"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >Middle Name</label
+                        >
+                        <input
+                            type="text"
+                            v-model="form.middle_name"
+                            name="middleName"
+                            id="middleName"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="Middle Name"
+                        />
+                    </div>
+                    <div>
+                        <label
+                            for="lastName"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >Last Name</label
+                        >
+                        <input
+                            type="text"
+                            v-model="form.last_name"
+                            name="lastName"
+                            id="lastName"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="Last Name"
+                        />
+                    </div>
+                    <div>
+                        <label
+                            for="gender"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >Gender</label
+                        >
+                        <select
+                            id="gender"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        >
+                            <option
+                                value="Male"
+                                :selected="form.gender === 'Male'"
+                            >
+                                Male
+                            </option>
+                            <option
+                                value="Female"
+                                :selected="form.gender === 'Female'"
+                            >
+                                Female
+                            </option>
+                        </select>
+                    </div>
+                    <div>
+                        <label
+                            for="emailAddress"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >Email Address</label
+                        >
+                        <input
+                            type="text"
+                            name="emailAddress"
+                            id="emailAddress"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            :value="form.email"
+                            placeholder="Email Address"
+                        />
+                    </div>
+                    <div>
+                        <label
+                            for="emailAddress"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >Contact Number</label
+                        >
+                        <input
+                            type="text"
+                            name="contactNumber"
+                            id="contactNumber"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            :value="form.contact_number"
+                            placeholder="Contact Number"
+                        />
+                    </div>
+                </div>
+                <div
+                    class="bottom-0 left-0 flex justify-center w-full pb-4 mt-4 space-x-4 sm:absolute sm:px-4 sm:mt-0"
                 >
-                    <svg
-                        aria-hidden="true"
-                        class="w-5 h-5 mr-1 -ml-1"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
+                    <button
+                        type="submit"
+                        class="w-full justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                     >
-                        <path
-                            fill-rule="evenodd"
-                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                            clip-rule="evenodd"
-                        ></path>
-                    </svg>
-                    Delete
-                </button>
-            </div>
-        </form>
-    </div>
+                        Update
+                    </button>
+                    <button
+                        type="button"
+                        class="w-full justify-center text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
+                    >
+                        <svg
+                            aria-hidden="true"
+                            class="w-5 h-5 mr-1 -ml-1"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                clip-rule="evenodd"
+                            ></path>
+                        </svg>
+                        Delete
+                    </button>
+                </div>
+            </form>
+        </div>
+    </Transition>
 
     <!-- Delete Product Drawer -->
     <div
@@ -508,7 +637,7 @@ watch(
         </a>
         <a
             href="#"
-            class="text-gray-900 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-primary-300 border border-gray-200 font-medium inline-flex items-center rounded-lg text-sm px-3 py-2.5 text-center dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-700"
+            class="text-gray-900 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-blue-300 border border-gray-200 font-medium inline-flex items-center rounded-lg text-sm px-3 py-2.5 text-center dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-700"
             data-modal-toggle="delete-product-modal"
         >
             No, cancel
@@ -516,136 +645,170 @@ watch(
     </div>
 
     <!-- Add Product Drawer -->
-    <div
-        id="drawer-create-product-default"
-        class="fixed top-0 right-0 z-40 w-full h-screen max-w-xs p-4 overflow-y-auto transition-transform translate-x-full bg-white dark:bg-gray-800"
-        tabindex="-1"
-        aria-labelledby="drawer-label"
-        aria-hidden="true"
+    <Transition
+        enter-from-class="translate-x-full"
+        enter-active-class="transition-transform translate-x-0"
+        leave-active-class="transition-transform translate-x-0"
+        leave-to-class="translate-x-full"
     >
-        <h5
-            id="drawer-label"
-            class="inline-flex items-center mb-6 text-sm font-semibold text-gray-500 uppercase dark:text-gray-400"
+        <div
+            id="drawer-create-product-default"
+            v-if="addModalVisibility"
+            class="fixed top-0 right-0 z-40 w-full h-screen max-w-xs p-4 overflow-y-auto bg-white dark:bg-gray-800"
+            tabindex="-1"
+            aria-labelledby="drawer-label"
+            aria-hidden="true"
         >
-            New Product
-        </h5>
-        <button
-            type="button"
-            data-drawer-dismiss="drawer-create-product-default"
-            aria-controls="drawer-create-product-default"
-            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 absolute top-2.5 right-2.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-        >
-            <svg
-                aria-hidden="true"
-                class="w-5 h-5"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
+            <h5
+                id="drawer-label"
+                class="inline-flex items-center mb-6 text-sm font-semibold text-gray-500 uppercase dark:text-gray-400"
             >
-                <path
-                    fill-rule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clip-rule="evenodd"
-                ></path>
-            </svg>
-            <span class="sr-only">Close menu</span>
-        </button>
-        <form action="#">
-            <div class="space-y-4">
-                <div>
-                    <label
-                        for="name"
-                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >Name</label
-                    >
-                    <input
-                        type="text"
-                        name="title"
-                        id="name"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                        placeholder="Type product name"
-                        required=""
-                    />
-                </div>
+                New {{ title }}
+            </h5>
+            <button
+                type="button"
+                @click="hideAddModal"
+                aria-controls="drawer-create-product-default"
+                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 absolute top-2.5 right-2.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+            >
+                <svg
+                    aria-hidden="true"
+                    class="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                        fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd"
+                    ></path>
+                </svg>
+                <span class="sr-only">Close</span>
+            </button>
+            <form @submit.prevent="submit">
+                <div class="space-y-4">
+                    <div>
+                        <label
+                            for="firstName"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >First Name</label
+                        >
+                        <input
+                            type="text"
+                            v-model="form.first_name"
+                            name="firstName"
+                            id="firstName"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="First Name"
+                        />
+                    </div>
+                    <div>
+                        <label
+                            for="firstName"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >Middle Name</label
+                        >
+                        <input
+                            type="text"
+                            v-model="form.middle_name"
+                            name="middleName"
+                            id="middleName"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="Middle Name"
+                        />
+                    </div>
+                    <div>
+                        <label
+                            for="lastName"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >Last Name</label
+                        >
+                        <input
+                            type="text"
+                            v-model="form.last_name"
+                            name="lastName"
+                            id="lastName"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="Last Name"
+                        />
+                    </div>
+                    <div>
+                        <label
+                            for="gender"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >Gender</label
+                        >
+                        <select
+                            id="gender"
+                            v-model="form.gender"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        >
+                            <option value="" selected hidden>
+                                Select Gender
+                            </option>
 
-                <div>
-                    <label
-                        for="price"
-                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >Price</label
-                    >
-                    <input
-                        type="number"
-                        name="price"
-                        id="price"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                        placeholder="$2999"
-                        required=""
-                    />
-                </div>
-                <div>
-                    <label
-                        for="category-create"
-                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >Technology</label
-                    >
-                    <select
-                        id="category-create"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                    >
-                        <option selected="">Select category</option>
-                        <option value="FL">Flowbite</option>
-                        <option value="RE">React</option>
-                        <option value="AN">Angular</option>
-                        <option value="VU">Vue</option>
-                    </select>
-                </div>
-                <div>
-                    <label
-                        for="description"
-                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >Description</label
-                    >
-                    <textarea
-                        id="description"
-                        rows="4"
-                        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                        placeholder="Enter event description here"
-                    ></textarea>
-                </div>
-                <div>
-                    <label
-                        for="discount-create"
-                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >Discount</label
-                    >
-                    <select
-                        id="discount-create"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                    >
-                        <option selected="">No</option>
-                        <option value="5">5%</option>
-                        <option value="10">10%</option>
-                        <option value="20">20%</option>
-                        <option value="30">30%</option>
-                        <option value="40">40%</option>
-                        <option value="50">50%</option>
-                    </select>
+                            <option
+                                value="Male"
+                                :selected="form.gender === 'Male'"
+                            >
+                                Male
+                            </option>
+                            <option
+                                value="Female"
+                                :selected="form.gender === 'Female'"
+                            >
+                                Female
+                            </option>
+                        </select>
+                    </div>
+                    <div>
+                        <label
+                            for="emailAddress"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >Email Address</label
+                        >
+                        <input
+                            type="text"
+                            v-model="form.email"
+                            name="emailAddress"
+                            id="emailAddress"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="Email Address"
+                        />
+                    </div>
+                    <div>
+                        <label
+                            for="emailAddress"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >Contact Number</label
+                        >
+                        <input
+                            type="text"
+                            v-model="form.contact_number"
+                            name="contactNumber"
+                            id="contactNumber"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="Contact Number"
+                        />
+                    </div>
                 </div>
                 <div
                     class="bottom-0 left-0 flex justify-center w-full pb-4 space-x-4 md:px-4 md:absolute"
                 >
                     <button
                         type="submit"
-                        class="text-white w-full justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-primary-800"
+                        :disabled="form.processing"
+                        class="text-white w-full justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:bg-blue-200 dark:disabled:bg-blue-900"
                     >
-                        Add product
+                        Add
                     </button>
                     <button
+                        @click="hideAddModal"
                         type="button"
                         data-drawer-dismiss="drawer-create-product-default"
                         aria-controls="drawer-create-product-default"
-                        class="inline-flex w-full justify-center text-gray-500 items-center bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-primary-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+                        class="inline-flex w-full justify-center text-gray-500 items-center bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
                     >
                         <svg
                             aria-hidden="true"
@@ -665,7 +828,7 @@ watch(
                         Cancel
                     </button>
                 </div>
-            </div>
-        </form>
-    </div>
+            </form>
+        </div>
+    </Transition>
 </template>

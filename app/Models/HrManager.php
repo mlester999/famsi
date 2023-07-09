@@ -13,7 +13,10 @@ class HrManager extends Model
     protected $fillable = [
         'user_id',
         'first_name',
+        'middle_name',
         'last_name',
+        'gender',
+        'contact_number',
     ];
 
     public function user(): BelongsTo

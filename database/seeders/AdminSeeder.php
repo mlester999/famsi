@@ -25,6 +25,8 @@ class AdminSeeder extends Seeder
                 'user_id' => $adminUser->id,
                 'first_name' => 'Admin',
                 'last_name' => 'Famsi',
+                'gender' => 'Male',
+                'contact_number' => '09172219345',
                 'created_at' => now(),
                 'updated_at' => now()
         ]);

@@ -54,6 +54,21 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function admin(): HasOne
+    {
+        return $this->hasOne(Admin::class);
+    }
+
+    public function applicant(): HasOne
+    {
+        return $this->hasOne(Applicant::class);
+    }
+
+    public function hrStaff(): HasOne
+    {
+        return $this->hasOne(HrStaff::class);
+    }
+
     public function hrManager(): HasOne
     {
         return $this->hasOne(HrManager::class);

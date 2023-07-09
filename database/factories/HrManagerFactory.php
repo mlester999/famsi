@@ -18,7 +18,10 @@ class HrManagerFactory extends Factory
     {
         return [
             'first_name' => $this->faker->firstName(),
+            'middle_name' => $this->faker->firstName(),
             'last_name' => $this->faker->lastName(),
+            'gender' => $this->faker->randomElement(['Male', 'Female']),
+            'contact_number' => $this->faker->numerify('09#########'),
         ];
     }
 }

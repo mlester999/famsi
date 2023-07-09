@@ -63,6 +63,8 @@ Route::middleware([
 
         Route::get('/hr-managers', [HrManagerController::class, 'index'])->name('hr-managers');
 
+        Route::post('/hr-managers', [HrManagerController::class, 'store'])->name('hr-managers.store');
+
         Route::get('/hr-staffs', function () {
             return Inertia::render('HRStaffs');
         })->name('hr-staffs');
