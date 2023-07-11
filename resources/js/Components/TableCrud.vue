@@ -24,9 +24,17 @@ const form = useForm({
 
 const page = usePage();
 
+let search = ref(props.filters.search);
+
+let currentUpdatingUserID = ref(null);
+let updateModalVisibility = ref(false);
+
+let addModalVisibility = ref(false);
+
 const submit = () => {
-    form.post(`/${page.props.user.role}/${props.linkName}`, {
+    form.post(`/${page.props.user.role}/${props.linkName}/store`, {
         onSuccess: () => {
+            document.body.classList.remove("overflow-hidden");
             updateModalVisibility.value = false;
             addModalVisibility.value = false;
             form.reset();
@@ -35,10 +43,19 @@ const submit = () => {
     });
 };
 
-let search = ref(props.filters.search);
-
-let updateModalVisibility = ref(false);
-let addModalVisibility = ref(false);
+const update = () => {
+    form.put(
+        `/${page.props.user.role}/${props.linkName}/update/${currentUpdatingUserID.value}`,
+        {
+            onSuccess: () => {
+                hideUpdateModal();
+                hideAddModal();
+                form.reset();
+                clearErrors();
+            },
+        }
+    );
+};
 
 const showUpdateModal = (data) => {
     form.first_name = data.first_name;
@@ -50,11 +67,15 @@ const showUpdateModal = (data) => {
 
     document.body.classList.add("overflow-hidden");
 
+    currentUpdatingUserID.value = data.id;
+
     updateModalVisibility.value = true;
 };
 
 const hideUpdateModal = () => {
     document.body.classList.remove("overflow-hidden");
+
+    currentUpdatingUserID.value = null;
 
     updateModalVisibility.value = false;
 };
@@ -243,7 +264,7 @@ watch(
                                     scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
-                                    Created At
+                                    Status
                                 </th>
 
                                 <th
@@ -327,13 +348,24 @@ watch(
                                 </td>
 
                                 <td
-                                    class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                                    class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white"
                                 >
-                                    {{
-                                        new Date(
-                                            role.created_at
-                                        ).toLocaleDateString("en-PH")
-                                    }}
+                                    <div
+                                        v-if="!role.is_active"
+                                        class="flex items-center"
+                                    >
+                                        <div
+                                            class="h-2.5 w-2.5 rounded-full bg-green-400 mr-2"
+                                        ></div>
+                                        Active
+                                    </div>
+
+                                    <div v-else class="flex items-center">
+                                        <div
+                                            class="h-2.5 w-2.5 rounded-full bg-red-500 mr-2"
+                                        ></div>
+                                        Inactive
+                                    </div>
                                 </td>
 
                                 <td class="p-4 space-x-2 whitespace-nowrap">
@@ -345,45 +377,14 @@ watch(
                                         "
                                         class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                                     >
-                                        <svg
-                                            class="w-4 h-4 mr-2"
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                            <path
-                                                d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"
-                                            ></path>
-                                            <path
-                                                fill-rule="evenodd"
-                                                d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
-                                                clip-rule="evenodd"
-                                            ></path>
-                                        </svg>
                                         Update
                                     </button>
                                     <button
                                         type="button"
                                         id="deleteProductButton"
-                                        data-drawer-target="drawer-delete-product-default"
-                                        data-drawer-show="drawer-delete-product-default"
-                                        aria-controls="drawer-delete-product-default"
-                                        data-drawer-placement="right"
                                         class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900"
                                     >
-                                        <svg
-                                            class="w-4 h-4 mr-2"
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                            <path
-                                                fill-rule="evenodd"
-                                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                                clip-rule="evenodd"
-                                            ></path>
-                                        </svg>
-                                        Delete
+                                        Deactivate
                                     </button>
                                 </td>
                             </tr>
@@ -442,7 +443,7 @@ watch(
                 </svg>
                 <span class="sr-only">Close</span>
             </button>
-            <form action="#">
+            <form @submit.prevent="update">
                 <div class="space-y-4">
                     <div>
                         <label
@@ -557,20 +558,7 @@ watch(
                         type="button"
                         class="w-full justify-center text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
                     >
-                        <svg
-                            aria-hidden="true"
-                            class="w-5 h-5 mr-1 -ml-1"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                fill-rule="evenodd"
-                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                clip-rule="evenodd"
-                            ></path>
-                        </svg>
-                        Delete
+                        Deactivate
                     </button>
                 </div>
             </form>
@@ -627,7 +615,7 @@ watch(
             ></path>
         </svg>
         <h3 class="mb-6 text-lg text-gray-500 dark:text-gray-400">
-            Are you sure you want to delete this product?
+            Are you sure you want to deactivate this user?
         </h3>
         <a
             href="#"

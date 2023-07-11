@@ -43,7 +43,7 @@ class HrManagerController extends Controller
             //           ->orWhereRaw('SOUNDEX(first_name) = SOUNDEX(?)', [$lowerSearch]);
             // });
         })
-        ->orderByDesc('id')
+        ->orderBy('id', 'asc')
         ->paginate(10)
         ->withQueryString()
         ->through(fn($hrManager) => [
@@ -158,7 +158,8 @@ class HrManagerController extends Controller
         $user = User::create([
             'email' => $hrManagerValidate['email'],
             'password' => Hash::make('12345678'),
-            'user_type' => 2
+            'user_type' => 2,
+            'is_active' => 1
         ]);
 
         HrManager::create([
@@ -169,8 +170,6 @@ class HrManagerController extends Controller
             'gender' => $hrManagerValidate['gender'],
             'contact_number' => $hrManagerValidate['contact_number'],
         ]);
-
-        return redirect(URL::current());
     }
 
     /**
@@ -192,9 +191,29 @@ class HrManagerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateHrManagerRequest $request, HrManager $hrManager)
+    public function update($id)
     {
-        //
+        $hrManagerValidate = Request::validate([
+            'first_name' => ['required', 'max:50'],
+            'middle_name' => ['required', 'max:50'],
+            'last_name' => ['required', 'max:50'],
+            'gender' => ['required'],
+            'email' => ['required', 'max:50', 'email'],
+            'contact_number' => ['required', 'digits:11'],
+        ]);
+
+        $hrManager = HrManager::findOrFail($id);
+        $user = HrManager::findOrFail($id)->user;
+
+        $hrManager->first_name = $hrManagerValidate['first_name'];
+        $hrManager->middle_name = $hrManagerValidate['middle_name'];
+        $hrManager->last_name = $hrManagerValidate['last_name'];
+        $hrManager->gender = $hrManagerValidate['gender'];
+        $user->email = $hrManagerValidate['email'];
+        $hrManager->contact_number = $hrManagerValidate['contact_number'];
+
+        $user->save();
+        $hrManager->save();
     }
 
     /**

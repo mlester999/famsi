@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->boolean('user_type')->default(false); // 0=>Applicant, 1=>Hr Staff, 2=>Hr Admin, 3=>Admin
+            $table->boolean('is_active');
             $table->timestamps();
         });
     }

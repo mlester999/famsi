@@ -63,7 +63,9 @@ Route::middleware([
 
         Route::get('/hr-managers', [HrManagerController::class, 'index'])->name('hr-managers');
 
-        Route::post('/hr-managers', [HrManagerController::class, 'store'])->name('hr-managers.store');
+        Route::post('/hr-managers/store', [HrManagerController::class, 'store'])->name('hr-managers.store');
+
+        Route::put('/hr-managers/update/{id}', [HrManagerController::class, 'update'])->name('hr-managers.update');
 
         Route::get('/hr-staffs', function () {
             return Inertia::render('HRStaffs');

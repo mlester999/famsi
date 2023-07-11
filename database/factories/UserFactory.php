@@ -32,6 +32,7 @@ class UserFactory extends Factory
             'two_factor_recovery_codes' => null,
             'remember_token' => Str::random(10),
             'user_type' => random_int(0, 3),
+            'is_active' => 1,
         ];
     }
 
