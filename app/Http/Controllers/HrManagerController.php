@@ -54,6 +54,7 @@ class HrManagerController extends Controller
             'gender' => $hrManager->gender,
             'email' => $hrManager->user->email,
             'contact_number' => $hrManager->contact_number,
+            'is_active' => $hrManager->user->is_active,
             'created_at' => $hrManager->created_at,
         ]);
 
@@ -217,10 +218,26 @@ class HrManagerController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Activate the specified resource.
      */
-    public function destroy(HrManager $hrManager)
+    public function activate($id)
     {
-        //
+        $user = HrManager::findOrFail($id)->user;
+
+        $user->is_active = 1;
+
+        $user->save();
+    }
+
+    /**
+     * Deactivate the specified resource.
+     */
+    public function deactivate($id)
+    {
+        $user = HrManager::findOrFail($id)->user;
+
+        $user->is_active = 0;
+
+        $user->save();
     }
 }
