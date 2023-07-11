@@ -13,8 +13,14 @@ defineProps({
     <div class="flex items-center mb-4 sm:mb-0">
         <span class="text-sm font-normal text-gray-500 dark:text-gray-400"
             >Showing
-            <span class="font-semibold text-gray-900 dark:text-white"
+            <span
+                v-if="roles.from && roles.to"
+                class="font-semibold text-gray-900 dark:text-white"
                 >{{ roles.from }} - {{ roles.to }}</span
+            >
+
+            <span v-else class="font-semibold text-gray-900 dark:text-white"
+                >0 - 0</span
             >
             of
             <span class="font-semibold text-gray-900 dark:text-white">{{

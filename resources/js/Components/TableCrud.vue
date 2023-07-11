@@ -481,6 +481,19 @@ watch(
                                     </button>
                                 </td>
                             </tr>
+
+                            <tr v-if="roles.data.length === 0">
+                                <td
+                                    colspan="9"
+                                    class="max-w-sm text-center p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
+                                >
+                                    <div
+                                        class="text-base text-gray-900 dark:text-white"
+                                    >
+                                        No {{ title }} found.
+                                    </div>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
