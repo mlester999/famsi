@@ -2,6 +2,12 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import DashboardCard from "@/Components/DashboardCard.vue";
 import TableDashboard from "@/Components/TableDashboard.vue";
+
+defineProps({
+    totalApplicants: Number,
+    totalHrStaffs: Number,
+    totalHrManagers: Number,
+});
 </script>
 
 <template>
@@ -13,19 +19,19 @@ import TableDashboard from "@/Components/TableDashboard.vue";
                 <DashboardCard>
                     <template #label> Total Applicants </template>
 
-                    <template #title> 1,123 </template>
+                    <template #title> {{ totalApplicants }} </template>
                 </DashboardCard>
 
                 <DashboardCard>
                     <template #label> Total HR Staffs </template>
 
-                    <template #title> 16 </template>
+                    <template #title> {{ totalHrStaffs }} </template>
                 </DashboardCard>
 
                 <DashboardCard>
-                    <template #label> Pending Applications </template>
+                    <template #label> Total HR Managers </template>
 
-                    <template #title> 692 </template>
+                    <template #title> {{ totalHrManagers }} </template>
                 </DashboardCard>
             </div>
 

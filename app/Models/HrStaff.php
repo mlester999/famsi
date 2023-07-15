@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class HrStaff extends Model
 {
+    protected $table = 'hr_staffs';
+
     use HasFactory;
 
     protected $fillable = [

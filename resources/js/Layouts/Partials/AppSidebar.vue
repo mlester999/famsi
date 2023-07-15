@@ -98,7 +98,7 @@ const currentUser = computed(() => {
                 <template #tab>
                     <li v-if="$page.props.auth.user.user_type == users.admin">
                         <SidebarTab
-                            :href="route(`${currentUser}.hr-managers`)"
+                            :href="route(`${currentUser}.hr-managers.index`)"
                             :class="[
                                 $page.url.includes('managers') &&
                                     'bg-gray-100 dark:bg-gray-700',
@@ -117,7 +117,7 @@ const currentUser = computed(() => {
 
                     <li>
                         <SidebarTab
-                            :href="route(`${currentUser}.hr-staffs`)"
+                            :href="route(`${currentUser}.hr-staffs.index`)"
                             :class="[
                                 $page.url.includes('staffs') &&
                                     'bg-gray-100 dark:bg-gray-700',
@@ -140,7 +140,7 @@ const currentUser = computed(() => {
                 <template #tab>
                     <li>
                         <SidebarTab
-                            :href="route(`${currentUser}.applicants`)"
+                            :href="route(`${currentUser}.applicants.index`)"
                             :class="[
                                 $page.url.includes('applicants') &&
                                     'bg-gray-100 dark:bg-gray-700',

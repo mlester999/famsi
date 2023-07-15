@@ -1,11 +1,23 @@
 <script setup>
 import TableCrud from "@/Components/TableCrud.vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
+
+defineProps({
+    applicants: Object,
+    pagination: Object,
+    filters: Object,
+});
 </script>
 
 <template>
     <AppLayout title="Applicants">
-        <TableCrud name="applicants">
+        <TableCrud
+            :roles="applicants"
+            :pagination="pagination"
+            :filters="filters"
+            linkName="applicants"
+            title="Applicant"
+        >
             <template #first-tab>
                 <p
                     class="inline-flex items-center text-gray-700 dark:text-gray-300"
@@ -22,7 +34,7 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 
             <template #title>Applicants</template>
             <template #description
-                >This is the layout of the Applicants of the website</template
+                >This section pertains to Applicant accounts.</template
             >
         </TableCrud>
     </AppLayout>

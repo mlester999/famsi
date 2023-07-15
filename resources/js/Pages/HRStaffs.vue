@@ -1,11 +1,23 @@
 <script setup>
 import TableCrud from "@/Components/TableCrud.vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
+
+defineProps({
+    hrStaffs: Object,
+    pagination: Object,
+    filters: Object,
+});
 </script>
 
 <template>
     <AppLayout title="HR Staffs">
-        <TableCrud name="hr-staffs">
+        <TableCrud
+            :roles="hrStaffs"
+            :pagination="pagination"
+            :filters="filters"
+            linkName="hr-staffs"
+            title="HR Staff"
+        >
             <template #first-tab>
                 <p
                     class="inline-flex items-center text-gray-700 dark:text-gray-300"
@@ -22,7 +34,7 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 
             <template #title>HR Staffs</template>
             <template #description
-                >This is the layout of the HR Staffs of the website</template
+                >This section pertains to HR Staff accounts.</template
             >
         </TableCrud>
     </AppLayout>

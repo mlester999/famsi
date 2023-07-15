@@ -604,8 +604,13 @@ watch(
                         >
                         <select
                             id="gender"
+                            v-model="form.gender"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         >
+                            <option value="" selected hidden>
+                                Select Gender
+                            </option>
+
                             <option
                                 value="Male"
                                 :selected="form.gender === 'Male'"
@@ -628,10 +633,10 @@ watch(
                         >
                         <input
                             type="text"
+                            v-model="form.email"
                             name="emailAddress"
                             id="emailAddress"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            :value="form.email"
                             placeholder="Email Address"
                         />
                     </div>
@@ -643,10 +648,10 @@ watch(
                         >
                         <input
                             type="text"
+                            v-model="form.contact_number"
                             name="contactNumber"
                             id="contactNumber"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            :value="form.contact_number"
                             placeholder="Contact Number"
                         />
                     </div>
