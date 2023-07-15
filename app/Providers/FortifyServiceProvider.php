@@ -50,7 +50,8 @@ class FortifyServiceProvider extends ServiceProvider
 
                 activity()
                 ->causedBy($admin)
-                ->withLogName('login')
+                ->event('login')
+                ->withProperties(['ipAddress' => $request->ip()])
                 ->log($adminInfo->first_name . ' logged in to the website.');
 
                 return $admin;
@@ -61,7 +62,8 @@ class FortifyServiceProvider extends ServiceProvider
 
                 activity()
                 ->causedBy($hrManager)
-                ->withLogName('login')
+                ->event('login')
+                ->withProperties(['ipAddress' => $request->ip()])
                 ->log('HR Manager: ' . $hrManagerInfo->first_name . $hrManagerInfo->last_name . ', logged in to the website.');
 
                 return $hrManager;
@@ -72,7 +74,8 @@ class FortifyServiceProvider extends ServiceProvider
 
                 activity()
                 ->causedBy($hrStaff)
-                ->withLogName('login')
+                ->event('login')
+                ->withProperties(['ipAddress' => $request->ip()])
                 ->log('HR Staff: ' . $hrStaffInfo->first_name . $hrStaffInfo->last_name . ', logged in to the website.');
 
                 return $hrStaff;
@@ -83,7 +86,8 @@ class FortifyServiceProvider extends ServiceProvider
 
                 activity()
                 ->causedBy($applicant)
-                ->withLogName('login')
+                ->event('login')
+                ->withProperties(['ipAddress' => $request->ip()])
                 ->log('Applicant: ' . $applicantInfo->first_name . $applicantInfo->last_name . ', logged in to the website.');
 
                 return $applicant;

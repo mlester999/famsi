@@ -186,6 +186,29 @@ const currentUser = computed(() => {
                     </li>
                 </template>
             </SidebarCategory>
+
+            <SidebarCategory name="Logs">
+                <template #tab>
+                    <li>
+                        <SidebarTab
+                            :href="route(`${currentUser}.activity-logs`)"
+                            :class="[
+                                $page.url.includes('activity-logs') &&
+                                    'bg-gray-100 dark:bg-gray-700',
+                            ]"
+                        >
+                            <template #icon>
+                                <font-awesome-icon
+                                    class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                    :icon="['fas', 'user-check']"
+                                />
+                            </template>
+
+                            <template #title> Activity Logs </template>
+                        </SidebarTab>
+                    </li>
+                </template>
+            </SidebarCategory>
         </div>
     </aside>
 

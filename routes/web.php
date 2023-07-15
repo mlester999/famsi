@@ -102,6 +102,10 @@ Route::middleware([
             return Inertia::render('Announcement');
         })->name('announcement');
 
+        Route::get('/activity-logs', function () {
+            return Inertia::render('ActivityLogs');
+        })->name('activity-logs');
+
             Route::group(['prefix' => 'hr-managers', 'as' => 'hr-managers.'], function () {
                 Route::get('/', [HrManagerController::class, 'index'])->name('index');
 
