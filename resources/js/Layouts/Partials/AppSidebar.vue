@@ -25,7 +25,10 @@ const currentUser = computed(() => {
             class="relative flex flex-col flex-1 min-h-0 py-5 bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700"
         >
             <SidebarCategory
-                v-if="$page.props.auth.user.user_type == users.admin"
+                v-if="
+                    $page.props.auth.user.user_type == users.admin ||
+                    $page.props.auth.user.user_type == users.hr_manager
+                "
                 name="Menu"
             >
                 <template #tab>
@@ -50,6 +53,9 @@ const currentUser = computed(() => {
 
                     <li>
                         <SidebarTab
+                            v-if="
+                                $page.props.auth.user.user_type == users.admin
+                            "
                             :href="route(`${currentUser}.homepage`)"
                             :class="[
                                 $page.url.includes('homepage') &&
@@ -69,6 +75,9 @@ const currentUser = computed(() => {
 
                     <li>
                         <SidebarTab
+                            v-if="
+                                $page.props.auth.user.user_type == users.admin
+                            "
                             :href="route(`${currentUser}.announcement`)"
                             :class="[
                                 $page.url.includes('announcement') &&

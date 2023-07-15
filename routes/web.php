@@ -49,8 +49,40 @@ Route::middleware([
 
     Route::group(['middleware' => 'role:hr-manager', 'prefix' => 'hr-manager', 'as' => 'hr-manager.'], function () {
         Route::get('/dashboard', function () {
-            return Inertia::render('Dashboard');
+            return Inertia::render('Dashboard', [
+                'totalApplicants' => Applicant::count(),
+                'totalHrStaffs' => HrStaff::count(),
+                'totalHrManagers' => HrManager::count()
+            ]);
         })->name('dashboard');
+
+        Route::group(['prefix' => 'hr-staffs', 'as' => 'hr-staffs.'], function() {
+            Route::get('/', [HrStaffController::class, 'index'])->name('index');
+
+            Route::post('/store', [HrStaffController::class, 'store'])->name('store');
+
+            Route::put('/update/{id}', [HrStaffController::class, 'update'])->name('update');
+
+            Route::put('/activate/{id}', [HrStaffController::class, 'activate'])->name('activate');
+
+            Route::put('/deactivate/{id}', [HrStaffController::class, 'deactivate'])->name('deactivate');
+        });
+
+        Route::group(['prefix' => 'applicants', 'as' => 'applicants.'], function() {
+            Route::get('/', [ApplicantController::class, 'index'])->name('index');
+
+            Route::post('/store', [ApplicantController::class, 'store'])->name('store');
+
+            Route::put('/update/{id}', [ApplicantController::class, 'update'])->name('update');
+
+            Route::put('/activate/{id}', [ApplicantController::class, 'activate'])->name('activate');
+
+            Route::put('/deactivate/{id}', [ApplicantController::class, 'deactivate'])->name('deactivate');
+        });
+
+        Route::get('/files', function () {
+            return Inertia::render('Files');
+        })->name('files');
     });
 
     Route::group(['middleware' => 'role:admin', 'prefix' => 'admin', 'as' => 'admin.'], function () {
@@ -82,29 +114,29 @@ Route::middleware([
                 Route::put('/deactivate/{id}', [HrManagerController::class, 'deactivate'])->name('deactivate');
             });
 
-        Route::group(['prefix' => 'hr-staffs', 'as' => 'hr-staffs.'], function() {
-            Route::get('/', [HrStaffController::class, 'index'])->name('index');
+            Route::group(['prefix' => 'hr-staffs', 'as' => 'hr-staffs.'], function() {
+                Route::get('/', [HrStaffController::class, 'index'])->name('index');
 
-            Route::post('/store', [HrStaffController::class, 'store'])->name('store');
+                Route::post('/store', [HrStaffController::class, 'store'])->name('store');
 
-            Route::put('/update/{id}', [HrStaffController::class, 'update'])->name('update');
+                Route::put('/update/{id}', [HrStaffController::class, 'update'])->name('update');
 
-            Route::put('/activate/{id}', [HrStaffController::class, 'activate'])->name('activate');
+                Route::put('/activate/{id}', [HrStaffController::class, 'activate'])->name('activate');
 
-            Route::put('/deactivate/{id}', [HrStaffController::class, 'deactivate'])->name('deactivate');
-        });
+                Route::put('/deactivate/{id}', [HrStaffController::class, 'deactivate'])->name('deactivate');
+            });
 
-        Route::group(['prefix' => 'applicants', 'as' => 'applicants.'], function() {
-            Route::get('/', [ApplicantController::class, 'index'])->name('index');
+            Route::group(['prefix' => 'applicants', 'as' => 'applicants.'], function() {
+                Route::get('/', [ApplicantController::class, 'index'])->name('index');
 
-            Route::post('/store', [ApplicantController::class, 'store'])->name('store');
+                Route::post('/store', [ApplicantController::class, 'store'])->name('store');
 
-            Route::put('/update/{id}', [ApplicantController::class, 'update'])->name('update');
+                Route::put('/update/{id}', [ApplicantController::class, 'update'])->name('update');
 
-            Route::put('/activate/{id}', [ApplicantController::class, 'activate'])->name('activate');
+                Route::put('/activate/{id}', [ApplicantController::class, 'activate'])->name('activate');
 
-            Route::put('/deactivate/{id}', [ApplicantController::class, 'deactivate'])->name('deactivate');
-        });
+                Route::put('/deactivate/{id}', [ApplicantController::class, 'deactivate'])->name('deactivate');
+            });
 
         Route::get('/files', function () {
             return Inertia::render('Files');
