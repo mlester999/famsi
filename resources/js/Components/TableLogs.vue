@@ -15,6 +15,8 @@ const props = defineProps({
 
 const page = usePage();
 
+console.log(props.filters);
+
 let search = ref(props.filters.search);
 
 let currentRemovingUserID = ref(false);
@@ -161,7 +163,7 @@ watch(
                                     scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
-                                    Log Name
+                                    Event
                                 </th>
                                 <th
                                     scope="col"
@@ -207,78 +209,30 @@ watch(
                                     </div>
                                 </td>
                                 <td
-                                    class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400"
+                                    class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
                                     <div
-                                        class="text-base text-gray-900 dark:text-white"
+                                        class="text-base max-w-xs whitespace-normal text-gray-900 dark:text-white"
                                     >
-                                        {{ log.first_name }}
+                                        {{ log.event }}
                                     </div>
                                 </td>
                                 <td
                                     class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
                                     <div
-                                        class="text-base text-gray-900 dark:text-white"
+                                        class="text-base max-w-xs whitespace-normal text-gray-900 dark:text-white"
                                     >
-                                        {{ log.middle_name }}
+                                        {{ log.description }}
                                     </div>
                                 </td>
                                 <td
                                     class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
                                     <div
-                                        class="text-base text-gray-900 dark:text-white"
+                                        class="text-base max-w-xs whitespace-normal text-gray-900 dark:text-white"
                                     >
-                                        {{ log.last_name }}
-                                    </div>
-                                </td>
-                                <td
-                                    class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                                >
-                                    <div
-                                        class="text-base text-gray-900 dark:text-white"
-                                    >
-                                        {{ log.gender }}
-                                    </div>
-                                </td>
-                                <td
-                                    class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
-                                >
-                                    <div
-                                        class="text-base text-gray-900 dark:text-white"
-                                    >
-                                        {{ log.email }}
-                                    </div>
-                                </td>
-                                <td
-                                    class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
-                                >
-                                    <div
-                                        class="text-base text-gray-900 dark:text-white"
-                                    >
-                                        {{ log.contact_number }}
-                                    </div>
-                                </td>
-
-                                <td
-                                    class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white"
-                                >
-                                    <div
-                                        v-if="log.is_active"
-                                        class="flex items-center"
-                                    >
-                                        <div
-                                            class="h-2.5 w-2.5 rounded-full bg-green-400 mr-2"
-                                        ></div>
-                                        Active
-                                    </div>
-
-                                    <div v-else class="flex items-center">
-                                        <div
-                                            class="h-2.5 w-2.5 rounded-full bg-red-500 mr-2"
-                                        ></div>
-                                        Inactive
+                                        {{ log.properties?.ipAddress }}
                                     </div>
                                 </td>
 

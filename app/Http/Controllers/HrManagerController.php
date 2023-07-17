@@ -3,12 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\HrManager;
-use App\Http\Requests\StoreHrManagerRequest;
-use App\Http\Requests\UpdateHrManagerRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 
 class HrManagerController extends Controller
