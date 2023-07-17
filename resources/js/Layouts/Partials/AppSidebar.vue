@@ -25,7 +25,10 @@ const currentUser = computed(() => {
             class="relative flex flex-col flex-1 min-h-0 py-5 bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700"
         >
             <SidebarCategory
-                v-if="$page.props.auth.user.user_type == users.admin"
+                v-if="
+                    $page.props.auth.user.user_type == users.admin ||
+                    $page.props.auth.user.user_type == users.hr_manager
+                "
                 name="Menu"
             >
                 <template #tab>
@@ -50,6 +53,9 @@ const currentUser = computed(() => {
 
                     <li>
                         <SidebarTab
+                            v-if="
+                                $page.props.auth.user.user_type == users.admin
+                            "
                             :href="route(`${currentUser}.homepage`)"
                             :class="[
                                 $page.url.includes('homepage') &&
@@ -69,6 +75,9 @@ const currentUser = computed(() => {
 
                     <li>
                         <SidebarTab
+                            v-if="
+                                $page.props.auth.user.user_type == users.admin
+                            "
                             :href="route(`${currentUser}.announcement`)"
                             :class="[
                                 $page.url.includes('announcement') &&
@@ -98,7 +107,7 @@ const currentUser = computed(() => {
                 <template #tab>
                     <li v-if="$page.props.auth.user.user_type == users.admin">
                         <SidebarTab
-                            :href="route(`${currentUser}.hr-managers`)"
+                            :href="route(`${currentUser}.hr-managers.index`)"
                             :class="[
                                 $page.url.includes('managers') &&
                                     'bg-gray-100 dark:bg-gray-700',
@@ -117,7 +126,7 @@ const currentUser = computed(() => {
 
                     <li>
                         <SidebarTab
-                            :href="route(`${currentUser}.hr-staffs`)"
+                            :href="route(`${currentUser}.hr-staffs.index`)"
                             :class="[
                                 $page.url.includes('staffs') &&
                                     'bg-gray-100 dark:bg-gray-700',
@@ -140,7 +149,7 @@ const currentUser = computed(() => {
                 <template #tab>
                     <li>
                         <SidebarTab
-                            :href="route(`${currentUser}.applicants`)"
+                            :href="route(`${currentUser}.applicants.index`)"
                             :class="[
                                 $page.url.includes('applicants') &&
                                     'bg-gray-100 dark:bg-gray-700',
@@ -173,6 +182,29 @@ const currentUser = computed(() => {
                             </template>
 
                             <template #title> Files </template>
+                        </SidebarTab>
+                    </li>
+                </template>
+            </SidebarCategory>
+
+            <SidebarCategory name="Logs">
+                <template #tab>
+                    <li>
+                        <SidebarTab
+                            :href="route(`${currentUser}.activity-logs`)"
+                            :class="[
+                                $page.url.includes('activity-logs') &&
+                                    'bg-gray-100 dark:bg-gray-700',
+                            ]"
+                        >
+                            <template #icon>
+                                <font-awesome-icon
+                                    class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                    :icon="['fas', 'user-check']"
+                                />
+                            </template>
+
+                            <template #title> Activity Logs </template>
                         </SidebarTab>
                     </li>
                 </template>

@@ -6,166 +6,48 @@ import debounce from "lodash.debounce";
 import Pagination from "../Partials/Table/Pagination.vue";
 
 const props = defineProps({
-    roles: Object,
+    logs: Object,
     pagination: Object,
     filters: Object,
     linkName: String,
     title: String,
 });
 
-const form = useForm({
-    first_name: "",
-    middle_name: "",
-    last_name: "",
-    gender: "",
-    email: "",
-    contact_number: "",
-});
-
 const page = usePage();
 
 let search = ref(props.filters.search);
 
-let currentUpdatingUserID = ref(null);
-let updateModalVisibility = ref(false);
+let currentRemovingUserID = ref(false);
+let deleteModalVisibility = ref(false);
 
-let addModalVisibility = ref(false);
-let activationModalVisibility = ref(false);
-let deactivationModalVisibility = ref(false);
-
-const submit = () => {
-    form.post(`/${page.props.user.role}/${props.linkName}/store`, {
-        onSuccess: () => {
-            document.body.classList.remove("overflow-hidden");
-            updateModalVisibility.value = false;
-            addModalVisibility.value = false;
-            form.reset();
-            clearErrors();
-        },
-    });
-};
-
-const update = () => {
-    form.put(
-        `/${page.props.user.role}/${props.linkName}/update/${currentUpdatingUserID.value}`,
+const remove = () => {
+    form.delete(
+        `/${page.props.user.log}/${props.linkName}/delete/${currentRemovingUserID.value}`,
         {
             onSuccess: () => {
-                hideUpdateModal();
-                hideAddModal();
+                hideDeleteModal();
                 form.reset();
                 clearErrors();
             },
         }
     );
-};
-
-const activate = () => {
-    form.put(
-        `/${page.props.user.role}/${props.linkName}/activate/${currentUpdatingUserID.value}`,
-        {
-            onSuccess: () => {
-                hideUpdateModal();
-                hideAddModal();
-                hideActivationModal();
-                hideDeactivationModal();
-                form.reset();
-                clearErrors();
-            },
-        }
-    );
-};
-
-const deactivate = () => {
-    form.put(
-        `/${page.props.user.role}/${props.linkName}/deactivate/${currentUpdatingUserID.value}`,
-        {
-            onSuccess: () => {
-                hideUpdateModal();
-                hideAddModal();
-                hideActivationModal();
-                hideDeactivationModal();
-                form.reset();
-                clearErrors();
-            },
-        }
-    );
-};
-
-// Activation Modal
-const showActivationModal = (id) => {
-    document.body.classList.add("overflow-hidden");
-
-    currentUpdatingUserID.value = id;
-
-    activationModalVisibility.value = true;
-};
-
-const hideActivationModal = () => {
-    document.body.classList.remove("overflow-hidden");
-
-    currentUpdatingUserID.value = null;
-
-    activationModalVisibility.value = false;
 };
 
 // Deactivation Modal
-const showDeactivationModal = (id) => {
+const showDeleteModal = (id) => {
     document.body.classList.add("overflow-hidden");
 
-    currentUpdatingUserID.value = id;
+    currentRemovingUserID.value = id;
 
-    deactivationModalVisibility.value = true;
+    deleteModalVisibility.value = true;
 };
 
-const hideDeactivationModal = () => {
+const hideDeleteModal = () => {
     document.body.classList.remove("overflow-hidden");
 
-    currentUpdatingUserID.value = null;
+    currentRemovingUserID.value = null;
 
-    deactivationModalVisibility.value = false;
-};
-
-// Update Modal
-const showUpdateModal = (data) => {
-    form.first_name = data.first_name;
-    form.middle_name = data.middle_name;
-    form.last_name = data.last_name;
-    form.gender = data.gender;
-    form.email = data.email;
-    form.contact_number = data.contact_number;
-
-    document.body.classList.add("overflow-hidden");
-
-    currentUpdatingUserID.value = data.id;
-
-    updateModalVisibility.value = true;
-};
-
-const hideUpdateModal = () => {
-    document.body.classList.remove("overflow-hidden");
-
-    currentUpdatingUserID.value = null;
-
-    updateModalVisibility.value = false;
-};
-
-const showAddModal = () => {
-    form.first_name = "";
-    form.middle_name = "";
-    form.last_name = "";
-    form.gender = "";
-    form.email = "";
-    form.contact_number = "";
-
-    document.body.classList.add("overflow-hidden");
-
-    addModalVisibility.value = true;
-};
-
-const hideAddModal = () => {
-    document.body.classList.remove("overflow-hidden");
-
-    addModalVisibility.value = false;
+    deleteModalVisibility.value = false;
 };
 
 watch(
@@ -176,7 +58,7 @@ watch(
             query.search = value;
         }
 
-        router.get(`/${page.props.user.role}/${props.linkName}`, query, {
+        router.get(`/${page.props.user.log}/${props.linkName}`, query, {
             preserveState: true,
             replace: true,
         });
@@ -191,26 +73,8 @@ watch(
     >
         <Teleport to="body">
             <div
-                v-if="updateModalVisibility"
-                @click="hideUpdateModal"
-                class="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-30 transition duration-200"
-            ></div>
-
-            <div
-                v-else-if="addModalVisibility"
-                @click="hideAddModal"
-                class="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-30 transition duration-200"
-            ></div>
-
-            <div
-                v-else-if="activationModalVisibility"
-                @click="hideActivationModal"
-                class="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-30 transition duration-200"
-            ></div>
-
-            <div
-                v-else-if="deactivationModalVisibility"
-                @click="hideDeactivationModal"
+                v-if="deleteModalVisibility"
+                @click="hideDeleteModal"
                 class="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-30 transition duration-200"
             ></div>
         </Teleport>
@@ -275,18 +139,6 @@ watch(
                         />
                     </div>
                 </div>
-                <button
-                    id="addNewButton"
-                    @click="showAddModal"
-                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                    type="button"
-                >
-                    <font-awesome-icon
-                        class="mr-2 -ml-1"
-                        :icon="['fas', 'plus']"
-                    />
-                    Add new {{ title }}
-                </button>
             </div>
         </div>
     </div>
@@ -309,50 +161,31 @@ watch(
                                     scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
-                                    First Name
+                                    Log Name
                                 </th>
                                 <th
                                     scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
-                                    Middle Name
+                                    Description
                                 </th>
                                 <th
                                     scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
-                                    Last Name
+                                    Ip Address
                                 </th>
                                 <th
                                     scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
-                                    Gender
+                                    Properties
                                 </th>
                                 <th
                                     scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
-                                    Email Address
-                                </th>
-                                <th
-                                    scope="col"
-                                    class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                                >
-                                    Contact Number
-                                </th>
-                                <th
-                                    scope="col"
-                                    class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                                >
-                                    Status
-                                </th>
-
-                                <th
-                                    scope="col"
-                                    class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                                >
-                                    Actions
+                                    Action
                                 </th>
                             </tr>
                         </thead>
@@ -360,8 +193,8 @@ watch(
                             class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700"
                         >
                             <tr
-                                v-for="(role, index) in roles.data"
-                                :key="role.id"
+                                v-for="(log, index) in logs.data"
+                                :key="log.id"
                                 class="hover:bg-gray-100 dark:hover:bg-gray-700"
                             >
                                 <td
@@ -370,7 +203,7 @@ watch(
                                     <div
                                         class="text-base text-center font-semibold text-gray-900 dark:text-white"
                                     >
-                                        {{ role.id }}
+                                        {{ log.id }}
                                     </div>
                                 </td>
                                 <td
@@ -379,7 +212,7 @@ watch(
                                     <div
                                         class="text-base text-gray-900 dark:text-white"
                                     >
-                                        {{ role.first_name }}
+                                        {{ log.first_name }}
                                     </div>
                                 </td>
                                 <td
@@ -388,7 +221,7 @@ watch(
                                     <div
                                         class="text-base text-gray-900 dark:text-white"
                                     >
-                                        {{ role.middle_name }}
+                                        {{ log.middle_name }}
                                     </div>
                                 </td>
                                 <td
@@ -397,7 +230,7 @@ watch(
                                     <div
                                         class="text-base text-gray-900 dark:text-white"
                                     >
-                                        {{ role.last_name }}
+                                        {{ log.last_name }}
                                     </div>
                                 </td>
                                 <td
@@ -406,7 +239,7 @@ watch(
                                     <div
                                         class="text-base text-gray-900 dark:text-white"
                                     >
-                                        {{ role.gender }}
+                                        {{ log.gender }}
                                     </div>
                                 </td>
                                 <td
@@ -415,7 +248,7 @@ watch(
                                     <div
                                         class="text-base text-gray-900 dark:text-white"
                                     >
-                                        {{ role.email }}
+                                        {{ log.email }}
                                     </div>
                                 </td>
                                 <td
@@ -424,7 +257,7 @@ watch(
                                     <div
                                         class="text-base text-gray-900 dark:text-white"
                                     >
-                                        {{ role.contact_number }}
+                                        {{ log.contact_number }}
                                     </div>
                                 </td>
 
@@ -432,7 +265,7 @@ watch(
                                     class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white"
                                 >
                                     <div
-                                        v-if="role.is_active"
+                                        v-if="log.is_active"
                                         class="flex items-center"
                                     >
                                         <div
@@ -454,15 +287,15 @@ watch(
                                         type="button"
                                         id="updateProductButton"
                                         @click="
-                                            showUpdateModal(roles.data[index])
+                                            showUpdateModal(logs.data[index])
                                         "
                                         class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                                     >
                                         Update
                                     </button>
                                     <button
-                                        v-if="role.is_active"
-                                        @click="showDeactivationModal(role.id)"
+                                        v-if="log.is_active"
+                                        @click="showDeactivationModal(log.id)"
                                         type="button"
                                         id="deactivateUserButton"
                                         class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900"
@@ -472,7 +305,7 @@ watch(
 
                                     <button
                                         v-else
-                                        @click="showActivationModal(role.id)"
+                                        @click="showActivationModal(log.id)"
                                         type="button"
                                         id="activateUserButton"
                                         class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:ring-green-300 dark:focus:ring-green-900"
@@ -482,7 +315,7 @@ watch(
                                 </td>
                             </tr>
 
-                            <tr v-if="roles.data.length === 0">
+                            <tr v-if="logs.data.length === 0">
                                 <td
                                     colspan="9"
                                     class="max-w-sm text-center p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
@@ -504,7 +337,7 @@ watch(
     <div
         class="sticky bottom-0 right-0 items-center w-full p-4 bg-white border-t border-gray-200 sm:flex sm:justify-between dark:bg-gray-800 dark:border-gray-700"
     >
-        <Pagination :roles="roles" :pagination="pagination" />
+        <Pagination :logs="logs" :pagination="pagination" />
     </div>
 
     <!-- Edit Product Drawer -->

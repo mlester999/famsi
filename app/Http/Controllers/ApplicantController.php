@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Applicant;
-use App\Http\Requests\StoreApplicantRequest;
-use App\Http\Requests\UpdateApplicantRequest;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Request;
+use Inertia\Inertia;
 
 class ApplicantController extends Controller
 {
@@ -13,7 +15,125 @@ class ApplicantController extends Controller
      */
     public function index()
     {
-        //
+
+        $filters = Request::only(['search']);
+        $searchReq = Request::input('search');
+
+        $applicants = Applicant::query()
+        ->with('user')
+        ->when($searchReq, function($query, $search) {
+            $query->where(function ($query) use ($search) {
+                $query->whereHas('user', function ($query) use ($search) {
+                    $query->whereRaw('LOWER(email) LIKE LOWER(?)', ['%' . $search . '%'])
+                        ->orWhereRaw('LOWER(contact_number) LIKE LOWER(?)', ['%' . $search . '%']);
+                })
+                        ->orWhereRaw('LOWER(first_name) LIKE LOWER(?)', ['%' . $search . '%'])
+                        ->orWhereRaw('LOWER(middle_name) LIKE LOWER(?)', ['%' . $search . '%'])
+                        ->orWhereRaw('LOWER(last_name) LIKE LOWER(?)', ['%' . $search . '%']);
+            });
+
+            // Use this if we like to perform a case-insensitive and approximate matching search
+
+            // $query->where(function ($query) use ($search) {
+            //     $lowerSearch = strtolower($search);
+            //     $query->whereRaw('LOWER(first_name) LIKE LOWER(?)', ['%' . $search . '%'])
+            //           ->orWhereRaw('SOUNDEX(last_name) = SOUNDEX(?)', [$lowerSearch]);
+            // })
+            // ->orWhere(function ($query) use ($search) {
+            //     $lowerSearch = strtolower($search);
+            //     $query->whereRaw('LOWER(last_name) LIKE LOWER(?)', ['%' . $search . '%'])
+            //           ->orWhereRaw('SOUNDEX(first_name) = SOUNDEX(?)', [$lowerSearch]);
+            // });
+        })
+        ->orderBy('id', 'asc')
+        ->paginate(10)
+        ->withQueryString()
+        ->through(fn($applicant) => [
+            'id' => $applicant->id,
+            'first_name' => $applicant->first_name,
+            'middle_name' => $applicant->middle_name,
+            'last_name' => $applicant->last_name,
+            'gender' => $applicant->gender,
+            'email' => $applicant->user->email,
+            'contact_number' => $applicant->contact_number,
+            'is_active' => $applicant->user->is_active,
+            'created_at' => $applicant->created_at,
+        ]);
+
+        if (empty($searchReq)) {
+            unset($filters['search']);
+        }
+
+        $currentPage = $applicants->currentPage();
+        $lastPage = $applicants->lastPage();
+        $firstPage = 1;
+
+        $previousPage = $currentPage - 1 > 0 ? $currentPage - 1 : null;
+        $nextPage = $currentPage + 1 <= $lastPage ? $currentPage + 1 : null;
+
+        $links = [];
+
+        if ($previousPage !== null) {
+            $links[] = [
+                'url' => $applicants->url($previousPage),
+                'label' => 'Previous',
+            ];
+        }
+
+        $links[] = [
+            'url' => $applicants->url(1),
+            'label' => 1,
+        ];
+
+        if ($currentPage > 3) {
+            $links[] = [
+                'url' => $applicants->url($currentPage - 1),
+                'label' => '...',
+            ];
+        }
+
+        $rangeStart = max(2, $currentPage - 1);
+        $rangeEnd = min($lastPage - 1, $currentPage + 1);
+
+        for ($i = $rangeStart; $i <= $rangeEnd; $i++) {
+            $links[] = [
+                'url' => $applicants->url($i),
+                'label' => $i,
+            ];
+        }
+
+
+        if ($currentPage < $lastPage - 2) {
+            $links[] = [
+                'url' => $applicants->url($currentPage + 1),
+                'label' => '...',
+            ];
+        }
+
+        if ($firstPage !== $lastPage) {
+            $links[] = [
+                'url' => $applicants->url($lastPage),
+                'label' => $lastPage,
+            ];
+        }
+
+        if ($nextPage !== null) {
+            $links[] = [
+                'url' => $applicants->url($nextPage),
+                'label' => 'Next',
+            ];
+        }
+
+
+        return Inertia::render('Applicants', [
+            'applicants' => $applicants,
+            'filters' => $filters,
+            'pagination' => [
+                'current_page' => $currentPage,
+                'last_page' => $lastPage,
+                'links' => $links,
+            ],
+        ]);
     }
 
     /**
@@ -27,9 +147,32 @@ class ApplicantController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreApplicantRequest $request)
+    public function store()
     {
-        //
+        $applicantValidate = Request::validate([
+            'first_name' => ['required', 'max:50'],
+            'middle_name' => ['required', 'max:50'],
+            'last_name' => ['required', 'max:50'],
+            'gender' => ['required'],
+            'email' => ['required', 'max:50', 'email'],
+            'contact_number' => ['required', 'digits:11'],
+        ]);
+
+        $user = User::create([
+            'email' => $applicantValidate['email'],
+            'password' => Hash::make('12345678'),
+            'user_type' => 2,
+            'is_active' => 1
+        ]);
+
+        Applicant::create([
+            'user_id' => $user['id'],
+            'first_name' => $applicantValidate['first_name'],
+            'middle_name' => $applicantValidate['middle_name'],
+            'last_name' => $applicantValidate['last_name'],
+            'gender' => $applicantValidate['gender'],
+            'contact_number' => $applicantValidate['contact_number'],
+        ]);
     }
 
     /**
@@ -51,16 +194,52 @@ class ApplicantController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateApplicantRequest $request, Applicant $applicant)
+    public function update($id)
     {
-        //
+        $applicantValidate = Request::validate([
+            'first_name' => ['required', 'max:50'],
+            'middle_name' => ['required', 'max:50'],
+            'last_name' => ['required', 'max:50'],
+            'gender' => ['required'],
+            'email' => ['required', 'max:50', 'email'],
+            'contact_number' => ['required', 'digits:11'],
+        ]);
+
+        $applicant = Applicant::findOrFail($id);
+        $user = Applicant::findOrFail($id)->user;
+
+        $applicant->first_name = $applicantValidate['first_name'];
+        $applicant->middle_name = $applicantValidate['middle_name'];
+        $applicant->last_name = $applicantValidate['last_name'];
+        $applicant->gender = $applicantValidate['gender'];
+        $user->email = $applicantValidate['email'];
+        $applicant->contact_number = $applicantValidate['contact_number'];
+
+        $user->save();
+        $applicant->save();
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Activate the specified resource.
      */
-    public function destroy(Applicant $applicant)
+    public function activate($id)
     {
-        //
+        $user = Applicant::findOrFail($id)->user;
+
+        $user->is_active = 1;
+
+        $user->save();
+    }
+
+    /**
+     * Deactivate the specified resource.
+     */
+    public function deactivate($id)
+    {
+        $user = Applicant::findOrFail($id)->user;
+
+        $user->is_active = 0;
+
+        $user->save();
     }
 }
