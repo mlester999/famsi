@@ -39,23 +39,13 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
 
         Fortify::authenticateUsing(function (Request $request){
-            $admin = User::where(['email' => $request->email, 'user_type' => 3])->first();
-            // $hrManager = User::where(['email' => $request->email, 'user_type' => 2])->first();
-            // $hrStaff = User::where(['email' => $request->email, 'user_type' => 1])->first();
-            // $applicant = User::where(['email' => $request->email, 'user_type' => 0])->first();
+            $user = User::where(['email' => $request->email])->first();
 
-            // // Admin
-            // if ($admin && $admin->is_active && Hash::check($request->password, $admin->password)) {
-                $adminInfo = Admin::where('user_id', $admin->id)->first();
+            // Admin
+            if ($user && $user->is_active && Hash::check($request->password, $user->password)) {
 
-                activity()
-                ->causedBy($admin)
-                ->event('login')
-                ->withProperties(['ipAddress' => $request->ip()])
-                ->log($adminInfo->first_name . ' logged in to the website.');
-
-                return $admin;
-            // }
+                return $user;
+            }
 
             // if ($hrManager && $hrManager->is_active && Hash::check($request->password, $hrManager->password)) {
             //     $hrManagerInfo = HrManager::where('user_id', $hrManager->id)->first();

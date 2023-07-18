@@ -25,8 +25,13 @@ class Admin extends Model
     public function getActivitylogOptions(): LogOptions
     {
         $logOptions = LogOptions::defaults()
-        ->logFillable(['first_name'])
-        ->setDescriptionForEvent(fn(string $eventName) => "This model has been {$eventName}");
+        ->logFillable();
+
+        $logOptions->setDescriptionForEvent(function (string $eventName) {
+            $description = "{$eventName} a Admin account under the name of {$this->first_name} {$this->last_name}";
+
+            return $description;
+        });
 
         return $logOptions;
     }

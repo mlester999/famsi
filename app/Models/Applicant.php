@@ -24,8 +24,16 @@ class Applicant extends Model
 
     public function getActivitylogOptions(): LogOptions
     {
-        return LogOptions::defaults()
-        ->setDescriptionForEvent(fn(string $eventName) => "This model has been {$eventName}");
+        $logOptions = LogOptions::defaults()
+        ->logFillable();
+
+        $logOptions->setDescriptionForEvent(function (string $eventName) {
+            $description = "{$eventName} a Applicant account under the name of {$this->first_name} {$this->last_name}";
+
+            return $description;
+        });
+
+        return $logOptions;
     }
 
     public function user(): BelongsTo

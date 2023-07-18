@@ -175,13 +175,13 @@ watch(
                                     scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
-                                    Ip Address
+                                    Source IP
                                 </th>
                                 <th
                                     scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
-                                    Properties
+                                    Date
                                 </th>
                                 <th
                                     scope="col"
@@ -226,6 +226,7 @@ watch(
                                         {{ log.description }}
                                     </div>
                                 </td>
+
                                 <td
                                     class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
@@ -233,6 +234,24 @@ watch(
                                         class="text-base max-w-xs whitespace-normal text-gray-900 dark:text-white"
                                     >
                                         {{ log.properties?.ipAddress }}
+                                    </div>
+                                </td>
+
+                                <td
+                                    class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                                >
+                                    <div
+                                        class="text-base max-w-xs whitespace-normal text-gray-900 dark:text-white"
+                                    >
+                                        {{
+                                            new Date(
+                                                log.created_at
+                                            ).toLocaleDateString("en-US", {
+                                                month: "long",
+                                                day: "numeric",
+                                                year: "numeric",
+                                            })
+                                        }}
                                     </div>
                                 </td>
 

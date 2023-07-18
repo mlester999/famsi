@@ -24,9 +24,16 @@ class HrManager extends Model
 
     public function getActivitylogOptions(): LogOptions
     {
-        return LogOptions::defaults()
-        ->logFillable()
-        ->setDescriptionForEvent(fn(string $eventName) => "has been {$eventName}");
+        $logOptions = LogOptions::defaults()
+        ->logFillable();
+
+        $logOptions->setDescriptionForEvent(function (string $eventName) {
+            $description = "{$eventName} a HR Manager account under the name of {$this->first_name} {$this->last_name}";
+
+            return $description;
+        });
+
+        return $logOptions;
     }
 
     public function user(): BelongsTo
