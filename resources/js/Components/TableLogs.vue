@@ -163,6 +163,12 @@ watch(
                                     scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
+                                    User
+                                </th>
+                                <th
+                                    scope="col"
+                                    class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                                >
                                     Event
                                 </th>
                                 <th
@@ -206,6 +212,15 @@ watch(
                                         class="text-base text-center font-semibold text-gray-900 dark:text-white"
                                     >
                                         {{ log.id }}
+                                    </div>
+                                </td>
+                                <td
+                                    class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                                >
+                                    <div
+                                        class="text-base max-w-xs whitespace-normal text-blue-500 dark:text-blue-400"
+                                    >
+                                        {{ log.properties?.user }}
                                     </div>
                                 </td>
                                 <td

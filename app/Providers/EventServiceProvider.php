@@ -41,7 +41,7 @@ class EventServiceProvider extends ServiceProvider
                 activity()
                 ->causedBy($user)
                 ->event('login')
-                ->withProperties(['ipAddress' => $request->ip()])
+                ->withProperties(['ipAddress' => request()->ip(), 'user' => $adminInfo->first_name . ' ' . $adminInfo->last_name, 'role' => 'Admin'])
                 ->log($adminInfo->first_name . ' logged in to the system.');
             } else if($user && $user->user_type === User::HR_MANAGER) {
                 $hrManagerInfo = HrManager::where('user_id', $user->id)->first();
@@ -49,7 +49,7 @@ class EventServiceProvider extends ServiceProvider
                 activity()
                 ->causedBy($user)
                 ->event('login')
-                ->withProperties(['ipAddress' => $request->ip()])
+                ->withProperties(['ipAddress' => request()->ip(), 'user' => $hrManagerInfo->first_name . ' ' . $hrManagerInfo->last_name, 'role' => 'HR Manager'])
                 ->log('HR Manager: ' . $hrManagerInfo->first_name . $hrManagerInfo->last_name . ', logged in to the system.');
             } else if($user && $user->user_type === User::HR_STAFF) {
                 $hrStaffInfo = HrStaff::where('user_id', $user->id)->first();
@@ -57,7 +57,7 @@ class EventServiceProvider extends ServiceProvider
                 activity()
                 ->causedBy($user)
                 ->event('login')
-                ->withProperties(['ipAddress' => $request->ip()])
+                ->withProperties(['ipAddress' => request()->ip(), 'user' => $hrStaffInfo->first_name . ' ' . $hrStaffInfo->last_name, 'role' => 'HR Staff'])
                 ->log('HR Staff: ' . $hrStaffInfo->first_name . $hrStaffInfo->last_name . ', logged in to the system.');
             } else if($user && $user->user_type === User::APPLICANT) {
                 $applicantInfo = Applicant::where('user_id', $user->id)->first();
@@ -65,7 +65,7 @@ class EventServiceProvider extends ServiceProvider
                 activity()
                 ->causedBy($user)
                 ->event('login')
-                ->withProperties(['ipAddress' => $request->ip()])
+                ->withProperties(['ipAddress' => request()->ip(), 'user' => $applicantInfo->first_name . ' ' . $applicantInfo->last_name, 'role' => 'Applicant'])
                 ->log('Applicant: ' . $applicantInfo->first_name . $applicantInfo->last_name . ', logged in to the system.');
             }
         });

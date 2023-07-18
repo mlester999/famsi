@@ -5,13 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Spatie\Activitylog\Traits\LogsActivity;
-use Spatie\Activitylog\LogOptions;
 
 class HrManager extends Model
 {
     use HasFactory;
-    use LogsActivity;
 
     protected $fillable = [
         'user_id',
@@ -22,19 +19,19 @@ class HrManager extends Model
         'contact_number',
     ];
 
-    public function getActivitylogOptions(): LogOptions
-    {
-        $logOptions = LogOptions::defaults()
-        ->logFillable();
+    // public function getActivitylogOptions(): LogOptions
+    // {
+    //     $logOptions = LogOptions::defaults()
+    //     ->logFillable();
 
-        $logOptions->setDescriptionForEvent(function (string $eventName) {
-            $description = "{$eventName} a HR Manager account under the name of {$this->first_name} {$this->last_name}";
+    //     $logOptions->setDescriptionForEvent(function (string $eventName) {
+    //         $description = "{$eventName} a HR Manager account under the name of {$this->first_name} {$this->last_name}";
 
-            return $description;
-        });
+    //         return $description;
+    //     });
 
-        return $logOptions;
-    }
+    //     return $logOptions;
+    // }
 
     public function user(): BelongsTo
     {
