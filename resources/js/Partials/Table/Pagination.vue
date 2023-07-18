@@ -4,7 +4,7 @@ import PreviousButton from "@/Components/PreviousButton.vue";
 import NextButton from "@/Components/NextButton.vue";
 
 defineProps({
-    logs: Object,
+    roles: Object,
     pagination: Object,
 });
 </script>
@@ -14,9 +14,9 @@ defineProps({
         <span class="text-sm font-normal text-gray-500 dark:text-gray-400"
             >Showing
             <span
-                v-if="logs.from && logs.to"
+                v-if="roles.from && roles.to"
                 class="font-semibold text-gray-900 dark:text-white"
-                >{{ logs.from }} - {{ logs.to }}</span
+                >{{ roles.from }} - {{ roles.to }}</span
             >
 
             <span v-else class="font-semibold text-gray-900 dark:text-white"
@@ -24,7 +24,7 @@ defineProps({
             >
             of
             <span class="font-semibold text-gray-900 dark:text-white">{{
-                logs.total
+                roles.total
             }}</span></span
         >
     </div>

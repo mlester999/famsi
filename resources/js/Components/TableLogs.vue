@@ -291,7 +291,7 @@ watch(
     <div
         class="sticky bottom-0 right-0 items-center w-full p-4 bg-white border-t border-gray-200 sm:flex sm:justify-between dark:bg-gray-800 dark:border-gray-700"
     >
-        <Pagination :logs="logs" :pagination="pagination" />
+        <Pagination :roles="logs" :pagination="pagination" />
     </div>
 
     <!-- Edit Product Drawer -->
