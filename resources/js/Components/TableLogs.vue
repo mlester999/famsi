@@ -15,6 +15,8 @@ const props = defineProps({
 
 const page = usePage();
 
+console.log(props.filters);
+
 let search = ref(props.filters.search);
 
 let currentRemovingUserID = ref(false);
@@ -161,7 +163,13 @@ watch(
                                     scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
-                                    Log Name
+                                    User
+                                </th>
+                                <th
+                                    scope="col"
+                                    class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                                >
+                                    Event
                                 </th>
                                 <th
                                     scope="col"
@@ -173,13 +181,13 @@ watch(
                                     scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
-                                    Ip Address
+                                    Source IP
                                 </th>
                                 <th
                                     scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
-                                    Properties
+                                    Date
                                 </th>
                                 <th
                                     scope="col"
@@ -207,78 +215,65 @@ watch(
                                     </div>
                                 </td>
                                 <td
-                                    class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400"
+                                    class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
-                                    <div
-                                        class="text-base text-gray-900 dark:text-white"
-                                    >
-                                        {{ log.first_name }}
+                                    <div class="max-w-xs whitespace-normal">
+                                        <p
+                                            class="text-base text-blue-500 dark:text-blue-400"
+                                        >
+                                            {{ log.properties?.user }}
+                                        </p>
+                                        <p
+                                            class="text-sm text-gray-500 dark:text-gray-400"
+                                        >
+                                            {{ log.properties?.role }}
+                                        </p>
                                     </div>
                                 </td>
                                 <td
                                     class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
                                     <div
-                                        class="text-base text-gray-900 dark:text-white"
+                                        class="text-base max-w-xs whitespace-normal text-gray-900 dark:text-white"
                                     >
-                                        {{ log.middle_name }}
+                                        {{ log.event }}
                                     </div>
                                 </td>
                                 <td
                                     class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
                                     <div
-                                        class="text-base text-gray-900 dark:text-white"
+                                        class="text-base max-w-xs whitespace-normal text-gray-900 dark:text-white"
                                     >
-                                        {{ log.last_name }}
-                                    </div>
-                                </td>
-                                <td
-                                    class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                                >
-                                    <div
-                                        class="text-base text-gray-900 dark:text-white"
-                                    >
-                                        {{ log.gender }}
-                                    </div>
-                                </td>
-                                <td
-                                    class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
-                                >
-                                    <div
-                                        class="text-base text-gray-900 dark:text-white"
-                                    >
-                                        {{ log.email }}
-                                    </div>
-                                </td>
-                                <td
-                                    class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
-                                >
-                                    <div
-                                        class="text-base text-gray-900 dark:text-white"
-                                    >
-                                        {{ log.contact_number }}
+                                        {{ log.description }}
                                     </div>
                                 </td>
 
                                 <td
-                                    class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white"
+                                    class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
                                     <div
-                                        v-if="log.is_active"
-                                        class="flex items-center"
+                                        class="text-base max-w-xs whitespace-normal text-gray-900 dark:text-white"
                                     >
-                                        <div
-                                            class="h-2.5 w-2.5 rounded-full bg-green-400 mr-2"
-                                        ></div>
-                                        Active
+                                        {{ log.properties?.ipAddress }}
                                     </div>
+                                </td>
 
-                                    <div v-else class="flex items-center">
-                                        <div
-                                            class="h-2.5 w-2.5 rounded-full bg-red-500 mr-2"
-                                        ></div>
-                                        Inactive
+                                <td
+                                    class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                                >
+                                    <div
+                                        class="text-base max-w-xs whitespace-normal text-gray-900 dark:text-white"
+                                    >
+                                        {{
+                                            new Date(
+                                                log.created_at
+                                            ).toLocaleDateString("en-US", {
+                                                month: "long",
+                                                day: "numeric",
+                                                year: "numeric",
+                                            })
+                                        }}
                                     </div>
                                 </td>
 
@@ -337,7 +332,7 @@ watch(
     <div
         class="sticky bottom-0 right-0 items-center w-full p-4 bg-white border-t border-gray-200 sm:flex sm:justify-between dark:bg-gray-800 dark:border-gray-700"
     >
-        <Pagination :logs="logs" :pagination="pagination" />
+        <Pagination :roles="logs" :pagination="pagination" />
     </div>
 
     <!-- Edit Product Drawer -->

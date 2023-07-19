@@ -1,5 +1,5 @@
 <script setup>
-import TableCrud from "@/Components/TableCrud.vue";
+import TableLogs from "@/Components/TableLogs.vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
 
 defineProps({
@@ -11,8 +11,8 @@ defineProps({
 
 <template>
     <AppLayout title="Activity Logs">
-        <TableCrud
-            :roles="activityLogs"
+        <TableLogs
+            :logs="activityLogs"
             :pagination="pagination"
             :filters="filters"
             linkName="activity-logs"
@@ -36,6 +36,6 @@ defineProps({
             <template #description
                 >This section pertains to activity logs.</template
             >
-        </TableCrud>
+        </TableLogs>
     </AppLayout>
 </template>

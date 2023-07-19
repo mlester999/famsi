@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityLogsController;
 use App\Http\Controllers\HrManagerController;
 use App\Http\Controllers\HrStaffController;
 use App\Http\Controllers\ApplicantController;
@@ -102,9 +103,7 @@ Route::middleware([
             return Inertia::render('Announcement');
         })->name('announcement');
 
-        Route::get('/activity-logs', function () {
-            return Inertia::render('ActivityLogs');
-        })->name('activity-logs');
+        Route::get('/activity-logs', [ActivityLogsController::class, 'index'])->name('activity-logs');
 
             Route::group(['prefix' => 'hr-managers', 'as' => 'hr-managers.'], function () {
                 Route::get('/', [HrManagerController::class, 'index'])->name('index');
