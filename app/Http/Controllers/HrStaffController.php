@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin;
+use App\Models\HrManager;
 use App\Models\HrStaff;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -175,22 +177,27 @@ class HrStaffController extends Controller
         ]);
 
         $userInfo = null;
+        $userRole = '';
 
         if(auth()->user()->user_type === User::ADMIN) {
             $userInfo = Admin::where('user_id', auth()->user()->id)->first();
+            $userRole = "Admin";
         } else if(auth()->user()->user_type === User::HR_MANAGER) {
             $userInfo = HrManager::where('user_id', auth()->user()->id)->first();
+            $userRole = "Hr Manager";
         } else if(auth()->user()->user_type === User::HR_STAFF) {
             $userInfo = HrStaff::where('user_id', auth()->user()->id)->first();
+            $userRole = "Hr Staff";
         } else if(auth()->user()->user_type === User::APPLICANT) {
             $userInfo = Applicant::where('user_id', auth()->user()->id)->first();
+            $userRole = "Applicant";
         }
 
         activity()
         ->performedOn(HrStaff::where('user_id', $user['id'])->first())
         ->causedBy(auth()->user())
         ->event('created')
-        ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name])
+        ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
         ->log("Created a HR Staff account with the name of {$hrStaffValidate['first_name']} {$hrStaffValidate['last_name']}");
     }
 
@@ -228,6 +235,21 @@ class HrStaffController extends Controller
         $user = HrStaff::findOrFail($id)->user;
 
         $userInfo = null;
+        $userRole = '';
+
+        if(auth()->user()->user_type === User::ADMIN) {
+            $userInfo = Admin::where('user_id', auth()->user()->id)->first();
+            $userRole = "Admin";
+        } else if(auth()->user()->user_type === User::HR_MANAGER) {
+            $userInfo = HrManager::where('user_id', auth()->user()->id)->first();
+            $userRole = "Hr Manager";
+        } else if(auth()->user()->user_type === User::HR_STAFF) {
+            $userInfo = HrStaff::where('user_id', auth()->user()->id)->first();
+            $userRole = "Hr Staff";
+        } else if(auth()->user()->user_type === User::APPLICANT) {
+            $userInfo = Applicant::where('user_id', auth()->user()->id)->first();
+            $userRole = "Applicant";
+        }
 
         if(auth()->user()->user_type === User::ADMIN) {
             $userInfo = Admin::where('user_id', auth()->user()->id)->first();
@@ -244,7 +266,7 @@ class HrStaffController extends Controller
             ->performedOn(HrStaff::where('user_id', $user['id'])->first())
             ->causedBy(auth()->user())
             ->event('updated')
-            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name])
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
             ->log("Updated a HR Staff account's first name from {$hrStaff->first_name} to {$hrStaffValidate['first_name']}");
 
             $hrStaff->first_name = $hrStaffValidate['first_name'];
@@ -255,7 +277,7 @@ class HrStaffController extends Controller
             ->performedOn(HrStaff::where('user_id', $user['id'])->first())
             ->causedBy(auth()->user())
             ->event('updated')
-            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name])
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
             ->log("Updated a HR Staff account's middle name from {$hrStaff->middle_name} to {$hrStaffValidate['middle_name']}");
 
             $hrStaff->middle_name = $hrStaffValidate['middle_name'];
@@ -266,7 +288,7 @@ class HrStaffController extends Controller
             ->performedOn(HrStaff::where('user_id', $user['id'])->first())
             ->causedBy(auth()->user())
             ->event('updated')
-            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name])
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
             ->log("Updated a HR Staff account's last name from {$hrStaff->last_name} to {$hrStaffValidate['last_name']}");
 
             $hrStaff->last_name = $hrStaffValidate['last_name'];
@@ -277,7 +299,7 @@ class HrStaffController extends Controller
             ->performedOn(HrStaff::where('user_id', $user['id'])->first())
             ->causedBy(auth()->user())
             ->event('updated')
-            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name])
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
             ->log("Updated a HR Staff account's gender from {$hrStaff->gender} to {$hrStaffValidate['gender']}");
 
             $hrStaff->gender = $hrStaffValidate['gender'];
@@ -288,7 +310,7 @@ class HrStaffController extends Controller
             ->performedOn(HrStaff::where('user_id', $user['id'])->first())
             ->causedBy(auth()->user())
             ->event('updated')
-            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name])
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
             ->log("Updated a HR Staff account's email from {$user->email} to {$hrStaffValidate['email']}");
 
             $hrStaff->email = $hrStaffValidate['email'];
@@ -299,7 +321,7 @@ class HrStaffController extends Controller
             ->performedOn(HrStaff::where('user_id', $user['id'])->first())
             ->causedBy(auth()->user())
             ->event('updated')
-            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name])
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
             ->log("Updated a HR Staff account's contact number from {$hrStaff->contact_number} to {$hrStaffValidate['contact_number']}");
 
             $hrStaff->contact_number = $hrStaffValidate['contact_number'];

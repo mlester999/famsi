@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin;
 use App\Models\Applicant;
+use App\Models\HrManager;
+use App\Models\HrStaff;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Request;
@@ -175,22 +178,27 @@ class ApplicantController extends Controller
         ]);
 
         $userInfo = null;
+        $userRole = '';
 
         if(auth()->user()->user_type === User::ADMIN) {
             $userInfo = Admin::where('user_id', auth()->user()->id)->first();
+            $userRole = "Admin";
         } else if(auth()->user()->user_type === User::HR_MANAGER) {
             $userInfo = HrManager::where('user_id', auth()->user()->id)->first();
+            $userRole = "Hr Manager";
         } else if(auth()->user()->user_type === User::HR_STAFF) {
             $userInfo = HrStaff::where('user_id', auth()->user()->id)->first();
+            $userRole = "Hr Staff";
         } else if(auth()->user()->user_type === User::APPLICANT) {
             $userInfo = Applicant::where('user_id', auth()->user()->id)->first();
+            $userRole = "Applicant";
         }
 
         activity()
         ->performedOn(Applicant::where('user_id', $user['id'])->first())
         ->causedBy(auth()->user())
         ->event('created')
-        ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name])
+        ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
         ->log("Created an Applicant account with the name of {$applicantValidate['first_name']} {$applicantValidate['last_name']}");
     }
 
@@ -228,15 +236,20 @@ class ApplicantController extends Controller
         $user = Applicant::findOrFail($id)->user;
 
         $userInfo = null;
+        $userRole = '';
 
         if(auth()->user()->user_type === User::ADMIN) {
             $userInfo = Admin::where('user_id', auth()->user()->id)->first();
+            $userRole = "Admin";
         } else if(auth()->user()->user_type === User::HR_MANAGER) {
             $userInfo = HrManager::where('user_id', auth()->user()->id)->first();
+            $userRole = "Hr Manager";
         } else if(auth()->user()->user_type === User::HR_STAFF) {
             $userInfo = HrStaff::where('user_id', auth()->user()->id)->first();
+            $userRole = "Hr Staff";
         } else if(auth()->user()->user_type === User::APPLICANT) {
             $userInfo = Applicant::where('user_id', auth()->user()->id)->first();
+            $userRole = "Applicant";
         }
 
         if($applicantValidate['first_name'] !== $applicant->first_name) {
@@ -244,7 +257,7 @@ class ApplicantController extends Controller
             ->performedOn(Applicant::where('user_id', $user['id'])->first())
             ->causedBy(auth()->user())
             ->event('updated')
-            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name])
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
             ->log("Updated a Applicant account's first name from {$applicant->first_name} to {$applicantValidate['first_name']}");
 
             $applicant->first_name = $applicantValidate['first_name'];
@@ -255,7 +268,7 @@ class ApplicantController extends Controller
             ->performedOn(Applicant::where('user_id', $user['id'])->first())
             ->causedBy(auth()->user())
             ->event('updated')
-            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name])
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
             ->log("Updated a Applicant account's middle name from {$applicant->middle_name} to {$applicantValidate['middle_name']}");
 
             $applicant->middle_name = $applicantValidate['middle_name'];
@@ -266,7 +279,7 @@ class ApplicantController extends Controller
             ->performedOn(Applicant::where('user_id', $user['id'])->first())
             ->causedBy(auth()->user())
             ->event('updated')
-            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name])
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
             ->log("Updated a Applicant account's last name from {$applicant->last_name} to {$applicantValidate['last_name']}");
 
             $applicant->last_name = $applicantValidate['last_name'];
@@ -277,7 +290,7 @@ class ApplicantController extends Controller
             ->performedOn(Applicant::where('user_id', $user['id'])->first())
             ->causedBy(auth()->user())
             ->event('updated')
-            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name])
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
             ->log("Updated a Applicant account's gender from {$applicant->gender} to {$applicantValidate['gender']}");
 
             $applicant->gender = $applicantValidate['gender'];
@@ -288,7 +301,7 @@ class ApplicantController extends Controller
             ->performedOn(Applicant::where('user_id', $user['id'])->first())
             ->causedBy(auth()->user())
             ->event('updated')
-            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name])
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
             ->log("Updated a Applicant account's email from {$user->email} to {$applicantValidate['email']}");
 
             $applicant->email = $applicantValidate['email'];
@@ -299,7 +312,7 @@ class ApplicantController extends Controller
             ->performedOn(Applicant::where('user_id', $user['id'])->first())
             ->causedBy(auth()->user())
             ->event('updated')
-            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name])
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
             ->log("Updated a Applicant account's contact number from {$applicant->contact_number} to {$applicantValidate['contact_number']}");
 
             $applicant->contact_number = $applicantValidate['contact_number'];

@@ -217,10 +217,17 @@ watch(
                                 <td
                                     class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
-                                    <div
-                                        class="text-base max-w-xs whitespace-normal text-blue-500 dark:text-blue-400"
-                                    >
-                                        {{ log.properties?.user }}
+                                    <div class="max-w-xs whitespace-normal">
+                                        <p
+                                            class="text-base text-blue-500 dark:text-blue-400"
+                                        >
+                                            {{ log.properties?.user }}
+                                        </p>
+                                        <p
+                                            class="text-sm text-gray-500 dark:text-gray-400"
+                                        >
+                                            {{ log.properties?.role }}
+                                        </p>
                                     </div>
                                 </td>
                                 <td
