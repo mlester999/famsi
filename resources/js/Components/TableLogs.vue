@@ -57,7 +57,7 @@ watch(
             query.search = value;
         }
 
-        router.get(`/${page.props.user.log}/${props.linkName}`, query, {
+        router.get(`/${page.props.user.role}/${props.linkName}`, query, {
             preserveState: true,
             replace: true,
         });
