@@ -700,7 +700,7 @@ const scrollToSection = (target) => {
             <hr
                 class="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8"
             />
-            <div class="sm:flex sm:items-center sm:justify-between">
+            <div class="sm:flex sm:items-center sm:justify-center">
                 <span
                     class="text-sm text-gray-500 sm:text-center dark:text-gray-400"
                     >© 2023
@@ -710,27 +710,6 @@ const scrollToSection = (target) => {
                         >Fully Advanced Manpower Solutions, Inc.</a
                     >. All Rights Reserved.
                 </span>
-                <div class="flex mt-4 space-x-6 sm:justify-center sm:mt-0">
-                    <a
-                        href="https://www.facebook.com/FAMSILaguna/"
-                        class="text-gray-500 hover:text-gray-900 dark:hover:text-white"
-                    >
-                        Facebook
-                    </a>
-
-                    <a
-                        href="#"
-                        class="text-gray-500 hover:text-gray-900 dark:hover:text-white"
-                    >
-                        LinkedIn
-                    </a>
-                    <a
-                        href="#"
-                        class="text-gray-500 hover:text-gray-900 dark:hover:text-white"
-                    >
-                        Indeed
-                    </a>
-                </div>
             </div>
         </div>
     </footer>

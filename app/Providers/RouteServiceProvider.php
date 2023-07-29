@@ -19,7 +19,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     public const APPLICANT_HOME = '/applicant/dashboard';
 
-    public const HR_STAFF_HOME = '/hr-staff/dashboard';
+    public const HR_STAFF_HOME = '/hr-staff/applicants';
 
     public const HR_MANAGER_HOME = '/hr-manager/dashboard';
 

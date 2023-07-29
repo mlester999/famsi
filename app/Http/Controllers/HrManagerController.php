@@ -59,6 +59,7 @@ class HrManagerController extends Controller
             'last_name' => $hrManager->last_name,
             'gender' => $hrManager->gender,
             'email' => $hrManager->user->email,
+            'email_verified_at' => $hrManager->user->email_verified_at,
             'contact_number' => $hrManager->contact_number,
             'is_active' => $hrManager->user->is_active,
             'created_at' => $hrManager->created_at,

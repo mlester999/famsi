@@ -24,6 +24,8 @@ class CreateNewUser implements CreatesNewUsers
             'firstName' => ['required', 'string', 'max:255'],
             'lastName' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'gender' => ['required', 'string', 'max:255'],
+            'contact_number' => ['required', 'numeric', 'digits:11'],
             'password' => $this->passwordRules(),
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
         ])->validate();
@@ -31,13 +33,17 @@ class CreateNewUser implements CreatesNewUsers
         $user = User::create([
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
-            'user_type' => 0
+            'user_type' => 0,
+            'is_active' => 0
         ]);
 
         Applicant::create([
             'user_id' => $user->id,
             'first_name' => $input['firstName'],
+            'middle_name' => $input['middleName'] ?? '',
             'last_name' => $input['lastName'],
+            'gender' => $input['gender'],
+            'contact_number' => $input['contact_number'],
         ]);
 
         return $user;

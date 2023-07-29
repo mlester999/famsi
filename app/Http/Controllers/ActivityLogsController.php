@@ -166,8 +166,11 @@ class ActivityLogsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Admin $admin)
+    public function destroy($id)
     {
-        //
+        $user = Activity::findOrFail($id);
+
+        $user->delete();
+
     }
 }

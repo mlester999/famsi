@@ -62,23 +62,7 @@ return [
     |
     */
 
-    'home' => function () {
-        if(auth()->user()->user_type == User::APPLICANT) {
-            return RouteServiceProvider::APPLICANT_HOME;
-        }
-
-        if(auth()->user()->user_type == User::HR_STAFF) {
-            return RouteServiceProvider::HR_STAFF_HOME;
-        }
-
-        if(auth()->user()->user_type == User::HR_MANAGER) {
-            return RouteServiceProvider::HR_MANAGER_HOME;
-        }
-
-        if(auth()->user()->user_type == User::ADMIN) {
-            return RouteServiceProvider::ADMIN_HOME;
-        }
-    },
+    'home' => '',
 
     /*
     |--------------------------------------------------------------------------
@@ -151,7 +135,7 @@ return [
     'features' => [
         Features::registration(),
         Features::resetPasswords(),
-        // Features::emailVerification(),
+        Features::emailVerification(),
         Features::updateProfileInformation(),
         Features::updatePasswords(),
         Features::twoFactorAuthentication([

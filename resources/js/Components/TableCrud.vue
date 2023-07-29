@@ -147,6 +147,10 @@ const hideUpdateModal = () => {
     currentUpdatingUserID.value = null;
 
     updateModalVisibility.value = false;
+
+    form.reset();
+
+    form.clearErrors();
 };
 
 const showAddModal = () => {
@@ -166,6 +170,10 @@ const hideAddModal = () => {
     document.body.classList.remove("overflow-hidden");
 
     addModalVisibility.value = false;
+
+    form.reset();
+
+    form.clearErrors();
 };
 
 watch(
@@ -345,7 +353,14 @@ watch(
                                     scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
-                                    Status
+                                    Email Status
+                                </th>
+
+                                <th
+                                    scope="col"
+                                    class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                                >
+                                    Account Status
                                 </th>
 
                                 <th
@@ -418,6 +433,7 @@ watch(
                                         {{ role.email }}
                                     </div>
                                 </td>
+
                                 <td
                                     class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
                                 >
@@ -425,6 +441,27 @@ watch(
                                         class="text-base text-gray-900 dark:text-white"
                                     >
                                         {{ role.contact_number }}
+                                    </div>
+                                </td>
+
+                                <td
+                                    class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white"
+                                >
+                                    <div
+                                        v-if="role.email_verified_at"
+                                        class="flex items-center"
+                                    >
+                                        <div
+                                            class="h-2.5 w-2.5 rounded-full bg-green-400 mr-2"
+                                        ></div>
+                                        Verified
+                                    </div>
+
+                                    <div v-else class="flex items-center">
+                                        <div
+                                            class="h-2.5 w-2.5 rounded-full bg-red-500 mr-2"
+                                        ></div>
+                                        Not Verified
                                     </div>
                                 </td>
 
@@ -550,7 +587,7 @@ watch(
                 <span class="sr-only">Close</span>
             </button>
             <form @submit.prevent="update">
-                <div class="space-y-4">
+                <div class="space-y-8">
                     <div>
                         <label
                             for="firstName"
@@ -565,6 +602,12 @@ watch(
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             placeholder="First Name"
                         />
+                        <p
+                            class="text-red-500 text-xs mt-1 absolute"
+                            v-if="form.errors.first_name"
+                        >
+                            {{ form.errors.first_name }}
+                        </p>
                     </div>
                     <div>
                         <label
@@ -580,6 +623,12 @@ watch(
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             placeholder="Middle Name"
                         />
+                        <p
+                            class="text-red-500 text-xs mt-1 absolute"
+                            v-if="form.errors.middle_name"
+                        >
+                            {{ form.errors.middle_name }}
+                        </p>
                     </div>
                     <div>
                         <label
@@ -595,6 +644,12 @@ watch(
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             placeholder="Last Name"
                         />
+                        <p
+                            class="text-red-500 text-xs mt-1 absolute"
+                            v-if="form.errors.last_name"
+                        >
+                            {{ form.errors.last_name }}
+                        </p>
                     </div>
                     <div>
                         <label
@@ -624,6 +679,12 @@ watch(
                                 Female
                             </option>
                         </select>
+                        <p
+                            class="text-red-500 text-xs mt-1 absolute"
+                            v-if="form.errors.gender"
+                        >
+                            {{ form.errors.gender }}
+                        </p>
                     </div>
                     <div>
                         <label
@@ -639,6 +700,12 @@ watch(
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             placeholder="Email Address"
                         />
+                        <p
+                            class="text-red-500 text-xs mt-1 absolute"
+                            v-if="form.errors.email"
+                        >
+                            {{ form.errors.email }}
+                        </p>
                     </div>
                     <div>
                         <label
@@ -654,6 +721,12 @@ watch(
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             placeholder="Contact Number"
                         />
+                        <p
+                            class="text-red-500 text-xs mt-1 absolute"
+                            v-if="form.errors.contact_number"
+                        >
+                            {{ form.errors.contact_number }}
+                        </p>
                     </div>
                 </div>
                 <div
@@ -890,7 +963,7 @@ watch(
                 <span class="sr-only">Close</span>
             </button>
             <form @submit.prevent="submit">
-                <div class="space-y-4">
+                <div class="space-y-8">
                     <div>
                         <label
                             for="firstName"
@@ -905,10 +978,16 @@ watch(
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             placeholder="First Name"
                         />
+                        <p
+                            class="text-red-500 text-xs mt-1 absolute"
+                            v-if="form.errors.first_name"
+                        >
+                            {{ form.errors.first_name }}
+                        </p>
                     </div>
-                    <div>
+                    <div class="mb-10">
                         <label
-                            for="firstName"
+                            for="middleName"
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                             >Middle Name</label
                         >
@@ -920,6 +999,12 @@ watch(
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             placeholder="Middle Name"
                         />
+                        <p
+                            class="text-red-500 text-xs mt-1 absolute"
+                            v-if="form.errors.middle_name"
+                        >
+                            {{ form.errors.middle_name }}
+                        </p>
                     </div>
                     <div>
                         <label
@@ -935,6 +1020,12 @@ watch(
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             placeholder="Last Name"
                         />
+                        <p
+                            class="text-red-500 text-xs mt-1 absolute"
+                            v-if="form.errors.last_name"
+                        >
+                            {{ form.errors.last_name }}
+                        </p>
                     </div>
                     <div>
                         <label
@@ -964,6 +1055,12 @@ watch(
                                 Female
                             </option>
                         </select>
+                        <p
+                            class="text-red-500 text-xs mt-1 absolute"
+                            v-if="form.errors.gender"
+                        >
+                            {{ form.errors.gender }}
+                        </p>
                     </div>
                     <div>
                         <label
@@ -979,6 +1076,12 @@ watch(
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             placeholder="Email Address"
                         />
+                        <p
+                            class="text-red-500 text-xs mt-1 absolute"
+                            v-if="form.errors.email"
+                        >
+                            {{ form.errors.email }}
+                        </p>
                     </div>
                     <div>
                         <label
@@ -994,6 +1097,12 @@ watch(
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             placeholder="Contact Number"
                         />
+                        <p
+                            class="text-red-500 text-xs mt-1 absolute"
+                            v-if="form.errors.contact_number"
+                        >
+                            {{ form.errors.contact_number }}
+                        </p>
                     </div>
                 </div>
                 <div

@@ -27,7 +27,8 @@ const currentUser = computed(() => {
             <SidebarCategory
                 v-if="
                     $page.props.auth.user.user_type == users.admin ||
-                    $page.props.auth.user.user_type == users.hr_manager
+                    $page.props.auth.user.user_type == users.hr_manager ||
+                    $page.props.auth.user.user_type == users.applicant
                 "
                 name="Menu"
             >
@@ -145,7 +146,14 @@ const currentUser = computed(() => {
                 </template>
             </SidebarCategory>
 
-            <SidebarCategory name="Recruitments">
+            <SidebarCategory
+                name="Recruitments"
+                v-if="
+                    $page.props.auth.user.user_type == users.admin ||
+                    $page.props.auth.user.user_type == users.hr_manager ||
+                    $page.props.auth.user.user_type == users.hr_staff
+                "
+            >
                 <template #tab>
                     <li>
                         <SidebarTab
@@ -187,11 +195,14 @@ const currentUser = computed(() => {
                 </template>
             </SidebarCategory>
 
-            <SidebarCategory name="Logs">
+            <SidebarCategory
+                name="Logs"
+                v-if="$page.props.auth.user.user_type == users.admin"
+            >
                 <template #tab>
-                    <li>
+                    <li v-if="$page.props.auth.user.user_type == users.admin">
                         <SidebarTab
-                            :href="route(`${currentUser}.activity-logs`)"
+                            :href="route(`${currentUser}.activity-logs.index`)"
                             :class="[
                                 $page.url.includes('activity-logs') &&
                                     'bg-gray-100 dark:bg-gray-700',

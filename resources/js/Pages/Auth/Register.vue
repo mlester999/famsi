@@ -10,8 +10,11 @@ import TextInput from "@/Components/TextInput.vue";
 
 const form = useForm({
     firstName: "",
+    middleName: "",
     lastName: "",
     email: "",
+    gender: "",
+    contact_number: "",
     password: "",
     password_confirmation: "",
     terms: false,
@@ -32,16 +35,10 @@ const submit = () => {
             <AuthenticationCardLogo />
         </template>
 
-        <template #title>
-            <h2
-                class="my-6 text-center text-3xl font-bold leading-9 tracking-tight text-gray-900"
-            >
-                Sign up an account
-            </h2>
-        </template>
+        <template #title> Sign up an account </template>
 
         <form @submit.prevent="submit">
-            <div class="flex justify-between space-x-8">
+            <div class="flex flex-col md:flex-row justify-between md:space-x-8">
                 <div class="mt-4 flex-1">
                     <InputLabel for="firstName" value="First Name" />
                     <TextInput
@@ -49,25 +46,35 @@ const submit = () => {
                         v-model="form.firstName"
                         type="text"
                         class="mt-1 block w-full"
-                        required
                         autofocus
                         autocomplete="firstName"
                     />
                     <InputError class="mt-2" :message="form.errors.firstName" />
                 </div>
+            </div>
 
-                <div class="mt-4 flex-1">
-                    <InputLabel for="lastName" value="Last Name" />
-                    <TextInput
-                        id="lastName"
-                        v-model="form.lastName"
-                        type="text"
-                        class="mt-1 block w-full"
-                        required
-                        autocomplete="lastName"
-                    />
-                    <InputError class="mt-2" :message="form.errors.lastName" />
-                </div>
+            <div class="mt-4 flex-1">
+                <InputLabel for="middleName" value="Middle Name (Optional)" />
+                <TextInput
+                    id="middleName"
+                    v-model="form.middleName"
+                    type="text"
+                    class="mt-1 block w-full"
+                    autocomplete="middleName"
+                />
+                <InputError class="mt-2" :message="form.errors.middleName" />
+            </div>
+
+            <div class="mt-4 flex-1">
+                <InputLabel for="lastName" value="Last Name" />
+                <TextInput
+                    id="lastName"
+                    v-model="form.lastName"
+                    type="text"
+                    class="mt-1 block w-full"
+                    autocomplete="lastName"
+                />
+                <InputError class="mt-2" :message="form.errors.lastName" />
             </div>
 
             <div class="mt-6">
@@ -77,10 +84,48 @@ const submit = () => {
                     v-model="form.email"
                     type="email"
                     class="mt-1 block w-full"
-                    required
                     autocomplete="username"
                 />
                 <InputError class="mt-2" :message="form.errors.email" />
+            </div>
+
+            <div class="flex justify-between space-x-8">
+                <div class="mt-6 flex-1">
+                    <InputLabel for="password" value="Gender" />
+                    <select
+                        id="gender"
+                        v-model="form.gender"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    >
+                        <option value="" selected hidden>Select Gender</option>
+
+                        <option value="Male" :selected="form.gender === 'Male'">
+                            Male
+                        </option>
+                        <option
+                            value="Female"
+                            :selected="form.gender === 'Female'"
+                        >
+                            Female
+                        </option>
+                    </select>
+                    <InputError class="mt-2" :message="form.errors.gender" />
+                </div>
+
+                <div class="mt-6 flex-1">
+                    <InputLabel for="contact_number" value="Contact Number" />
+                    <TextInput
+                        id="contact_number"
+                        v-model="form.contact_number"
+                        type="number"
+                        class="mt-1 block w-full"
+                        autocomplete="contact_number"
+                    />
+                    <InputError
+                        class="mt-2"
+                        :message="form.errors.contact_number"
+                    />
+                </div>
             </div>
 
             <div class="flex justify-between space-x-8">
@@ -91,7 +136,6 @@ const submit = () => {
                         v-model="form.password"
                         type="password"
                         class="mt-1 block w-full"
-                        required
                         autocomplete="new-password"
                     />
                     <InputError class="mt-2" :message="form.errors.password" />
@@ -107,7 +151,6 @@ const submit = () => {
                         v-model="form.password_confirmation"
                         type="password"
                         class="mt-1 block w-full"
-                        required
                         autocomplete="new-password"
                     />
                     <InputError
@@ -127,7 +170,6 @@ const submit = () => {
                             id="terms"
                             v-model:checked="form.terms"
                             name="terms"
-                            required
                         />
 
                         <div class="ml-2">
