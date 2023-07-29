@@ -43,9 +43,21 @@ Route::middleware([
     });
 
     Route::group(['middleware' => 'role:hr-staff', 'prefix' => 'hr-staff', 'as' => 'hr-staff.'], function () {
-        Route::get('/dashboard', function () {
-            return Inertia::render('Dashboard');
-        })->name('dashboard');
+        Route::group(['prefix' => 'applicants', 'as' => 'applicants.'], function() {
+            Route::get('/', [ApplicantController::class, 'index'])->name('index');
+
+            Route::post('/store', [ApplicantController::class, 'store'])->name('store');
+
+            Route::put('/update/{id}', [ApplicantController::class, 'update'])->name('update');
+
+            Route::put('/activate/{id}', [ApplicantController::class, 'activate'])->name('activate');
+
+            Route::put('/deactivate/{id}', [ApplicantController::class, 'deactivate'])->name('deactivate');
+        });
+
+        Route::get('/files', function () {
+            return Inertia::render('Files');
+        })->name('files');
     });
 
     Route::group(['middleware' => 'role:hr-manager', 'prefix' => 'hr-manager', 'as' => 'hr-manager.'], function () {

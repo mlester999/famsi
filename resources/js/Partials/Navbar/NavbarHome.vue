@@ -52,7 +52,7 @@ defineProps({
 
         <Link
             v-if="$page.props.auth.user.user_type == users.hr_staff"
-            :href="route('hr-staff.dashboard')"
+            :href="route('hr-staff.applicants.index')"
         >
             <ApplicationMark class="block h-12 w-auto" />
         </Link>

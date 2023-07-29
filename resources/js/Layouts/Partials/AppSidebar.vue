@@ -187,9 +187,12 @@ const currentUser = computed(() => {
                 </template>
             </SidebarCategory>
 
-            <SidebarCategory name="Logs">
+            <SidebarCategory
+                name="Logs"
+                v-if="$page.props.auth.user.user_type == users.admin"
+            >
                 <template #tab>
-                    <li>
+                    <li v-if="$page.props.auth.user.user_type == users.admin">
                         <SidebarTab
                             :href="route(`${currentUser}.activity-logs.index`)"
                             :class="[
