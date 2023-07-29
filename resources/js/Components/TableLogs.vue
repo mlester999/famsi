@@ -1,5 +1,5 @@
 <script setup>
-import { router, usePage, useForm } from "@inertiajs/vue3";
+import { router, usePage } from "@inertiajs/vue3";
 import { ref, watch, Transition, Teleport } from "vue";
 import debounce from "lodash.debounce";
 
@@ -15,20 +15,17 @@ const props = defineProps({
 
 const page = usePage();
 
-console.log(props.filters);
-
 let search = ref(props.filters.search);
 
 let currentRemovingUserID = ref(false);
 let deleteModalVisibility = ref(false);
 
 const remove = () => {
-    form.delete(
-        `/${page.props.user.log}/${props.linkName}/delete/${currentRemovingUserID.value}`,
+    router.delete(
+        `/${page.props.user.role}/${props.linkName}/destroy/${currentRemovingUserID.value}`,
         {
             onSuccess: () => {
                 hideDeleteModal();
-                form.reset();
                 clearErrors();
             },
         }
@@ -279,33 +276,12 @@ watch(
 
                                 <td class="p-4 space-x-2 whitespace-nowrap">
                                     <button
+                                        @click="showDeleteModal(log.id)"
                                         type="button"
-                                        id="updateProductButton"
-                                        @click="
-                                            showUpdateModal(logs.data[index])
-                                        "
-                                        class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                                    >
-                                        Update
-                                    </button>
-                                    <button
-                                        v-if="log.is_active"
-                                        @click="showDeactivationModal(log.id)"
-                                        type="button"
-                                        id="deactivateUserButton"
+                                        id="deleteUserButton"
                                         class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900"
                                     >
-                                        Deactivate
-                                    </button>
-
-                                    <button
-                                        v-else
-                                        @click="showActivationModal(log.id)"
-                                        type="button"
-                                        id="activateUserButton"
-                                        class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:ring-green-300 dark:focus:ring-green-900"
-                                    >
-                                        Activate
+                                        Delete
                                     </button>
                                 </td>
                             </tr>
@@ -335,7 +311,7 @@ watch(
         <Pagination :roles="logs" :pagination="pagination" />
     </div>
 
-    <!-- Edit Product Drawer -->
+    <!-- Delete Product Drawer -->
     <Transition
         enter-from-class="translate-x-full"
         enter-active-class="transition-transform translate-x-0"
@@ -343,193 +319,7 @@ watch(
         leave-to-class="translate-x-full"
     >
         <div
-            v-if="updateModalVisibility"
-            id="drawer-update-product-default"
-            class="fixed top-0 right-0 z-40 w-full h-screen max-w-xs p-4 overflow-y-auto bg-white dark:bg-gray-800"
-            tabindex="-1"
-            aria-labelledby="drawer-label"
-            aria-hidden="true"
-        >
-            <h5
-                id="drawer-label"
-                class="inline-flex items-center mb-6 text-sm font-semibold text-gray-500 uppercase dark:text-gray-400"
-            >
-                Update {{ title }}
-            </h5>
-            <button
-                type="button"
-                @click="hideUpdateModal"
-                aria-controls="drawer-update-product-default"
-                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 absolute top-2.5 right-2.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-            >
-                <svg
-                    aria-hidden="true"
-                    class="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        fill-rule="evenodd"
-                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                        clip-rule="evenodd"
-                    ></path>
-                </svg>
-                <span class="sr-only">Close</span>
-            </button>
-            <form @submit.prevent="update">
-                <div class="space-y-4">
-                    <div>
-                        <label
-                            for="firstName"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >First Name</label
-                        >
-                        <input
-                            type="text"
-                            v-model="form.first_name"
-                            name="firstName"
-                            id="firstName"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="First Name"
-                        />
-                    </div>
-                    <div>
-                        <label
-                            for="firstName"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Middle Name</label
-                        >
-                        <input
-                            type="text"
-                            v-model="form.middle_name"
-                            name="middleName"
-                            id="middleName"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="Middle Name"
-                        />
-                    </div>
-                    <div>
-                        <label
-                            for="lastName"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Last Name</label
-                        >
-                        <input
-                            type="text"
-                            v-model="form.last_name"
-                            name="lastName"
-                            id="lastName"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="Last Name"
-                        />
-                    </div>
-                    <div>
-                        <label
-                            for="gender"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Gender</label
-                        >
-                        <select
-                            id="gender"
-                            v-model="form.gender"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        >
-                            <option value="" selected hidden>
-                                Select Gender
-                            </option>
-
-                            <option
-                                value="Male"
-                                :selected="form.gender === 'Male'"
-                            >
-                                Male
-                            </option>
-                            <option
-                                value="Female"
-                                :selected="form.gender === 'Female'"
-                            >
-                                Female
-                            </option>
-                        </select>
-                    </div>
-                    <div>
-                        <label
-                            for="emailAddress"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Email Address</label
-                        >
-                        <input
-                            type="text"
-                            v-model="form.email"
-                            name="emailAddress"
-                            id="emailAddress"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="Email Address"
-                        />
-                    </div>
-                    <div>
-                        <label
-                            for="emailAddress"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Contact Number</label
-                        >
-                        <input
-                            type="text"
-                            v-model="form.contact_number"
-                            name="contactNumber"
-                            id="contactNumber"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="Contact Number"
-                        />
-                    </div>
-                </div>
-                <div
-                    class="bottom-0 left-0 flex justify-center w-full pb-4 mt-4 space-x-4 sm:absolute sm:px-4 sm:mt-0"
-                >
-                    <button
-                        type="submit"
-                        class="w-full justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                    >
-                        Update
-                    </button>
-                    <button
-                        @click="hideUpdateModal"
-                        type="button"
-                        aria-controls="drawer-create-product-default"
-                        class="inline-flex w-full justify-center text-gray-500 items-center bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
-                    >
-                        <svg
-                            aria-hidden="true"
-                            class="w-5 h-5 -ml-1 sm:mr-1"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12"
-                            ></path>
-                        </svg>
-                        Cancel
-                    </button>
-                </div>
-            </form>
-        </div>
-    </Transition>
-
-    <!-- Deactivation Product Drawer -->
-    <Transition
-        enter-from-class="translate-x-full"
-        enter-active-class="transition-transform translate-x-0"
-        leave-active-class="transition-transform translate-x-0"
-        leave-to-class="translate-x-full"
-    >
-        <div
-            v-if="deactivationModalVisibility"
+            v-if="deleteModalVisibility"
             id="drawer-delete-product-default"
             class="fixed top-0 right-0 z-40 w-full h-screen max-w-xs p-4 overflow-y-auto bg-white dark:bg-gray-800"
             tabindex="-1"
@@ -540,10 +330,10 @@ watch(
                 id="drawer-label"
                 class="inline-flex items-center text-sm font-semibold text-gray-500 uppercase dark:text-gray-400"
             >
-                Deactivate
+                Delete
             </h5>
             <button
-                @click="hideDeactivationModal"
+                @click="hideDeleteModal"
                 type="button"
                 aria-controls="drawer-delete-product-default"
                 class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 absolute top-2.5 right-2.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
@@ -578,10 +368,10 @@ watch(
                 ></path>
             </svg>
             <h3 class="mb-6 text-lg text-gray-500 dark:text-gray-400">
-                Are you sure you want to deactivate this {{ title }}?
+                Are you sure you want to delete this {{ title }}?
             </h3>
 
-            <form @submit.prevent="deactivate" class="inline-block">
+            <form @submit.prevent="remove" class="inline-block">
                 <button
                     type="submit"
                     class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-3 py-2.5 text-center mr-2 dark:focus:ring-red-900"
@@ -590,276 +380,12 @@ watch(
                 </button>
             </form>
             <button
-                @click="hideDeactivationModal"
+                @click="hideDeleteModal"
                 class="text-gray-900 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-blue-300 border border-gray-200 font-medium inline-flex items-center rounded-lg text-sm px-3 py-2.5 text-center dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-700"
                 data-modal-toggle="delete-product-modal"
             >
                 No, cancel
             </button>
-        </div>
-    </Transition>
-
-    <!-- Activation Product Drawer -->
-    <Transition
-        enter-from-class="translate-x-full"
-        enter-active-class="transition-transform translate-x-0"
-        leave-active-class="transition-transform translate-x-0"
-        leave-to-class="translate-x-full"
-    >
-        <div
-            v-if="activationModalVisibility"
-            id="drawer-delete-product-default"
-            class="fixed top-0 right-0 z-40 w-full h-screen max-w-xs p-4 overflow-y-auto bg-white dark:bg-gray-800"
-            tabindex="-1"
-            aria-labelledby="drawer-label"
-            aria-hidden="true"
-        >
-            <h5
-                id="drawer-label"
-                class="inline-flex items-center text-sm font-semibold text-gray-500 uppercase dark:text-gray-400"
-            >
-                Activate
-            </h5>
-            <button
-                @click="hideActivationModal"
-                type="button"
-                aria-controls="drawer-delete-product-default"
-                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 absolute top-2.5 right-2.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-            >
-                <svg
-                    aria-hidden="true"
-                    class="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        fill-rule="evenodd"
-                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                        clip-rule="evenodd"
-                    ></path>
-                </svg>
-                <span class="sr-only">Close menu</span>
-            </button>
-            <svg
-                class="w-10 h-10 mt-8 mb-4 text-green-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-            >
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                ></path>
-            </svg>
-            <h3 class="mb-6 text-lg text-gray-500 dark:text-gray-400">
-                Are you sure you want to activate this {{ title }}?
-            </h3>
-            <form @submit.prevent="activate" class="inline-block">
-                <button
-                    type="submit"
-                    class="text-white bg-green-600 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm inline-flex items-center px-3 py-2.5 text-center mr-2 dark:focus:ring-green-900"
-                >
-                    Yes, I'm sure
-                </button>
-            </form>
-            <button
-                @click="hideActivationModal"
-                class="text-gray-900 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-blue-300 border border-gray-200 font-medium inline-flex items-center rounded-lg text-sm px-3 py-2.5 text-center dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-700"
-            >
-                No, cancel
-            </button>
-        </div>
-    </Transition>
-
-    <!-- Add Product Drawer -->
-    <Transition
-        enter-from-class="translate-x-full"
-        enter-active-class="transition-transform translate-x-0"
-        leave-active-class="transition-transform translate-x-0"
-        leave-to-class="translate-x-full"
-    >
-        <div
-            id="drawer-create-product-default"
-            v-if="addModalVisibility"
-            class="fixed top-0 right-0 z-40 w-full h-screen max-w-xs p-4 overflow-y-auto bg-white dark:bg-gray-800"
-            tabindex="-1"
-            aria-labelledby="drawer-label"
-            aria-hidden="true"
-        >
-            <h5
-                id="drawer-label"
-                class="inline-flex items-center mb-6 text-sm font-semibold text-gray-500 uppercase dark:text-gray-400"
-            >
-                New {{ title }}
-            </h5>
-            <button
-                type="button"
-                @click="hideAddModal"
-                aria-controls="drawer-create-product-default"
-                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 absolute top-2.5 right-2.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-            >
-                <svg
-                    aria-hidden="true"
-                    class="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        fill-rule="evenodd"
-                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                        clip-rule="evenodd"
-                    ></path>
-                </svg>
-                <span class="sr-only">Close</span>
-            </button>
-            <form @submit.prevent="submit">
-                <div class="space-y-4">
-                    <div>
-                        <label
-                            for="firstName"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >First Name</label
-                        >
-                        <input
-                            type="text"
-                            v-model="form.first_name"
-                            name="firstName"
-                            id="firstName"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="First Name"
-                        />
-                    </div>
-                    <div>
-                        <label
-                            for="firstName"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Middle Name</label
-                        >
-                        <input
-                            type="text"
-                            v-model="form.middle_name"
-                            name="middleName"
-                            id="middleName"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="Middle Name"
-                        />
-                    </div>
-                    <div>
-                        <label
-                            for="lastName"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Last Name</label
-                        >
-                        <input
-                            type="text"
-                            v-model="form.last_name"
-                            name="lastName"
-                            id="lastName"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="Last Name"
-                        />
-                    </div>
-                    <div>
-                        <label
-                            for="gender"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Gender</label
-                        >
-                        <select
-                            id="gender"
-                            v-model="form.gender"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        >
-                            <option value="" selected hidden>
-                                Select Gender
-                            </option>
-
-                            <option
-                                value="Male"
-                                :selected="form.gender === 'Male'"
-                            >
-                                Male
-                            </option>
-                            <option
-                                value="Female"
-                                :selected="form.gender === 'Female'"
-                            >
-                                Female
-                            </option>
-                        </select>
-                    </div>
-                    <div>
-                        <label
-                            for="emailAddress"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Email Address</label
-                        >
-                        <input
-                            type="text"
-                            v-model="form.email"
-                            name="emailAddress"
-                            id="emailAddress"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="Email Address"
-                        />
-                    </div>
-                    <div>
-                        <label
-                            for="emailAddress"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Contact Number</label
-                        >
-                        <input
-                            type="text"
-                            v-model="form.contact_number"
-                            name="contactNumber"
-                            id="contactNumber"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="Contact Number"
-                        />
-                    </div>
-                </div>
-                <div
-                    class="bottom-0 left-0 flex justify-center w-full pb-4 space-x-4 md:px-4 md:absolute"
-                >
-                    <button
-                        type="submit"
-                        :disabled="form.processing"
-                        class="text-white w-full justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:bg-blue-200 dark:disabled:bg-blue-900"
-                    >
-                        Add
-                    </button>
-                    <button
-                        @click="hideAddModal"
-                        type="button"
-                        data-drawer-dismiss="drawer-create-product-default"
-                        aria-controls="drawer-create-product-default"
-                        class="inline-flex w-full justify-center text-gray-500 items-center bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
-                    >
-                        <svg
-                            aria-hidden="true"
-                            class="w-5 h-5 -ml-1 sm:mr-1"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12"
-                            ></path>
-                        </svg>
-                        Cancel
-                    </button>
-                </div>
-            </form>
         </div>
     </Transition>
 </template>

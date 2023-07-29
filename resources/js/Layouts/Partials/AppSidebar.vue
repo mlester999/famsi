@@ -191,7 +191,7 @@ const currentUser = computed(() => {
                 <template #tab>
                     <li>
                         <SidebarTab
-                            :href="route(`${currentUser}.activity-logs`)"
+                            :href="route(`${currentUser}.activity-logs.index`)"
                             :class="[
                                 $page.url.includes('activity-logs') &&
                                     'bg-gray-100 dark:bg-gray-700',

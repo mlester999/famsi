@@ -166,8 +166,8 @@ class ActivityLogsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Admin $admin)
+    public function destroy()
     {
-        //
+        dd('wala');
     }
 }

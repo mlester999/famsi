@@ -103,7 +103,11 @@ Route::middleware([
             return Inertia::render('Announcement');
         })->name('announcement');
 
-        Route::get('/activity-logs', [ActivityLogsController::class, 'index'])->name('activity-logs');
+            Route::group(['prefix' => 'activity-logs', 'as' => 'activity-logs.'], function () {
+                Route::get('/', [ActivityLogsController::class, 'index'])->name('index');
+
+                Route::delete('/destroy/{id}', [ActivityLogsController::class, 'destroy'])->name('destroy');
+            });
 
             Route::group(['prefix' => 'hr-managers', 'as' => 'hr-managers.'], function () {
                 Route::get('/', [HrManagerController::class, 'index'])->name('index');
