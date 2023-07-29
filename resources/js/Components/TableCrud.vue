@@ -353,7 +353,14 @@ watch(
                                     scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
-                                    Status
+                                    Email Status
+                                </th>
+
+                                <th
+                                    scope="col"
+                                    class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                                >
+                                    Account Status
                                 </th>
 
                                 <th
@@ -426,6 +433,7 @@ watch(
                                         {{ role.email }}
                                     </div>
                                 </td>
+
                                 <td
                                     class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
                                 >
@@ -433,6 +441,27 @@ watch(
                                         class="text-base text-gray-900 dark:text-white"
                                     >
                                         {{ role.contact_number }}
+                                    </div>
+                                </td>
+
+                                <td
+                                    class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white"
+                                >
+                                    <div
+                                        v-if="role.email_verified_at"
+                                        class="flex items-center"
+                                    >
+                                        <div
+                                            class="h-2.5 w-2.5 rounded-full bg-green-400 mr-2"
+                                        ></div>
+                                        Verified
+                                    </div>
+
+                                    <div v-else class="flex items-center">
+                                        <div
+                                            class="h-2.5 w-2.5 rounded-full bg-red-500 mr-2"
+                                        ></div>
+                                        Not Verified
                                     </div>
                                 </td>
 
