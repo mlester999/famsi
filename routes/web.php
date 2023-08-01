@@ -4,6 +4,7 @@ use App\Http\Controllers\ActivityLogsController;
 use App\Http\Controllers\HrManagerController;
 use App\Http\Controllers\HrStaffController;
 use App\Http\Controllers\ApplicantController;
+use App\Http\Controllers\HrManagerDashboardController;
 use App\Models\Applicant;
 use App\Models\HrManager;
 use App\Models\HrStaff;
@@ -61,9 +62,7 @@ Route::middleware([
     });
 
     Route::group(['middleware' => 'role:hr-manager', 'prefix' => 'hr-manager', 'as' => 'hr-manager.'], function () {
-        Route::get('/dashboard', function () {
-            return Inertia::render('HRManagerDashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', HrManagerDashboardController::class)->name('dashboard');
 
         Route::group(['prefix' => 'hr-staffs', 'as' => 'hr-staffs.'], function() {
             Route::get('/', [HrStaffController::class, 'index'])->name('index');

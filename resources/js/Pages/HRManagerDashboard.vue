@@ -1,18 +1,21 @@
 <script setup>
 import AppLayout from "@/Layouts/AppLayout.vue";
+import TableHRManagerDashboard from "@/Components/TableHRManagerDashboard.vue";
 
-import TableDashboard from "@/Components/TableDashboard.vue";
+defineProps({
+    events: Array,
+});
 </script>
 
 <template>
     <AppLayout title="Dashboard">
         <div class="px-4 pt-6">
-            <TableDashboard name="schedules">
-                <template #title>Schedules</template>
+            <TableHRManagerDashboard name="schedules" :events="events">
+                <template #title>Schedules for Applicant Interviews</template>
                 <template #description
-                    >This is the schedule for online availability</template
+                    >This is your schedules for applicant Interviews</template
                 >
-            </TableDashboard>
+            </TableHRManagerDashboard>
         </div>
     </AppLayout>
 </template>
