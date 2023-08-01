@@ -17,8 +17,16 @@ const handleEventClick = () => {
     alert("Handle Event was clicked");
 };
 
+const handleEventDrop = () => {
+    alert("Event Dropped was clicked");
+};
+
+const handleEventResize = () => {
+    alert("Event Resize was clicked");
+};
+
 const calendarOptions = ref({
-    plugins: [timeGridPlugin],
+    plugins: [timeGridPlugin, interactionPlugin],
     initialView: "timeGridWeek",
     slotMinTime: "8:00:00",
     slotMaxTime: "19:00:00",
@@ -29,7 +37,9 @@ const calendarOptions = ref({
     dayMaxEvents: true,
     select: handleDateSelect,
     eventClick: handleEventClick,
-
+    eventDrop: handleEventDrop,
+    eventResize: handleEventResize,
+    eventResizableFromStart: true,
     headerToolbar: {
         left: "prev,next",
         center: "title",
