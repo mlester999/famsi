@@ -35,10 +35,10 @@ defineProps({
                 </DashboardCard>
             </div>
 
-            <TableDashboard name="transactions">
-                <template #title>Transactions</template>
+            <TableDashboard name="schedules">
+                <template #title>Schedules</template>
                 <template #description
-                    >This is a list of latest transactions</template
+                    >This is the schedule for online availability</template
                 >
             </TableDashboard>
         </div>

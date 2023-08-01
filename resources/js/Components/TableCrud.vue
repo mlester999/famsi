@@ -309,12 +309,6 @@ watch(
                             <tr>
                                 <th
                                     scope="col"
-                                    class="p-4 text-xs font-medium text-center text-gray-500 uppercase dark:text-gray-400"
-                                >
-                                    #
-                                </th>
-                                <th
-                                    scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
                                     First Name
@@ -383,22 +377,13 @@ watch(
                                     class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400"
                                 >
                                     <div
-                                        class="text-base text-center font-semibold text-gray-900 dark:text-white"
-                                    >
-                                        {{ role.id }}
-                                    </div>
-                                </td>
-                                <td
-                                    class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400"
-                                >
-                                    <div
                                         class="text-base text-gray-900 dark:text-white"
                                     >
                                         {{ role.first_name }}
                                     </div>
                                 </td>
                                 <td
-                                    class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                                    class="px-2 py-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
                                     <div
                                         class="text-base text-gray-900 dark:text-white"
@@ -407,7 +392,7 @@ watch(
                                     </div>
                                 </td>
                                 <td
-                                    class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                                    class="px-2 py-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
                                     <div
                                         class="text-base text-gray-900 dark:text-white"
@@ -416,7 +401,7 @@ watch(
                                     </div>
                                 </td>
                                 <td
-                                    class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                                    class="px-2 py-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
                                     <div
                                         class="text-base text-gray-900 dark:text-white"
@@ -425,7 +410,7 @@ watch(
                                     </div>
                                 </td>
                                 <td
-                                    class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
+                                    class="max-w-sm px-2 py-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
                                 >
                                     <div
                                         class="text-base text-gray-900 dark:text-white"
@@ -435,7 +420,7 @@ watch(
                                 </td>
 
                                 <td
-                                    class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
+                                    class="max-w-sm px-2 py-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
                                 >
                                     <div
                                         class="text-base text-gray-900 dark:text-white"
@@ -445,7 +430,7 @@ watch(
                                 </td>
 
                                 <td
-                                    class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white"
+                                    class="px-2 py-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white"
                                 >
                                     <div
                                         v-if="role.email_verified_at"
@@ -466,7 +451,7 @@ watch(
                                 </td>
 
                                 <td
-                                    class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white"
+                                    class="px-2 py-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white"
                                 >
                                     <div
                                         v-if="role.is_active"
@@ -486,7 +471,9 @@ watch(
                                     </div>
                                 </td>
 
-                                <td class="p-4 space-x-2 whitespace-nowrap">
+                                <td
+                                    class="px-2 py-4 space-x-2 whitespace-nowrap"
+                                >
                                     <button
                                         type="button"
                                         id="updateProductButton"

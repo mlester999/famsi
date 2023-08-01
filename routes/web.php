@@ -62,11 +62,7 @@ Route::middleware([
 
     Route::group(['middleware' => 'role:hr-manager', 'prefix' => 'hr-manager', 'as' => 'hr-manager.'], function () {
         Route::get('/dashboard', function () {
-            return Inertia::render('Dashboard', [
-                'totalApplicants' => Applicant::count(),
-                'totalHrStaffs' => HrStaff::count(),
-                'totalHrManagers' => HrManager::count()
-            ]);
+            return Inertia::render('HRManagerDashboard');
         })->name('dashboard');
 
         Route::group(['prefix' => 'hr-staffs', 'as' => 'hr-staffs.'], function() {
