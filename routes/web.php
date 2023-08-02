@@ -62,7 +62,13 @@ Route::middleware([
     });
 
     Route::group(['middleware' => 'role:hr-manager', 'prefix' => 'hr-manager', 'as' => 'hr-manager.'], function () {
-        Route::get('/dashboard', HrManagerDashboardController::class)->name('dashboard');
+        Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.'], function() {
+            Route::get('/', HrManagerDashboardController::class)->name('index');
+
+            Route::post('/store', [HrManagerDashboardController::class, 'store'])->name('store');
+
+            Route::delete('/delete/{id}', [HrManagerDashboardController::class, 'delete'])->name('delete');
+        });
 
         Route::group(['prefix' => 'hr-staffs', 'as' => 'hr-staffs.'], function() {
             Route::get('/', [HrStaffController::class, 'index'])->name('index');

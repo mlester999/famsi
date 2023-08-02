@@ -14,8 +14,8 @@ class Appointment extends Model
         'start_time',
         'finish_time',
         'comments',
-        'client_id',
-        'employee_id',
+        'applicant_id',
+        'hr_manager_id',
     ];
 
     public function applicant(): BelongsTo

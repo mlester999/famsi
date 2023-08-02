@@ -30,6 +30,7 @@
         "@fullcalendar/timegrid": "^6.1.8",
         "@fullcalendar/vue3": "^6.1.8",
         "@vueuse/core": "^10.2.0",
+        "date-fns": "^2.30.0",
         "lodash.debounce": "^4.0.8"
     }
 }

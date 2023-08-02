@@ -35,7 +35,7 @@ const currentUser = computed(() => {
                 <template #tab>
                     <li>
                         <SidebarTab
-                            :href="route(`${currentUser}.dashboard`)"
+                            :href="route(`${currentUser}.dashboard.index`)"
                             :class="[
                                 $page.url.includes('dashboard') &&
                                     'bg-gray-100 dark:bg-gray-700',
