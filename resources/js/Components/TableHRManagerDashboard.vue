@@ -1,11 +1,11 @@
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, onUpdated } from "vue";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { format } from "date-fns";
-import { useForm, usePage } from "@inertiajs/vue3";
+import { router, useForm, usePage } from "@inertiajs/vue3";
 
 const props = defineProps({
     events: Array,
@@ -26,17 +26,20 @@ const form = useForm({
     endTimeDate: "",
 });
 
+const calendarRef = ref("");
 const currentScheduleId = ref("");
+const optionsModalVisibility = ref(false);
+const deleteScheduleModalVisibility = ref(false);
+const addScheduleModalVisibility = ref(false);
 
 const storeSchedule = () => {
-    form.post(
-        `/${page.props.user.role}/${props.linkName}/store/${currentScheduleId.value}`,
-        {
-            onSuccess: () => {
-                hideAddScheduleModal();
-            },
-        }
-    );
+    form.post(`/${page.props.user.role}/${props.linkName}/store`, {
+        onSuccess: () => {
+            hideAddScheduleModal();
+            calendarRef.value.getApi().removeAllEvents();
+            calendarRef.value.getApi().addEventSource(props.events);
+        },
+    });
 };
 
 const deleteSchedule = () => {
@@ -45,14 +48,12 @@ const deleteSchedule = () => {
         {
             onSuccess: () => {
                 hideDeleteScheduleModal();
+                calendarRef.value.getApi().removeAllEvents();
+                calendarRef.value.getApi().addEventSource(props.events);
             },
         }
     );
 };
-
-const optionsModalVisibility = ref(false);
-const deleteScheduleModalVisibility = ref(false);
-const addScheduleModalVisibility = ref(false);
 
 const hideOptionsModal = () => {
     document.body.classList.remove("overflow-hidden");
@@ -84,6 +85,7 @@ const hideDeleteScheduleModal = () => {
 
     form.reset();
     form.clearErrors();
+    console.log(form);
 };
 
 const showDeleteScheduleModal = () => {
@@ -100,6 +102,9 @@ const hideAddScheduleModal = () => {
 
     form.reset();
     form.clearErrors();
+    console.log(form);
+
+    calendarRef.value.getApi().unselect();
 };
 
 const showAddScheduleModal = (arg) => {
@@ -133,8 +138,11 @@ const calendarOptions = ref({
     editable: true,
     selectable: true,
     selectMirror: true,
+    selectOverlap: false,
     dayMaxEvents: true,
+    unselectAuto: false,
     select: showAddScheduleModal,
+    eventLimit: true,
     eventClick: showOptionsModal,
     eventDrop: handleEventDrop,
     eventResize: handleEventResize,
@@ -197,7 +205,10 @@ const calendarOptions = ref({
                 <div class="inline-block min-w-full align-middle">
                     <div class="overflow-hidden shadow sm:rounded-lg"></div>
 
-                    <FullCalendar :options="calendarOptions" />
+                    <FullCalendar
+                        :options="calendarOptions"
+                        ref="calendarRef"
+                    />
                 </div>
             </div>
         </div>

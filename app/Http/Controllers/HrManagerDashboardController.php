@@ -59,7 +59,7 @@ class HrManagerDashboardController extends Controller
         $endDateTime = Carbon::createFromFormat('Y-m-d\TH:i:sP', $scheduleValidate['endTimeDate']);
         $endDateTime->setTimezone('Asia/Manila');
 
-        $schedule = Appointment::create([
+        Appointment::create([
             'start_time' => $startDateTime,
             'finish_time' => $endDateTime,
             'comments' => $scheduleValidate['title'],
@@ -67,9 +67,7 @@ class HrManagerDashboardController extends Controller
             'hr_manager_id' => $authUser->id
         ]);
 
-        $schedule->save();
-
-        return back()->with('success', 'Action performed successfully.');
+        return redirect()->back();
     }
 
     public function delete($id)
@@ -78,6 +76,6 @@ class HrManagerDashboardController extends Controller
 
         $appointment->delete();
 
-        return back()->with('success', 'Action performed successfully.');
+        return redirect()->back();
     }
 }
