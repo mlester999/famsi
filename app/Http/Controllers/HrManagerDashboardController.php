@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin;
 use App\Models\Applicant;
 use App\Models\Appointment;
 use App\Models\HrManager;
+use App\Models\HrStaff;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,7 +32,8 @@ class HrManagerDashboardController extends Controller
         foreach ($appointments as $appointment) {
             $events[] = [
                 'id' => $appointment->id,
-                'title' => 'Interview with ' . $appointment->applicant->first_name,
+                'title' => $appointment->comments,
+                'applicant_id' => $appointment->applicant_id,
                 'start' => $appointment->start_time,
                 'end' => $appointment->finish_time,
             ];
@@ -69,6 +73,91 @@ class HrManagerDashboardController extends Controller
 
         return redirect()->back();
     }
+
+    public function update($id)
+    {
+        $scheduleValidate = Request::validate([
+            'startTimeDate' => ['required'],
+            'endTimeDate' => ['required'],
+            'title' => ['required', 'max:50'],
+            'applicant' => ['required']
+        ]);
+
+        $schedule = Appointment::findOrFail($id);
+        $newApplicant = Applicant::findOrFail($scheduleValidate['applicant']);
+
+        $userInfo = null;
+        $userRole = '';
+
+        if(auth()->user()->user_type === User::ADMIN) {
+            $userInfo = Admin::where('user_id', auth()->user()->id)->first();
+            $userRole = "Admin";
+        } else if(auth()->user()->user_type === User::HR_MANAGER) {
+            $userInfo = HrManager::where('user_id', auth()->user()->id)->first();
+            $userRole = "Hr Manager";
+        } else if(auth()->user()->user_type === User::HR_STAFF) {
+            $userInfo = HrStaff::where('user_id', auth()->user()->id)->first();
+            $userRole = "Hr Staff";
+        } else if(auth()->user()->user_type === User::APPLICANT) {
+            $userInfo = Applicant::where('user_id', auth()->user()->id)->first();
+            $userRole = "Applicant";
+        }
+
+        if($scheduleValidate['startTimeDate'] !== $schedule->start_time) {
+            $startDateTime = Carbon::createFromFormat('Y-m-d\TH:i:sP', $scheduleValidate['startTimeDate']);
+            $startDateTime->setTimezone('Asia/Manila');
+
+            activity()
+            ->performedOn(Appointment::where('id', $id)->first())
+            ->causedBy(auth()->user())
+            ->event('updated')
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
+            ->log("Updated a Schedule's start time date from {$schedule->start_time} to {$startDateTime}");
+
+            $schedule->start_time = $startDateTime;
+        }
+
+        if($scheduleValidate['endTimeDate'] !== $schedule->finish_time) {
+            $endDateTime = Carbon::createFromFormat('Y-m-d\TH:i:sP', $scheduleValidate['endTimeDate']);
+            $endDateTime->setTimezone('Asia/Manila');
+
+            activity()
+            ->performedOn(Appointment::where('id', $id)->first())
+            ->causedBy(auth()->user())
+            ->event('updated')
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
+            ->log("Updated a Schedule's end time date from {$schedule->finish_time} to {$endDateTime}");
+
+            $schedule->finish_time = $endDateTime;
+        }
+
+        if($scheduleValidate['title'] !== $schedule->comments) {
+            activity()
+            ->performedOn(Appointment::where('id', $id)->first())
+            ->causedBy(auth()->user())
+            ->event('updated')
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
+            ->log("Updated a Schedule's title from {$schedule->comments} to {$scheduleValidate['title']}");
+
+            $schedule->comments = $scheduleValidate['title'];
+        }
+
+        if($scheduleValidate['applicant'] !== $schedule->applicant_id) {
+            activity()
+            ->performedOn(Appointment::where('id', $id)->first())
+            ->causedBy(auth()->user())
+            ->event('updated')
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
+            ->log("Updated a Schedule's applicant from {$schedule->applicant->first_name} {$schedule->applicant->middle_name} {$schedule->applicant->last_name} to {$newApplicant->first_name} {$newApplicant->middle_name} {$newApplicant->last_name}");
+
+            $schedule->applicant_id = $scheduleValidate['applicant'];
+        }
+
+        $schedule->save();
+
+        return redirect()->back();
+    }
+
 
     public function delete($id)
     {

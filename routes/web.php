@@ -67,6 +67,8 @@ Route::middleware([
 
             Route::post('/store', [HrManagerDashboardController::class, 'store'])->name('store');
 
+            Route::put('/update/{id}', [HrManagerDashboardController::class, 'update'])->name('update');
+
             Route::delete('/delete/{id}', [HrManagerDashboardController::class, 'delete'])->name('delete');
         });
 
@@ -100,13 +102,15 @@ Route::middleware([
     });
 
     Route::group(['middleware' => 'role:admin', 'prefix' => 'admin', 'as' => 'admin.'], function () {
-        Route::get('/dashboard', function () {
-            return Inertia::render('Dashboard', [
-                'totalApplicants' => Applicant::count(),
-                'totalHrStaffs' => HrStaff::count(),
-                'totalHrManagers' => HrManager::count()
-            ]);
-        })->name('dashboard');
+        Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.'], function() {
+            Route::get('/', function () {
+                return Inertia::render('Dashboard', [
+                    'totalApplicants' => Applicant::count(),
+                    'totalHrStaffs' => HrStaff::count(),
+                    'totalHrManagers' => HrManager::count()
+                ]);
+            })->name('index');
+        });
 
         Route::get('/homepage', function () {
             return Inertia::render('HomePage');

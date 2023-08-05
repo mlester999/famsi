@@ -30,10 +30,12 @@ const calendarRef = ref("");
 const currentScheduleId = ref("");
 const optionsModalVisibility = ref(false);
 const deleteScheduleModalVisibility = ref(false);
+const updateScheduleModalVisibility = ref(false);
 const addScheduleModalVisibility = ref(false);
 
 const storeSchedule = () => {
     form.post(`/${page.props.user.role}/${props.linkName}/store`, {
+        preserveScroll: true,
         onSuccess: () => {
             hideAddScheduleModal();
             calendarRef.value.getApi().removeAllEvents();
@@ -46,6 +48,7 @@ const deleteSchedule = () => {
     form.delete(
         `/${page.props.user.role}/${props.linkName}/delete/${currentScheduleId.value}`,
         {
+            preserveScroll: true,
             onSuccess: () => {
                 hideDeleteScheduleModal();
                 calendarRef.value.getApi().removeAllEvents();
@@ -53,6 +56,35 @@ const deleteSchedule = () => {
             },
         }
     );
+};
+
+const updateSchedule = () => {
+    form.put(
+        `/${page.props.user.role}/${props.linkName}/update/${currentScheduleId.value}`,
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                hideUpdateScheduleModal();
+                calendarRef.value.getApi().removeAllEvents();
+                calendarRef.value.getApi().addEventSource(props.events);
+            },
+        }
+    );
+};
+
+const setFormData = (arg, options) => {
+    if (options) {
+        currentScheduleId.value = arg.event.id;
+        form.applicant = arg.event.extendedProps.applicant_id;
+    }
+
+    form.title = arg.event.title;
+    form.date = format(new Date(arg.event.endStr), "MMMM d, yyyy");
+    form.day = format(new Date(arg.event.endStr), "EEEE");
+    form.startTime = format(new Date(arg.event.startStr), "h:mm a");
+    form.endTime = format(new Date(arg.event.endStr), "h:mm a");
+    form.startTimeDate = arg.event.startStr;
+    form.endTimeDate = arg.event.endStr;
 };
 
 const hideOptionsModal = () => {
@@ -69,12 +101,7 @@ const showOptionsModal = (arg) => {
 
     optionsModalVisibility.value = true;
 
-    currentScheduleId.value = arg.event.id;
-    form.title = arg.event.title;
-    form.date = format(new Date(arg.event.endStr), "MMMM d, yyyy");
-    form.day = format(new Date(arg.event.endStr), "EEEE");
-    form.startTime = format(new Date(arg.event.startStr), "h:mm a");
-    form.endTime = format(new Date(arg.event.endStr), "h:mm a");
+    setFormData(arg, true);
 };
 
 // Show and Hide the Delete Schedule Modal
@@ -85,13 +112,30 @@ const hideDeleteScheduleModal = () => {
 
     form.reset();
     form.clearErrors();
-    console.log(form);
 };
 
 const showDeleteScheduleModal = () => {
+    document.body.classList.add("overflow-hidden");
     optionsModalVisibility.value = false;
 
     deleteScheduleModalVisibility.value = true;
+};
+
+// Show and Hide the Update Schedule Modal
+const hideUpdateScheduleModal = () => {
+    document.body.classList.remove("overflow-hidden");
+
+    updateScheduleModalVisibility.value = false;
+
+    form.reset();
+    form.clearErrors();
+};
+
+const showUpdateScheduleModal = () => {
+    document.body.classList.add("overflow-hidden");
+    optionsModalVisibility.value = false;
+
+    updateScheduleModalVisibility.value = true;
 };
 
 // Show and Hide the Add Schedule Modal
@@ -102,45 +146,59 @@ const hideAddScheduleModal = () => {
 
     form.reset();
     form.clearErrors();
-    console.log(form);
 
     calendarRef.value.getApi().unselect();
 };
 
 const showAddScheduleModal = (arg) => {
-    console.log(arg);
-    addScheduleModalVisibility.value = true;
+    document.body.classList.add("overflow-hidden");
 
-    form.date = format(new Date(arg.endStr), "MMMM d, yyyy");
-    form.day = format(new Date(arg.endStr), "EEEE");
-    form.startTime = format(new Date(arg.startStr), "h:mm a");
-    form.endTime = format(new Date(arg.endStr), "h:mm a");
-    form.startTimeDate = arg.startStr;
-    form.endTimeDate = arg.endStr;
+    const startDay = format(new Date(arg.startStr), "EEEE");
+    const endDay = format(new Date(arg.endStr), "EEEE");
+
+    if (startDay === endDay) {
+        addScheduleModalVisibility.value = true;
+
+        setFormData(arg, false);
+    } else {
+        calendarRef.value.getApi().unselect();
+    }
 };
 
 const handleEventDrop = (arg) => {
-    console.log(arg);
-    alert("Event Dropped was clicked");
+    setFormData(arg, true);
+    updateSchedule();
 };
 
 const handleEventResize = (arg) => {
-    console.log(arg);
-    alert("Event Resize was clicked");
+    setFormData(arg, true);
+    updateSchedule();
 };
 
 const calendarOptions = ref({
-    plugins: [timeGridPlugin, interactionPlugin],
+    plugins: [timeGridPlugin, interactionPlugin, dayGridPlugin],
     initialView: "timeGridWeek",
-    slotMinTime: "8:00:00",
-    slotMaxTime: "19:00:00",
     allDaySlot: false,
     editable: true,
     selectable: true,
     selectMirror: true,
     selectOverlap: false,
+    eventOverlap: false,
     dayMaxEvents: true,
     unselectAuto: false,
+    businessHours: [
+        // specify an array instead
+        {
+            daysOfWeek: [1, 2, 3, 4], // Monday, Tuesday, Wednesday
+            startTime: "08:00", // 8am
+            endTime: "19:00", // 5pm
+        },
+        {
+            daysOfWeek: [5, 6], // Monday, Tuesday, Wednesday
+            startTime: "08:00", // 8am
+            endTime: "17:00", // 5pm
+        },
+    ],
     select: showAddScheduleModal,
     eventLimit: true,
     eventClick: showOptionsModal,
@@ -150,9 +208,10 @@ const calendarOptions = ref({
     headerToolbar: {
         left: "prev,next",
         center: "title",
-        right: "timeGridWeek,timeGridDay", // user can switch between the two
+        right: "dayGridMonth,timeGridWeek,timeGridDay", // user can switch between the two
     },
-    weekends: false,
+    weekends: true,
+    hiddenDays: [0],
     events: props.events,
 });
 </script>
@@ -166,6 +225,12 @@ const calendarOptions = ref({
             <div
                 v-if="optionsModalVisibility"
                 @click="hideOptionsModal"
+                class="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-30 transition duration-200"
+            ></div>
+
+            <div
+                v-if="updateScheduleModalVisibility"
+                @click="hideUpdateScheduleModal"
                 class="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-30 transition duration-200"
             ></div>
 
@@ -291,6 +356,7 @@ const calendarOptions = ref({
 
             <div class="flex justify-end">
                 <button
+                    @click="showUpdateScheduleModal"
                     class="text-white bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm inline-flex items-center px-3 py-2.5 text-center mr-2 dark:focus:ring-blue-900"
                 >
                     Edit
@@ -303,6 +369,230 @@ const calendarOptions = ref({
                     Delete
                 </button>
             </div>
+        </div>
+    </Transition>
+
+    <!-- Update Schedule Modal -->
+    <Transition
+        enter-from-class="translate-x-full"
+        enter-active-class="transition-transform translate-x-0"
+        leave-active-class="transition-transform translate-x-0"
+        leave-to-class="translate-x-full"
+    >
+        <div
+            v-if="updateScheduleModalVisibility"
+            id="drawer-update-product-default"
+            class="fixed top-0 right-0 z-40 w-full h-screen max-w-xs p-4 overflow-y-auto bg-white dark:bg-gray-800"
+            tabindex="-1"
+            aria-labelledby="drawer-label"
+            aria-hidden="true"
+        >
+            <h5
+                id="drawer-label"
+                class="inline-flex items-center mb-6 text-sm font-semibold text-gray-500 uppercase dark:text-gray-400"
+            >
+                Update Schedule
+            </h5>
+            <button
+                type="button"
+                @click="hideUpdateScheduleModal"
+                aria-controls="drawer-update-product-default"
+                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 absolute top-2.5 right-2.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+            >
+                <svg
+                    aria-hidden="true"
+                    class="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                        fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd"
+                    ></path>
+                </svg>
+                <span class="sr-only">Close</span>
+            </button>
+            <form @submit.prevent="updateSchedule">
+                <div class="space-y-6">
+                    <div>
+                        <label
+                            for="title"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >Title</label
+                        >
+                        <input
+                            type="text"
+                            v-model="form.title"
+                            name="title"
+                            id="title"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="Schedule Title"
+                        />
+                        <p
+                            class="text-red-500 text-xs mt-1 absolute"
+                            v-if="form.errors.title"
+                        >
+                            {{ form.errors.title }}
+                        </p>
+                    </div>
+                    <div>
+                        <label
+                            for="gender"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >Applicant</label
+                        >
+                        <select
+                            id="gender"
+                            v-model="form.applicant"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        >
+                            <option value="" selected hidden>
+                                Select an Applicant
+                            </option>
+
+                            <option
+                                v-for="applicant in applicants"
+                                :value="applicant.id"
+                            >
+                                {{ applicant.first_name }}
+                                {{ applicant.last_name }}
+                            </option>
+                        </select>
+                        <p
+                            class="text-red-500 text-xs mt-1 absolute"
+                            v-if="form.errors.applicant"
+                        >
+                            {{ form.errors.applicant }}
+                        </p>
+                    </div>
+                    <div>
+                        <label
+                            for="date"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >Date</label
+                        >
+                        <input
+                            type="text"
+                            v-model="form.date"
+                            name="date"
+                            id="date"
+                            class="bg-gray-300 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="Schedule Date"
+                            disabled
+                        />
+                        <p
+                            class="text-red-500 text-xs mt-1 absolute"
+                            v-if="form.errors.date"
+                        >
+                            {{ form.errors.date }}
+                        </p>
+                    </div>
+
+                    <div>
+                        <label
+                            for="day"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >Day</label
+                        >
+                        <input
+                            type="text"
+                            v-model="form.day"
+                            name="day"
+                            id="day"
+                            class="bg-gray-300 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="Schedule Day"
+                            disabled
+                        />
+                        <p
+                            class="text-red-500 text-xs mt-1 absolute"
+                            v-if="form.errors.day"
+                        >
+                            {{ form.errors.day }}
+                        </p>
+                    </div>
+
+                    <div>
+                        <label
+                            for="startTime"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >Start Time</label
+                        >
+                        <input
+                            type="text"
+                            v-model="form.startTime"
+                            name="startTime"
+                            id="startTime"
+                            class="bg-gray-300 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="Schedule Start Time"
+                            disabled
+                        />
+                        <p
+                            class="text-red-500 text-xs mt-1 absolute"
+                            v-if="form.errors.startTime"
+                        >
+                            {{ form.errors.startTime }}
+                        </p>
+                    </div>
+
+                    <div>
+                        <label
+                            for="endTime"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >End Time</label
+                        >
+                        <input
+                            type="text"
+                            v-model="form.endTime"
+                            name="endTime"
+                            id="endTime"
+                            class="bg-gray-300 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="Schedule End Time"
+                            disabled
+                        />
+                        <p
+                            class="text-red-500 text-xs mt-1 absolute"
+                            v-if="form.errors.endTime"
+                        >
+                            {{ form.errors.endTime }}
+                        </p>
+                    </div>
+                </div>
+                <div
+                    class="bottom-0 left-0 flex justify-center w-full pb-4 mt-4 space-x-4 sm:absolute sm:px-4 sm:mt-0"
+                >
+                    <button
+                        type="submit"
+                        class="w-full justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                    >
+                        Update
+                    </button>
+                    <button
+                        @click="hideUpdateScheduleModal"
+                        type="button"
+                        aria-controls="drawer-create-product-default"
+                        class="inline-flex w-full justify-center text-gray-500 items-center bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+                    >
+                        <svg
+                            aria-hidden="true"
+                            class="w-5 h-5 -ml-1 sm:mr-1"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"
+                            ></path>
+                        </svg>
+                        Cancel
+                    </button>
+                </div>
+            </form>
         </div>
     </Transition>
 
@@ -325,7 +615,7 @@ const calendarOptions = ref({
                 id="drawer-label"
                 class="inline-flex items-center text-sm font-semibold text-gray-500 uppercase dark:text-gray-400"
             >
-                Delete
+                Delete Schedule
             </h5>
             <button
                 @click="hideDeleteScheduleModal"
@@ -456,7 +746,7 @@ const calendarOptions = ref({
                         <label
                             for="gender"
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Applicant (Optional)</label
+                            >Applicant</label
                         >
                         <select
                             id="gender"
@@ -522,9 +812,9 @@ const calendarOptions = ref({
                         />
                         <p
                             class="text-red-500 text-xs mt-1 absolute"
-                            v-if="form.errors.title"
+                            v-if="form.errors.day"
                         >
-                            {{ form.errors.title }}
+                            {{ form.errors.day }}
                         </p>
                     </div>
 

@@ -66,7 +66,7 @@ defineProps({
 
         <Link
             v-if="$page.props.auth.user.user_type == users.admin"
-            :href="route('admin.dashboard')"
+            :href="route('admin.dashboard.index')"
         >
             <ApplicationMark class="block h-12 w-auto" />
         </Link>
