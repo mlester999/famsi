@@ -1,5 +1,5 @@
 <script setup>
-import { ref, inject } from "vue";
+import { ref, inject, onMounted } from "vue";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -7,6 +7,11 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import { format } from "date-fns";
 import { useForm, usePage } from "@inertiajs/vue3";
 import { useToast } from "vue-toastification";
+import { Timepicker, Input, initTE } from "tw-elements";
+
+onMounted(() => {
+    initTE({ Input, Timepicker });
+});
 
 const props = defineProps({
     events: Array,
@@ -319,7 +324,7 @@ const calendarOptions = ref({
 
             <div
                 v-if="updateConfirmationScheduleModalVisibility"
-                @click="hideAddScheduleModal"
+                @click="hideUpdateConfirmationScheduleModal"
                 class="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-30 transition duration-200"
             ></div>
         </Teleport>
@@ -340,6 +345,22 @@ const calendarOptions = ref({
                     class="text-base font-normal text-gray-500 dark:text-gray-400"
                     ><slot name="description"></slot
                 ></span>
+                <div
+                    class="relative"
+                    data-te-timepicker-init
+                    data-te-input-wrapper-init
+                >
+                    <input
+                        type="text"
+                        class="peer block min-h-[auto] w-full rounded border-0 bg-transparent px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 peer-focus:text-primary data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:peer-focus:text-primary [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
+                        id="form1"
+                    />
+                    <label
+                        for="form1"
+                        class="pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6] text-neutral-500 transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-primary"
+                        >Select a time</label
+                    >
+                </div>
             </div>
         </div>
         <!-- Table -->
@@ -761,7 +782,7 @@ const calendarOptions = ref({
         leave-to-class="translate-x-full"
     >
         <div
-            v-if="updateConfirmationScheduleModalVisibility"
+            v-show="updateConfirmationScheduleModalVisibility"
             id="drawer-delete-product-default"
             class="fixed top-0 right-0 z-40 w-full h-screen max-w-xs p-4 overflow-y-auto bg-white dark:bg-gray-800"
             tabindex="-1"

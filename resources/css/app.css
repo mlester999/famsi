@@ -6,6 +6,12 @@ body * {
     @apply transition-colors duration-200;
 }
 
-[x-cloak] {
-    display: none;
+@layer base {
+    html {
+        @apply text-neutral-800;
+    }
+    html.dark {
+        @apply text-neutral-50;
+        @apply bg-neutral-800;
+    }
 }
