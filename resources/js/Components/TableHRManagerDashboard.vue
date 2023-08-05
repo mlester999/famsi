@@ -1,11 +1,12 @@
 <script setup>
-import { computed, ref, onUpdated } from "vue";
+import { ref, inject } from "vue";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { format } from "date-fns";
-import { router, useForm, usePage } from "@inertiajs/vue3";
+import { useForm, usePage } from "@inertiajs/vue3";
+import { useToast } from "vue-toastification";
 
 const props = defineProps({
     events: Array,
@@ -26,6 +27,10 @@ const form = useForm({
     endTimeDate: "",
 });
 
+const toast = useToast();
+
+const $loading = inject("$loading");
+
 const calendarRef = ref("");
 const currentScheduleId = ref("");
 const optionsModalVisibility = ref(false);
@@ -34,50 +39,89 @@ const updateScheduleModalVisibility = ref(false);
 const addScheduleModalVisibility = ref(false);
 
 const storeSchedule = () => {
+    const loader = $loading.show({
+        color: "#fff",
+        loader: "dots",
+        width: 96,
+        height: 96,
+        backgroundColor: "#000",
+        opacity: 0.5,
+        zIndex: 999,
+    });
+
+    document.body.classList.add("overflow-hidden");
+
     form.post(`/${page.props.user.role}/${props.linkName}/store`, {
         preserveScroll: true,
         onSuccess: () => {
+            toast.success("Schedule added successfully!");
             hideAddScheduleModal();
             calendarRef.value.getApi().removeAllEvents();
             calendarRef.value.getApi().addEventSource(props.events);
+            loader.hide();
         },
     });
 };
 
 const deleteSchedule = () => {
+    const loader = $loading.show({
+        color: "#fff",
+        loader: "dots",
+        width: 96,
+        height: 96,
+        backgroundColor: "#000",
+        opacity: 0.5,
+        zIndex: 999,
+    });
+
+    document.body.classList.add("overflow-hidden");
+
     form.delete(
         `/${page.props.user.role}/${props.linkName}/delete/${currentScheduleId.value}`,
         {
             preserveScroll: true,
             onSuccess: () => {
+                toast.success("Schedule deleted successfully!");
                 hideDeleteScheduleModal();
                 calendarRef.value.getApi().removeAllEvents();
                 calendarRef.value.getApi().addEventSource(props.events);
+                loader.hide();
             },
         }
     );
 };
 
 const updateSchedule = () => {
+    const loader = $loading.show({
+        color: "#fff",
+        loader: "dots",
+        width: 96,
+        height: 96,
+        backgroundColor: "#000",
+        opacity: 0.5,
+        zIndex: 999,
+    });
+
+    document.body.classList.add("overflow-hidden");
+
     form.put(
         `/${page.props.user.role}/${props.linkName}/update/${currentScheduleId.value}`,
         {
             preserveScroll: true,
             onSuccess: () => {
+                toast.success("Schedule updated successfully!");
                 hideUpdateScheduleModal();
                 calendarRef.value.getApi().removeAllEvents();
                 calendarRef.value.getApi().addEventSource(props.events);
+                loader.hide();
             },
         }
     );
 };
 
-const setFormData = (arg, options) => {
-    if (options) {
-        currentScheduleId.value = arg.event.id;
-        form.applicant = arg.event.extendedProps.applicant_id;
-    }
-
+const setFormData = (arg) => {
+    currentScheduleId.value = arg.event.id;
+    form.applicant = arg.event.extendedProps.applicant_id;
     form.title = arg.event.title;
     form.date = format(new Date(arg.event.endStr), "MMMM d, yyyy");
     form.day = format(new Date(arg.event.endStr), "EEEE");
@@ -101,7 +145,7 @@ const showOptionsModal = (arg) => {
 
     optionsModalVisibility.value = true;
 
-    setFormData(arg, true);
+    setFormData(arg);
 };
 
 // Show and Hide the Delete Schedule Modal
@@ -159,19 +203,24 @@ const showAddScheduleModal = (arg) => {
     if (startDay === endDay) {
         addScheduleModalVisibility.value = true;
 
-        setFormData(arg, false);
+        form.date = format(new Date(arg.endStr), "MMMM d, yyyy");
+        form.day = format(new Date(arg.endStr), "EEEE");
+        form.startTime = format(new Date(arg.startStr), "h:mm a");
+        form.endTime = format(new Date(arg.endStr), "h:mm a");
+        form.startTimeDate = arg.startStr;
+        form.endTimeDate = arg.endStr;
     } else {
         calendarRef.value.getApi().unselect();
     }
 };
 
 const handleEventDrop = (arg) => {
-    setFormData(arg, true);
+    setFormData(arg);
     updateSchedule();
 };
 
 const handleEventResize = (arg) => {
-    setFormData(arg, true);
+    setFormData(arg);
     updateSchedule();
 };
 
@@ -247,6 +296,7 @@ const calendarOptions = ref({
             ></div>
         </Teleport>
     </Transition>
+
     <div
         class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:border-gray-700 sm:p-6 dark:bg-gray-800"
     >

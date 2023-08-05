@@ -31,6 +31,8 @@
         "@fullcalendar/vue3": "^6.1.8",
         "@vueuse/core": "^10.2.0",
         "date-fns": "^2.30.0",
-        "lodash.debounce": "^4.0.8"
+        "lodash.debounce": "^4.0.8",
+        "vue-loading-overlay": "^6.0.3",
+        "vue-toastification": "^2.0.0-rc.5"
     }
 }
