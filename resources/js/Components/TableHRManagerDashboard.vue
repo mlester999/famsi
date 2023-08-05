@@ -36,6 +36,7 @@ const currentScheduleId = ref("");
 const optionsModalVisibility = ref(false);
 const deleteScheduleModalVisibility = ref(false);
 const updateScheduleModalVisibility = ref(false);
+const updateConfirmationScheduleModalVisibility = ref(false);
 const addScheduleModalVisibility = ref(false);
 
 const storeSchedule = () => {
@@ -170,6 +171,7 @@ const hideUpdateScheduleModal = () => {
     document.body.classList.remove("overflow-hidden");
 
     updateScheduleModalVisibility.value = false;
+    updateConfirmationScheduleModalVisibility.value = false;
 
     form.reset();
     form.clearErrors();
@@ -214,14 +216,34 @@ const showAddScheduleModal = (arg) => {
     }
 };
 
+// Show and Hide the Update Confirmation Schedule Modal
+const hideUpdateConfirmationScheduleModal = () => {
+    document.body.classList.remove("overflow-hidden");
+
+    updateConfirmationScheduleModalVisibility.value = false;
+
+    form.reset();
+    form.clearErrors();
+
+    calendarRef.value.getApi().removeAllEvents();
+    calendarRef.value.getApi().addEventSource(props.events);
+};
+
+const showUpdateConfirmationScheduleModal = () => {
+    document.body.classList.add("overflow-hidden");
+    optionsModalVisibility.value = false;
+
+    updateConfirmationScheduleModalVisibility.value = true;
+};
+
 const handleEventDrop = (arg) => {
     setFormData(arg);
-    updateSchedule();
+    showUpdateConfirmationScheduleModal();
 };
 
 const handleEventResize = (arg) => {
     setFormData(arg);
-    updateSchedule();
+    showUpdateConfirmationScheduleModal();
 };
 
 const calendarOptions = ref({
@@ -291,6 +313,12 @@ const calendarOptions = ref({
 
             <div
                 v-if="addScheduleModalVisibility"
+                @click="hideAddScheduleModal"
+                class="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-30 transition duration-200"
+            ></div>
+
+            <div
+                v-if="updateConfirmationScheduleModalVisibility"
                 @click="hideAddScheduleModal"
                 class="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-30 transition duration-200"
             ></div>
@@ -718,7 +746,85 @@ const calendarOptions = ref({
                 <button
                     @click="hideDeleteScheduleModal"
                     class="text-gray-900 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-blue-300 border border-gray-200 font-medium inline-flex items-center rounded-lg text-sm px-3 py-2.5 text-center dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-700"
-                    data-modal-toggle="delete-product-modal"
+                >
+                    No, cancel
+                </button>
+            </div>
+        </div>
+    </Transition>
+
+    <!-- Update Confirmation Schedule Modal -->
+    <Transition
+        enter-from-class="translate-x-full"
+        enter-active-class="transition-transform translate-x-0"
+        leave-active-class="transition-transform translate-x-0"
+        leave-to-class="translate-x-full"
+    >
+        <div
+            v-if="updateConfirmationScheduleModalVisibility"
+            id="drawer-delete-product-default"
+            class="fixed top-0 right-0 z-40 w-full h-screen max-w-xs p-4 overflow-y-auto bg-white dark:bg-gray-800"
+            tabindex="-1"
+            aria-labelledby="drawer-label"
+            aria-hidden="true"
+        >
+            <h5
+                id="drawer-label"
+                class="inline-flex items-center text-sm font-semibold text-gray-500 uppercase dark:text-gray-400"
+            >
+                Update Schedule
+            </h5>
+            <button
+                @click="hideUpdateConfirmationScheduleModal"
+                type="button"
+                aria-controls="drawer-delete-product-default"
+                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 absolute top-2.5 right-2.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+            >
+                <svg
+                    aria-hidden="true"
+                    class="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                        fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd"
+                    ></path>
+                </svg>
+                <span class="sr-only">Close menu</span>
+            </button>
+            <svg
+                class="w-10 h-10 mt-8 mb-4 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                ></path>
+            </svg>
+            <h3 class="mb-6 text-lg text-gray-500 dark:text-gray-400">
+                Are you sure you want to update this schedule?
+            </h3>
+
+            <div class="flex justify-end">
+                <form @submit.prevent="updateSchedule" class="inline-block">
+                    <button
+                        type="submit"
+                        class="text-white bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm inline-flex items-center px-3 py-2.5 text-center mr-2 dark:focus:ring-blue-900"
+                    >
+                        Yes, I'm sure
+                    </button>
+                </form>
+                <button
+                    @click="hideUpdateConfirmationScheduleModal"
+                    class="text-gray-900 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-blue-300 border border-gray-200 font-medium inline-flex items-center rounded-lg text-sm px-3 py-2.5 text-center dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-700"
                 >
                     No, cancel
                 </button>
