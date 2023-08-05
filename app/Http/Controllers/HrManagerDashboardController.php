@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Twilio\Rest\Client;
 
 class HrManagerDashboardController extends Controller
 {
@@ -70,6 +71,20 @@ class HrManagerDashboardController extends Controller
             'applicant_id' => $scheduleValidate['applicant'],
             'hr_manager_id' => $authUser->id
         ]);
+
+        // Your Account SID and Auth Token from twilio.com/console
+        // $sid    = env("TWILIO_SID");
+        // $token  = env("TWILIO_TOKEN");
+        // $twilio = new Client($sid, $token);
+
+        // $message = $twilio->messages
+        //                   ->create(
+        //                       "+639763386980", // Text this number
+        //                       [
+        //                           "body" => "Hello applicant! Thanks for your application.",
+        //                           "from" => env("TWILIO_FROM") // Your Twilio number
+        //                       ]
+        //                   );
 
         return redirect()->back();
     }
