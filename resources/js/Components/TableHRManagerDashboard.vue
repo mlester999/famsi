@@ -1,17 +1,13 @@
 <script setup>
-import { ref, inject, onMounted } from "vue";
+import { ref, inject, watch } from "vue";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import { format } from "date-fns";
+import { format, addHours, parse } from "date-fns";
 import { useForm, usePage } from "@inertiajs/vue3";
 import { useToast } from "vue-toastification";
-import { Timepicker, Input, initTE } from "tw-elements";
-
-onMounted(() => {
-    initTE({ Input, Timepicker });
-});
+import TimePicker from "./TimePicker.vue";
 
 const props = defineProps({
     events: Array,
@@ -31,6 +27,43 @@ const form = useForm({
     startTimeDate: "",
     endTimeDate: "",
 });
+
+watch(
+    () => form.startTime, // use a getter like this
+    (newStartTime) => {
+        console.log(newStartTime);
+        if (newStartTime) {
+            // Get the current date
+            const currentDate = new Date();
+
+            // Set the source timezone offset (+08:00)
+            const sourceTimezoneOffset = 8 * 60 * 60 * 1000; // 8 hours in milliseconds
+
+            // Parse the input time
+            const parsedTime = parse(newStartTime, "hh:mm a", currentDate);
+
+            // Set the hours and minutes from the parsed time
+            const adjustedDateTime = new Date(currentDate);
+            adjustedDateTime.setHours(
+                parsedTime.getHours(),
+                parsedTime.getMinutes(),
+                0,
+                0
+            );
+
+            // Adjust for the source timezone offset
+            const adjustedTime = new Date(
+                adjustedDateTime.getTime() + sourceTimezoneOffset
+            );
+
+            // Format the adjusted datetime in the desired format
+            form.startTimeDate = format(
+                adjustedTime,
+                "yyyy-MM-dd'T'HH:mm:ssXXX"
+            );
+        }
+    }
+);
 
 const toast = useToast();
 
@@ -345,22 +378,6 @@ const calendarOptions = ref({
                     class="text-base font-normal text-gray-500 dark:text-gray-400"
                     ><slot name="description"></slot
                 ></span>
-                <div
-                    class="relative"
-                    data-te-timepicker-init
-                    data-te-input-wrapper-init
-                >
-                    <input
-                        type="text"
-                        class="peer block min-h-[auto] w-full rounded border-0 bg-transparent px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 peer-focus:text-primary data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:peer-focus:text-primary [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
-                        id="form1"
-                    />
-                    <label
-                        for="form1"
-                        class="pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6] text-neutral-500 transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-primary"
-                        >Select a time</label
-                    >
-                </div>
             </div>
         </div>
         <!-- Table -->
@@ -613,26 +630,11 @@ const calendarOptions = ref({
                     </div>
 
                     <div>
-                        <label
-                            for="startTime"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Start Time</label
-                        >
-                        <input
-                            type="text"
+                        <TimePicker
+                            id="editStartTimePicker"
                             v-model="form.startTime"
-                            name="startTime"
-                            id="startTime"
-                            class="bg-gray-300 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="Schedule Start Time"
-                            disabled
+                            label="Start Time"
                         />
-                        <p
-                            class="text-red-500 text-xs mt-1 absolute"
-                            v-if="form.errors.startTime"
-                        >
-                            {{ form.errors.startTime }}
-                        </p>
                     </div>
 
                     <div>

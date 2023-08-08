@@ -1,6 +1,4 @@
 @tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 body * {
     @apply transition-colors duration-200;
@@ -15,3 +13,6 @@ body * {
         @apply bg-neutral-800;
     }
 }
+
+@tailwind components;
+@tailwind utilities;
