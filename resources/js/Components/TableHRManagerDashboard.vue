@@ -8,6 +8,7 @@ import { format, addHours, parse } from "date-fns";
 import { useForm, usePage } from "@inertiajs/vue3";
 import { useToast } from "vue-toastification";
 import TimePicker from "./TimePicker.vue";
+import InputField from "./InputField.vue";
 
 const props = defineProps({
     events: Array,
@@ -538,21 +539,16 @@ const calendarOptions = ref({
                 <span class="sr-only">Close</span>
             </button>
             <form @submit.prevent="updateSchedule">
-                <div class="space-y-6">
+                <div class="space-y-8">
                     <div>
-                        <label
-                            for="title"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Title</label
-                        >
-                        <input
-                            type="text"
-                            v-model="form.title"
-                            name="title"
+                        <InputField
                             id="title"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            v-model="form.title"
+                            type="text"
+                            label="Title"
                             placeholder="Schedule Title"
                         />
+
                         <p
                             class="text-red-500 text-xs mt-1 absolute"
                             v-if="form.errors.title"
@@ -591,52 +587,28 @@ const calendarOptions = ref({
                         </p>
                     </div>
                     <div>
-                        <label
-                            for="date"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Date</label
-                        >
-                        <input
-                            type="text"
-                            v-model="form.date"
-                            name="date"
+                        <InputField
                             id="date"
-                            class="bg-gray-300 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            v-model="form.date"
+                            type="text"
+                            label="Date"
                             placeholder="Schedule Date"
-                            disabled
+                            :disabled="true"
                         />
-                        <p
-                            class="text-red-500 text-xs mt-1 absolute"
-                            v-if="form.errors.date"
-                        >
-                            {{ form.errors.date }}
-                        </p>
                     </div>
 
                     <div>
-                        <label
-                            for="day"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Day</label
-                        >
-                        <input
-                            type="text"
-                            v-model="form.day"
-                            name="day"
+                        <InputField
                             id="day"
-                            class="bg-gray-300 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            v-model="form.day"
+                            type="text"
+                            label="Day"
                             placeholder="Schedule Day"
-                            disabled
+                            :disabled="true"
                         />
-                        <p
-                            class="text-red-500 text-xs mt-1 absolute"
-                            v-if="form.errors.day"
-                        >
-                            {{ form.errors.day }}
-                        </p>
                     </div>
 
-                    <div class="py-2">
+                    <div>
                         <TimePicker
                             id="editStartTimePicker"
                             v-model="form.startTime"
@@ -644,7 +616,7 @@ const calendarOptions = ref({
                         />
                     </div>
 
-                    <div class="py-2">
+                    <div>
                         <TimePicker
                             id="editEndTimePicker"
                             v-model="form.endTime"
