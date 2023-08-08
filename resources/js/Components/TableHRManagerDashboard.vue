@@ -29,36 +29,45 @@ const form = useForm({
 });
 
 watch(
-    () => form.startTime, // use a getter like this
+    () => form.startTime,
     (newStartTime) => {
-        console.log(newStartTime);
         if (newStartTime) {
-            // Get the current date
-            const currentDate = new Date();
+            // Input date and time
+            const inputDateTime = `${form.date} ${newStartTime}`;
 
-            // Set the source timezone offset (+08:00)
-            const sourceTimezoneOffset = 8 * 60 * 60 * 1000; // 8 hours in milliseconds
-
-            // Parse the input time
-            const parsedTime = parse(newStartTime, "hh:mm a", currentDate);
-
-            // Set the hours and minutes from the parsed time
-            const adjustedDateTime = new Date(currentDate);
-            adjustedDateTime.setHours(
-                parsedTime.getHours(),
-                parsedTime.getMinutes(),
-                0,
-                0
+            // Parse the input date and time
+            const parsedDateTime = parse(
+                inputDateTime,
+                "MMMM d, yyyy hh:mm a",
+                new Date()
             );
 
-            // Adjust for the source timezone offset
-            const adjustedTime = new Date(
-                adjustedDateTime.getTime() + sourceTimezoneOffset
-            );
-
-            // Format the adjusted datetime in the desired format
+            // Format the parsed datetime in the desired format
             form.startTimeDate = format(
-                adjustedTime,
+                parsedDateTime,
+                "yyyy-MM-dd'T'HH:mm:ssXXX"
+            );
+        }
+    }
+);
+
+watch(
+    () => form.endTime,
+    (endStartTime) => {
+        if (endStartTime) {
+            // Input date and time
+            const inputDateTime = `${form.date} ${endStartTime}`;
+
+            // Parse the input date and time
+            const parsedDateTime = parse(
+                inputDateTime,
+                "MMMM d, yyyy hh:mm a",
+                new Date()
+            );
+
+            // Format the parsed datetime in the desired format
+            form.endTimeDate = format(
+                parsedDateTime,
                 "yyyy-MM-dd'T'HH:mm:ssXXX"
             );
         }
@@ -166,8 +175,6 @@ const setFormData = (arg) => {
     form.day = format(new Date(arg.event.endStr), "EEEE");
     form.startTime = format(new Date(arg.event.startStr), "h:mm a");
     form.endTime = format(new Date(arg.event.endStr), "h:mm a");
-    form.startTimeDate = arg.event.startStr;
-    form.endTimeDate = arg.event.endStr;
 };
 
 const hideOptionsModal = () => {
@@ -235,6 +242,7 @@ const hideAddScheduleModal = () => {
 };
 
 const showAddScheduleModal = (arg) => {
+    console.log(arg);
     document.body.classList.add("overflow-hidden");
 
     const startDay = format(new Date(arg.startStr), "EEEE");
@@ -247,8 +255,6 @@ const showAddScheduleModal = (arg) => {
         form.day = format(new Date(arg.endStr), "EEEE");
         form.startTime = format(new Date(arg.startStr), "h:mm a");
         form.endTime = format(new Date(arg.endStr), "h:mm a");
-        form.startTimeDate = arg.startStr;
-        form.endTimeDate = arg.endStr;
     } else {
         calendarRef.value.getApi().unselect();
     }
@@ -286,6 +292,7 @@ const handleEventResize = (arg) => {
 
 const calendarOptions = ref({
     plugins: [timeGridPlugin, interactionPlugin, dayGridPlugin],
+    timezone: "local",
     initialView: "timeGridWeek",
     allDaySlot: false,
     editable: true,
@@ -629,7 +636,7 @@ const calendarOptions = ref({
                         </p>
                     </div>
 
-                    <div>
+                    <div class="py-2">
                         <TimePicker
                             id="editStartTimePicker"
                             v-model="form.startTime"
@@ -637,27 +644,12 @@ const calendarOptions = ref({
                         />
                     </div>
 
-                    <div>
-                        <label
-                            for="endTime"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >End Time</label
-                        >
-                        <input
-                            type="text"
+                    <div class="py-2">
+                        <TimePicker
+                            id="editEndTimePicker"
                             v-model="form.endTime"
-                            name="endTime"
-                            id="endTime"
-                            class="bg-gray-300 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="Schedule End Time"
-                            disabled
+                            label="End Time"
                         />
-                        <p
-                            class="text-red-500 text-xs mt-1 absolute"
-                            v-if="form.errors.endTime"
-                        >
-                            {{ form.errors.endTime }}
-                        </p>
                     </div>
                 </div>
                 <div

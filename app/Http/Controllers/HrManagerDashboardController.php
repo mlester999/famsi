@@ -59,10 +59,7 @@ class HrManagerDashboardController extends Controller
         $authUser = HrManager::where('user_id', auth()->user()->id)->first();
 
         $startDateTime = Carbon::createFromFormat('Y-m-d\TH:i:sP', $scheduleValidate['startTimeDate']);
-        $startDateTime->setTimezone('Asia/Manila');
-
         $endDateTime = Carbon::createFromFormat('Y-m-d\TH:i:sP', $scheduleValidate['endTimeDate']);
-        $endDateTime->setTimezone('Asia/Manila');
 
         Appointment::create([
             'start_time' => $startDateTime,
