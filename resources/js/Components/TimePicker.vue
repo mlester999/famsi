@@ -6,12 +6,16 @@ const props = defineProps({
     id: String,
     modelValue: String,
     label: String,
+    error: String,
 });
 
 onMounted(() => {
     const myInput = new Input(document.getElementById(props.id));
     const options = {
         format12: true,
+        showClearBtn: false,
+        enableValidation: false,
+        readOnly: true,
     };
     const myTimepicker = new Timepicker(
         document.getElementById(props.id),
@@ -40,4 +44,7 @@ onMounted(() => {
             >{{ props.label }}</label
         >
     </div>
+    <p class="text-red-500 text-xs mt-1 absolute" v-if="error">
+        {{ error }}
+    </p>
 </template>

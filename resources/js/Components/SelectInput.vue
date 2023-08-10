@@ -6,6 +6,7 @@ const props = defineProps({
     id: String,
     modelValue: String,
     label: String,
+    error: String,
 });
 
 onMounted(() => {
@@ -22,12 +23,16 @@ onMounted(() => {
     <select
         data-te-select-init
         :value="modelValue"
-        @input="$emit('update:modelValue', $event.target.value)"
+        @change="$emit('update:modelValue', $event.target.value)"
         :id="props.id"
     >
         <slot />
     </select>
     <label data-te-select-label-ref :for="props.id">{{ props.label }} </label>
+
+    <p class="text-red-500 text-xs mt-1 absolute" v-if="error">
+        {{ error }}
+    </p>
 
     <!-- <label
         :for="id"

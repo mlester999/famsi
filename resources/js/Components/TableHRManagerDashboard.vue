@@ -4,7 +4,7 @@ import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import { format, addHours, parse } from "date-fns";
+import { format, parse } from "date-fns";
 import { useForm, usePage } from "@inertiajs/vue3";
 import { useToast } from "vue-toastification";
 import TimePicker from "./TimePicker.vue";
@@ -110,6 +110,9 @@ const storeSchedule = () => {
             calendarRef.value.getApi().addEventSource(props.events);
             loader.hide();
         },
+        onError: () => {
+            loader.hide();
+        },
     });
 };
 
@@ -135,6 +138,9 @@ const deleteSchedule = () => {
                 hideDeleteScheduleModal();
                 calendarRef.value.getApi().removeAllEvents();
                 calendarRef.value.getApi().addEventSource(props.events);
+                loader.hide();
+            },
+            onError: () => {
                 loader.hide();
             },
         }
@@ -163,6 +169,9 @@ const updateSchedule = () => {
                 hideUpdateScheduleModal();
                 calendarRef.value.getApi().removeAllEvents();
                 calendarRef.value.getApi().addEventSource(props.events);
+                loader.hide();
+            },
+            onError: () => {
                 loader.hide();
             },
         }
@@ -540,7 +549,7 @@ const calendarOptions = ref({
                 <span class="sr-only">Close</span>
             </button>
             <form @submit.prevent="updateSchedule">
-                <div class="space-y-8">
+                <div class="space-y-10">
                     <div>
                         <InputField
                             id="title"
@@ -548,20 +557,15 @@ const calendarOptions = ref({
                             type="text"
                             label="Title"
                             placeholder="Schedule Title"
+                            :error="form.errors.title"
                         />
-
-                        <p
-                            class="text-red-500 text-xs mt-1 absolute"
-                            v-if="form.errors.title"
-                        >
-                            {{ form.errors.title }}
-                        </p>
                     </div>
                     <div>
                         <SelectInput
-                            id="gender"
+                            id="applicant"
                             v-model="form.applicant"
                             label="Applicant"
+                            :error="form.errors.applicant"
                         >
                             <option value="" disabled selected hidden></option>
                             <option
@@ -572,13 +576,6 @@ const calendarOptions = ref({
                                 {{ applicant.last_name }}
                             </option>
                         </SelectInput>
-
-                        <p
-                            class="text-red-500 text-xs mt-1 absolute"
-                            v-if="form.errors.applicant"
-                        >
-                            {{ form.errors.applicant }}
-                        </p>
                     </div>
                     <div>
                         <InputField
@@ -607,6 +604,7 @@ const calendarOptions = ref({
                             id="editStartTimePicker"
                             v-model="form.startTime"
                             label="Start Time"
+                            :error="form.errors.startTimeDate"
                         />
                     </div>
 
@@ -615,6 +613,7 @@ const calendarOptions = ref({
                             id="editEndTimePicker"
                             v-model="form.endTime"
                             label="End Time"
+                            :error="form.errors.endTimeDate"
                         />
                     </div>
                 </div>
@@ -857,148 +856,73 @@ const calendarOptions = ref({
             </button>
 
             <form @submit.prevent="storeSchedule">
-                <div class="space-y-6">
+                <div class="space-y-10">
                     <div>
-                        <label
-                            for="title"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Title</label
-                        >
-                        <input
-                            type="text"
-                            v-model="form.title"
-                            name="title"
+                        <InputField
                             id="title"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            v-model="form.title"
+                            type="text"
+                            label="Title"
                             placeholder="Schedule Title"
+                            :error="form.errors.title"
                         />
-                        <p
-                            class="text-red-500 text-xs mt-1 absolute"
-                            v-if="form.errors.title"
-                        >
-                            {{ form.errors.title }}
-                        </p>
                     </div>
                     <div>
-                        <label
-                            for="gender"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Applicant</label
-                        >
-                        <select
-                            id="gender"
+                        <SelectInput
+                            id="applicant"
                             v-model="form.applicant"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            label="Applicant"
+                            :error="form.errors.applicant"
                         >
-                            <option value="" selected hidden>
-                                Select an Applicant
-                            </option>
-
+                            <option value="" disabled selected hidden></option>
                             <option
                                 v-for="applicant in applicants"
+                                :key="applicant.id"
                                 :value="applicant.id"
                             >
                                 {{ applicant.first_name }}
                                 {{ applicant.last_name }}
                             </option>
-                        </select>
-                        <p
-                            class="text-red-500 text-xs mt-1 absolute"
-                            v-if="form.errors.applicant"
-                        >
-                            {{ form.errors.applicant }}
-                        </p>
+                        </SelectInput>
                     </div>
                     <div>
-                        <label
-                            for="date"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Date</label
-                        >
-                        <input
-                            type="text"
-                            v-model="form.date"
-                            name="date"
+                        <InputField
                             id="date"
-                            class="bg-gray-300 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            v-model="form.date"
+                            type="text"
+                            label="Date"
                             placeholder="Schedule Date"
-                            disabled
+                            :disabled="true"
                         />
-                        <p
-                            class="text-red-500 text-xs mt-1 absolute"
-                            v-if="form.errors.date"
-                        >
-                            {{ form.errors.date }}
-                        </p>
                     </div>
 
                     <div>
-                        <label
-                            for="day"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Day</label
-                        >
-                        <input
-                            type="text"
-                            v-model="form.day"
-                            name="day"
+                        <InputField
                             id="day"
-                            class="bg-gray-300 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            v-model="form.day"
+                            type="text"
+                            label="Day"
                             placeholder="Schedule Day"
-                            disabled
+                            :disabled="true"
                         />
-                        <p
-                            class="text-red-500 text-xs mt-1 absolute"
-                            v-if="form.errors.day"
-                        >
-                            {{ form.errors.day }}
-                        </p>
                     </div>
 
                     <div>
-                        <label
-                            for="startTime"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Start Time</label
-                        >
-                        <input
-                            type="text"
+                        <TimePicker
+                            id="editStartTimePicker"
                             v-model="form.startTime"
-                            name="startTime"
-                            id="startTime"
-                            class="bg-gray-300 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="Schedule Start Time"
-                            disabled
+                            label="Start Time"
+                            :error="form.errors.startTimeDate"
                         />
-                        <p
-                            class="text-red-500 text-xs mt-1 absolute"
-                            v-if="form.errors.startTime"
-                        >
-                            {{ form.errors.startTime }}
-                        </p>
                     </div>
 
                     <div>
-                        <label
-                            for="endTime"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >End Time</label
-                        >
-                        <input
-                            type="text"
+                        <TimePicker
+                            id="editEndTimePicker"
                             v-model="form.endTime"
-                            name="endTime"
-                            id="endTime"
-                            class="bg-gray-300 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="Schedule End Time"
-                            disabled
+                            label="End Time"
+                            :error="form.errors.endTimeDate"
                         />
-                        <p
-                            class="text-red-500 text-xs mt-1 absolute"
-                            v-if="form.errors.endTime"
-                        >
-                            {{ form.errors.endTime }}
-                        </p>
                     </div>
                 </div>
                 <div

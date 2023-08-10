@@ -49,10 +49,14 @@ class HrManagerDashboardController extends Controller
     public function store()
     {
         $scheduleValidate = Request::validate([
-            'startTimeDate' => ['required'],
-            'endTimeDate' => ['required'],
+            'startTimeDate' => ['required', 'date', 'before:endTimeDate'],
+            'endTimeDate' => ['required', 'date', 'after:startTimeDate', 'different:startTimeDate'],
             'title' => ['required', 'max:50'],
             'applicant' => ['required']
+        ], [
+            'startTimeDate.before' => 'The start time is later than end time date.',
+            'endTimeDate.after' => 'The end time is earlier than start time date.',
+            'endTimeDate.different' => 'The end time must be different from the start time.',
         ]);
 
 
@@ -89,10 +93,14 @@ class HrManagerDashboardController extends Controller
     public function update($id)
     {
         $scheduleValidate = Request::validate([
-            'startTimeDate' => ['required'],
-            'endTimeDate' => ['required'],
+            'startTimeDate' => ['required', 'date', 'before:endTimeDate'],
+            'endTimeDate' => ['required', 'date', 'after:startTimeDate', 'different:startTimeDate'],
             'title' => ['required', 'max:50'],
             'applicant' => ['required']
+        ], [
+            'startTimeDate.before' => 'The start time is later than end time date.',
+            'endTimeDate.after' => 'The end time is earlier than start time date.',
+            'endTimeDate.different' => 'The end time must be different from the start time.',
         ]);
 
         $schedule = Appointment::findOrFail($id);

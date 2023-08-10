@@ -9,6 +9,7 @@ const props = defineProps({
     type: String,
     placeholder: String,
     disabled: Boolean,
+    error: String,
 });
 
 onMounted(() => {
@@ -55,4 +56,8 @@ onMounted(() => {
             >{{ props.label }}
         </label>
     </div>
+
+    <p class="text-red-500 text-xs absolute -mt-2" v-if="error">
+        {{ error }}
+    </p>
 </template>
