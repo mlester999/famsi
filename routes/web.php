@@ -4,7 +4,7 @@ use App\Http\Controllers\ActivityLogsController;
 use App\Http\Controllers\HrManagerController;
 use App\Http\Controllers\HrStaffController;
 use App\Http\Controllers\ApplicantController;
-use App\Http\Controllers\FilesController;
+use App\Http\Controllers\DocumentsController;
 use App\Http\Controllers\HrManagerDashboardController;
 use App\Models\Applicant;
 use App\Models\HrManager;
@@ -57,9 +57,9 @@ Route::middleware([
             Route::put('/deactivate/{id}', [ApplicantController::class, 'deactivate'])->name('deactivate');
         });
 
-        Route::get('/files', function () {
-            return Inertia::render('Files');
-        })->name('files');
+        Route::get('/documents', function () {
+            return Inertia::render('Documents');
+        })->name('documents');
     });
 
     Route::group(['middleware' => 'role:hr-manager', 'prefix' => 'hr-manager', 'as' => 'hr-manager.'], function () {
@@ -97,9 +97,9 @@ Route::middleware([
             Route::put('/deactivate/{id}', [ApplicantController::class, 'deactivate'])->name('deactivate');
         });
 
-        Route::get('/files', function () {
-            return Inertia::render('Files');
-        })->name('files');
+        Route::get('/documents', function () {
+            return Inertia::render('Documents');
+        })->name('documents');
     });
 
     Route::group(['middleware' => 'role:admin', 'prefix' => 'admin', 'as' => 'admin.'], function () {
@@ -163,8 +163,8 @@ Route::middleware([
                 Route::put('/deactivate/{id}', [ApplicantController::class, 'deactivate'])->name('deactivate');
             });
 
-            Route::group(['prefix' => 'files', 'as' => 'files.'], function() {
-                Route::get('/', [FilesController::class, 'index'])->name('index');
+            Route::group(['prefix' => 'documents', 'as' => 'documents.'], function() {
+                Route::get('/', [DocumentsController::class, 'index'])->name('index');
             });
 
     });

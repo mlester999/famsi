@@ -176,9 +176,9 @@ const currentUser = computed(() => {
 
                     <li>
                         <SidebarTab
-                            :href="route(`${currentUser}.files`)"
+                            :href="route(`${currentUser}.documents.index`)"
                             :class="[
-                                $page.url.includes('files') &&
+                                $page.url.includes('documents') &&
                                     'bg-gray-100 dark:bg-gray-700',
                             ]"
                         >
@@ -189,7 +189,7 @@ const currentUser = computed(() => {
                                 />
                             </template>
 
-                            <template #title> Files </template>
+                            <template #title> Documents </template>
                         </SidebarTab>
                     </li>
                 </template>

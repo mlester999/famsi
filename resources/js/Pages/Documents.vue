@@ -1,5 +1,5 @@
 <script setup>
-import TableCrud from "@/Components/TableCrud.vue";
+import TableDocuments from "@/Components/TableDocuments.vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
 
 defineProps({
@@ -11,7 +11,13 @@ defineProps({
 
 <template>
     <AppLayout title="Documents">
-        <TableCrud name="documents">
+        <TableDocuments
+            :roles="documents"
+            :pagination="pagination"
+            :filters="filters"
+            linkName="documents"
+            title="Document"
+        >
             <template #first-tab>
                 <p
                     class="inline-flex items-center text-gray-700 dark:text-gray-300"
@@ -30,6 +36,6 @@ defineProps({
             <template #description
                 >This is the layout of the Documents of the website</template
             >
-        </TableCrud>
+        </TableDocuments>
     </AppLayout>
 </template>
