@@ -138,7 +138,12 @@ class DocumentsController extends Controller
      */
     public function upload()
     {
-        // dd('upload');
+        if(request()->hasFile('documentUpload'))
+        {
+            return request()->file('documentUpload')->store('uploads/documents', 'public');
+        }
+
+        return '';
     }
 
     /**

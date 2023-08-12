@@ -925,7 +925,7 @@ watch(
 
                     <div>
                         <FilePond
-                            name="files"
+                            name="documentUpload"
                             ref="pond"
                             label-idle="Upload file here or <span class='filepond--label-action'>Browse</span>"
                             :allow-drop="true"
