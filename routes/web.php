@@ -165,6 +165,8 @@ Route::middleware([
 
             Route::group(['prefix' => 'documents', 'as' => 'documents.'], function() {
                 Route::get('/', [DocumentsController::class, 'index'])->name('index');
+
+                Route::post('/upload', [DocumentsController::class, 'upload'])->name('upload');
             });
 
     });

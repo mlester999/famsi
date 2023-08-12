@@ -134,6 +134,14 @@ class DocumentsController extends Controller
     }
 
     /**
+     * Upload the file to digital ocean cloud storage.
+     */
+    public function upload()
+    {
+        // dd('upload');
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)

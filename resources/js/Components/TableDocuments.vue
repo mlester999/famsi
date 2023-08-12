@@ -1,6 +1,6 @@
 <script setup>
 import { router, usePage, useForm } from "@inertiajs/vue3";
-import { ref, watch, Transition, Teleport } from "vue";
+import { ref, computed, watch, Transition, Teleport } from "vue";
 import debounce from "lodash.debounce";
 import vueFilePond from "vue-filepond";
 
@@ -9,21 +9,37 @@ import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 
+const page = usePage();
+
 // Create component
 const FilePond = vueFilePond(
     FilePondPluginFileValidateType,
     FilePondPluginImagePreview
 );
 
-const myFiles = ref([]);
+const pond = ref(null);
 
 // The `setup` function automatically exports everything you return
-const setup = () => {
-    return {
-        FilePond, // Component
-        myFiles, // Reactive data property
-    };
+const handleFilePondInit = () => {
+    console.log(page.props.csrf_token);
 };
+
+const handleFilePondLoad = () => {
+    console.log("Loading...");
+};
+
+const server = computed(() => ({
+    url: "",
+    process: {
+        url: `/${page.props.user.role}/${props.linkName}/upload`,
+        method: "POST",
+        headers: {
+            "X-CSRF-TOKEN": page.props.csrf_token,
+        },
+        withCredentials: false,
+        onLoad: handleFilePondLoad,
+    },
+}));
 
 import Pagination from "../Partials/Table/Pagination.vue";
 import InputField from "./InputField.vue";
@@ -43,8 +59,6 @@ const form = useForm({
     filename: "",
     path: "",
 });
-
-const page = usePage();
 
 let search = ref(props.filters.search);
 
@@ -913,12 +927,13 @@ watch(
                         <FilePond
                             name="files"
                             ref="pond"
-                            label-idle="Drop files here or <span class='filepond--label-action'>Browse</span>"
+                            label-idle="Upload file here or <span class='filepond--label-action'>Browse</span>"
                             :allow-drop="true"
-                            accepted-file-types=".pdf, .docx"
-                            server="/api"
-                            :files="myFiles"
+                            accepted-file-types="application/pdf, application/docx"
+                            :file="form.filename"
+                            :server="server"
                             @init="handleFilePondInit"
+                            credits=""
                         />
                     </div>
                 </div>
