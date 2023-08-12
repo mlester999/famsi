@@ -2,6 +2,28 @@
 import { router, usePage, useForm } from "@inertiajs/vue3";
 import { ref, watch, Transition, Teleport } from "vue";
 import debounce from "lodash.debounce";
+import vueFilePond from "vue-filepond";
+
+import "filepond/dist/filepond.min.css";
+import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css";
+import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
+import FilePondPluginImagePreview from "filepond-plugin-image-preview";
+
+// Create component
+const FilePond = vueFilePond(
+    FilePondPluginFileValidateType,
+    FilePondPluginImagePreview
+);
+
+const myFiles = ref([]);
+
+// The `setup` function automatically exports everything you return
+const setup = () => {
+    return {
+        FilePond, // Component
+        myFiles, // Reactive data property
+    };
+};
 
 import Pagination from "../Partials/Table/Pagination.vue";
 import InputField from "./InputField.vue";
@@ -884,6 +906,19 @@ watch(
                             label="Description"
                             placeholder="Description"
                             :error="form.errors.description"
+                        />
+                    </div>
+
+                    <div>
+                        <FilePond
+                            name="files"
+                            ref="pond"
+                            label-idle="Drop files here or <span class='filepond--label-action'>Browse</span>"
+                            :allow-drop="true"
+                            accepted-file-types=".pdf, .docx"
+                            server="/api"
+                            :files="myFiles"
+                            @init="handleFilePondInit"
                         />
                     </div>
                 </div>
