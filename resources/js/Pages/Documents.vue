@@ -1,11 +1,17 @@
 <script setup>
 import TableCrud from "@/Components/TableCrud.vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
+
+defineProps({
+    documents: Object,
+    pagination: Object,
+    filters: Object,
+});
 </script>
 
 <template>
-    <AppLayout title="Files">
-        <TableCrud name="files">
+    <AppLayout title="Documents">
+        <TableCrud name="documents">
             <template #first-tab>
                 <p
                     class="inline-flex items-center text-gray-700 dark:text-gray-300"
@@ -18,11 +24,11 @@ import AppLayout from "@/Layouts/AppLayout.vue";
                 </p>
             </template>
 
-            <template #second-tab> Files </template>
+            <template #second-tab> Documents </template>
 
-            <template #title>Files</template>
+            <template #title>Documents</template>
             <template #description
-                >This is the layout of the Files of the website</template
+                >This is the layout of the Documents of the website</template
             >
         </TableCrud>
     </AppLayout>

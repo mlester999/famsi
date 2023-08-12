@@ -7,13 +7,14 @@ const props = defineProps({
     modelValue: String,
     label: String,
     error: String,
+    canSearch: Boolean,
 });
 
 onMounted(() => {
     const options = {
-        selectFilter: true,
+        selectFilter: props.canSearch ?? true,
         selectSize: "lg",
-        selectClearButton: true,
+        selectClearButton: false,
     };
     const myInput = new Select(document.getElementById(props.id), options);
 });
@@ -33,16 +34,4 @@ onMounted(() => {
     <p class="text-red-500 text-xs mt-1 absolute" v-if="error">
         {{ error }}
     </p>
-
-    <!-- <label
-        :for="id"
-        class="block text-sm font-medium text-gray-900 dark:text-white"
-        >{{ labelValue }}</label
-    >
-    <select
-        :id="id"
-        class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-    >
-        <slot />
-    </select> -->
 </template>

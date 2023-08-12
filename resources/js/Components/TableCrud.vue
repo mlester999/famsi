@@ -4,6 +4,8 @@ import { ref, watch, Transition, Teleport } from "vue";
 import debounce from "lodash.debounce";
 
 import Pagination from "../Partials/Table/Pagination.vue";
+import InputField from "./InputField.vue";
+import SelectInput from "./SelectInput.vue";
 
 const props = defineProps({
     roles: Object,
@@ -27,9 +29,12 @@ const page = usePage();
 let search = ref(props.filters.search);
 
 let currentUpdatingUserID = ref(null);
-let updateModalVisibility = ref(false);
+let currentUserIsActive = ref(null);
+let currentUserEmailIsVerified = ref(null);
 
+let updateModalVisibility = ref(false);
 let addModalVisibility = ref(false);
+let viewInfoModalVisibility = ref(false);
 let activationModalVisibility = ref(false);
 let deactivationModalVisibility = ref(false);
 
@@ -93,6 +98,9 @@ const deactivate = () => {
 
 // Activation Modal
 const showActivationModal = (id) => {
+    document.body.classList.remove("overflow-hidden");
+    viewInfoModalVisibility.value = false;
+
     document.body.classList.add("overflow-hidden");
 
     currentUpdatingUserID.value = id;
@@ -110,6 +118,9 @@ const hideActivationModal = () => {
 
 // Deactivation Modal
 const showDeactivationModal = (id) => {
+    document.body.classList.remove("overflow-hidden");
+    viewInfoModalVisibility.value = false;
+
     document.body.classList.add("overflow-hidden");
 
     currentUpdatingUserID.value = id;
@@ -125,8 +136,8 @@ const hideDeactivationModal = () => {
     deactivationModalVisibility.value = false;
 };
 
-// Update Modal
-const showUpdateModal = (data) => {
+// Show Info Modal
+const showInfoModal = (data) => {
     form.first_name = data.first_name;
     form.middle_name = data.middle_name;
     form.last_name = data.last_name;
@@ -137,6 +148,43 @@ const showUpdateModal = (data) => {
     document.body.classList.add("overflow-hidden");
 
     currentUpdatingUserID.value = data.id;
+    currentUserIsActive.value = data.is_active;
+    currentUserEmailIsVerified.value = data.email_verified_at;
+
+    viewInfoModalVisibility.value = true;
+};
+
+const hideInfoModal = () => {
+    document.body.classList.remove("overflow-hidden");
+
+    currentUpdatingUserID.value = null;
+    currentUserIsActive.value = null;
+    currentUserEmailIsVerified.value = null;
+
+    viewInfoModalVisibility.value = false;
+
+    form.reset();
+
+    form.clearErrors();
+};
+
+// Update Modal
+const showUpdateModal = (data) => {
+    document.body.classList.remove("overflow-hidden");
+    viewInfoModalVisibility.value = false;
+
+    if (data) {
+        form.first_name = data.first_name;
+        form.middle_name = data.middle_name;
+        form.last_name = data.last_name;
+        form.gender = data.gender;
+        form.email = data.email;
+        form.contact_number = data.contact_number;
+
+        currentUpdatingUserID.value = data.id;
+    }
+
+    document.body.classList.add("overflow-hidden");
 
     updateModalVisibility.value = true;
 };
@@ -221,6 +269,12 @@ watch(
                 @click="hideDeactivationModal"
                 class="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-30 transition duration-200"
             ></div>
+
+            <div
+                v-else-if="viewInfoModalVisibility"
+                @click="hideInfoModal"
+                class="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-30 transition duration-200"
+            ></div>
         </Teleport>
     </Transition>
     <div
@@ -273,13 +327,12 @@ watch(
             >
                 <div class="flex items-center mb-4 sm:mb-0">
                     <div class="relative w-48 mt-1 sm:w-64 xl:w-96">
-                        <input
+                        <InputField
+                            id="search"
                             v-model="search"
-                            type="text"
-                            name="search"
-                            id="products-search"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="Search..."
+                            type="search"
+                            label="Search"
+                            placeholder="Search"
                         />
                     </div>
                 </div>
@@ -371,10 +424,11 @@ watch(
                             <tr
                                 v-for="(role, index) in roles.data"
                                 :key="role.id"
-                                class="hover:bg-gray-100 dark:hover:bg-gray-700"
+                                @click="showInfoModal(roles.data[index])"
+                                class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
                             >
                                 <td
-                                    class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400"
+                                    class="p-4 text-sm font-medium text-gray-500 whitespace-nowrap dark:text-gray-400"
                                 >
                                     <div
                                         class="text-base text-gray-900 dark:text-white"
@@ -386,9 +440,17 @@ watch(
                                     class="px-2 py-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
                                     <div
+                                        v-if="role.middle_name"
                                         class="text-base text-gray-900 dark:text-white"
                                     >
                                         {{ role.middle_name }}
+                                    </div>
+
+                                    <div
+                                        v-else
+                                        class="text-base font-light text-gray-400 dark:text-gray-600"
+                                    >
+                                        N/A
                                     </div>
                                 </td>
                                 <td
@@ -531,7 +593,178 @@ watch(
         <Pagination :roles="roles" :pagination="pagination" />
     </div>
 
-    <!-- Edit Product Drawer -->
+    <!-- Options Modal Modal -->
+    <Transition
+        enter-from-class="translate-x-full"
+        enter-active-class="transition-transform translate-x-0"
+        leave-active-class="transition-transform translate-x-0"
+        leave-to-class="translate-x-full"
+    >
+        <div
+            v-if="viewInfoModalVisibility"
+            id="drawer-delete-product-default"
+            class="fixed top-0 right-0 z-40 w-full h-screen max-w-xs p-4 overflow-y-auto bg-white dark:bg-gray-800"
+            tabindex="-1"
+            aria-labelledby="drawer-label"
+            aria-hidden="true"
+        >
+            <h5
+                id="drawer-label"
+                class="inline-flex items-center text-sm font-semibold text-gray-500 uppercase dark:text-gray-400"
+            >
+                {{ title }} Information
+            </h5>
+            <button
+                @click="hideInfoModal"
+                type="button"
+                aria-controls="drawer-delete-product-default"
+                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 absolute top-2.5 right-2.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+            >
+                <svg
+                    aria-hidden="true"
+                    class="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                        fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd"
+                    ></path>
+                </svg>
+                <span class="sr-only">Close menu</span>
+            </button>
+
+            <div class="px-4 py-8 space-y-4">
+                <div>
+                    <h3 class="text-md text-gray-500 dark:text-white">
+                        <span class="font-bold text-black dark:text-gray-400"
+                            >First Name:
+                        </span>
+                    </h3>
+                    <p class="text-black dark:text-white">
+                        {{ form.first_name }}
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-md text-gray-500 dark:text-gray-400">
+                        <span class="font-bold text-black dark:text-gray-400"
+                            >Middle Name:
+                        </span>
+                    </h3>
+                    <span v-if="form.middle_name">{{ form.middle_name }}</span>
+                    <p class="text-gray-500 dark:text-gray-600" v-else>N/A</p>
+                </div>
+
+                <div>
+                    <h3 class="text-md text-gray-500 dark:text-gray-400">
+                        <span class="font-bold text-black dark:text-gray-400"
+                            >Last Name:
+                        </span>
+                    </h3>
+                    <p class="text-black dark:text-white">
+                        {{ form.last_name }}
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-md text-gray-500 dark:text-gray-400">
+                        <span class="font-bold text-black dark:text-gray-400"
+                            >Gender:
+                        </span>
+                    </h3>
+                    <p class="text-black dark:text-white">{{ form.gender }}</p>
+                </div>
+
+                <div>
+                    <h3 class="text-md text-gray-500 dark:text-gray-400">
+                        <span class="font-bold text-black dark:text-gray-400"
+                            >Email Address:
+                        </span>
+                    </h3>
+                    <p class="text-black dark:text-white">{{ form.email }}</p>
+                </div>
+
+                <div>
+                    <h3 class="text-md text-gray-500 dark:text-gray-400">
+                        <span class="font-bold text-black dark:text-gray-400"
+                            >Contact Number:
+                        </span>
+                    </h3>
+                    <p class="text-black dark:text-white">
+                        {{ form.contact_number }}
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-md text-gray-500 dark:text-gray-400">
+                        <span class="font-bold text-black dark:text-gray-400"
+                            >Email Status:
+                        </span>
+                    </h3>
+                    <p
+                        class="text-black dark:text-white"
+                        v-if="currentUserEmailIsVerified"
+                    >
+                        Verified
+                    </p>
+                    <p class="text-black dark:text-white" v-else>
+                        Not Verified
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-md text-gray-500 dark:text-gray-400">
+                        <span class="font-bold text-black dark:text-gray-400"
+                            >Account Status:
+                        </span>
+                    </h3>
+                    <p
+                        class="text-black dark:text-white"
+                        v-if="currentUserIsActive"
+                    >
+                        Active
+                    </p>
+                    <p class="text-black dark:text-white" v-else>Inactive</p>
+                </div>
+            </div>
+
+            <div
+                class="bottom-0 left-0 flex justify-center w-full pb-4 space-x-4 md:px-4 absolute"
+            >
+                <button
+                    @click="showUpdateModal"
+                    class="text-white w-full justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:bg-blue-200 dark:disabled:bg-blue-900"
+                >
+                    Update
+                </button>
+
+                <button
+                    v-if="currentUserIsActive"
+                    @click="showDeactivationModal(currentUpdatingUserID)"
+                    type="button"
+                    id="deactivateUserButton"
+                    class="inline-flex w-full justify-center text-white items-center bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 rounded-lg text-sm font-medium px-5 py-2.5 focus:z-10 dark:bg-red-700 dark:hover:bg-red-900 dark:focus:ring-red-900"
+                >
+                    Deactivate
+                </button>
+
+                <button
+                    v-else
+                    @click="showActivationModal(currentUpdatingUserID)"
+                    type="button"
+                    id="activateUserButton"
+                    class="inline-flex w-full justify-center text-white items-center bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 rounded-lg text-sm font-medium px-5 py-2.5 focus:z-10 dark:bg-green-700 dark:hover:bg-green-900 dark:focus:ring-green-900"
+                >
+                    Activate
+                </button>
+            </div>
+        </div>
+    </Transition>
+
+    <!-- Update Modal -->
     <Transition
         enter-from-class="translate-x-full"
         enter-active-class="transition-transform translate-x-0"
@@ -574,84 +807,46 @@ watch(
                 <span class="sr-only">Close</span>
             </button>
             <form @submit.prevent="update">
-                <div class="space-y-8">
+                <div class="space-y-10">
                     <div>
-                        <label
-                            for="firstName"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >First Name</label
-                        >
-                        <input
-                            type="text"
-                            v-model="form.first_name"
-                            name="firstName"
+                        <InputField
                             id="firstName"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            v-model="form.first_name"
+                            type="text"
+                            label="First Name"
                             placeholder="First Name"
+                            :error="form.errors.first_name"
                         />
-                        <p
-                            class="text-red-500 text-xs mt-1 absolute"
-                            v-if="form.errors.first_name"
-                        >
-                            {{ form.errors.first_name }}
-                        </p>
                     </div>
                     <div>
-                        <label
-                            for="firstName"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Middle Name</label
-                        >
-                        <input
-                            type="text"
-                            v-model="form.middle_name"
-                            name="middleName"
+                        <InputField
                             id="middleName"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="Middle Name"
-                        />
-                        <p
-                            class="text-red-500 text-xs mt-1 absolute"
-                            v-if="form.errors.middle_name"
-                        >
-                            {{ form.errors.middle_name }}
-                        </p>
-                    </div>
-                    <div>
-                        <label
-                            for="lastName"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Last Name</label
-                        >
-                        <input
+                            v-model="form.middle_name"
                             type="text"
-                            v-model="form.last_name"
-                            name="lastName"
-                            id="lastName"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="Last Name"
+                            label="Middle Name"
+                            placeholder="Middle Name"
+                            :error="form.errors.middle_name"
                         />
-                        <p
-                            class="text-red-500 text-xs mt-1 absolute"
-                            v-if="form.errors.last_name"
-                        >
-                            {{ form.errors.last_name }}
-                        </p>
                     </div>
                     <div>
-                        <label
-                            for="gender"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Gender</label
-                        >
-                        <select
+                        <InputField
+                            id="lastName"
+                            v-model="form.last_name"
+                            type="text"
+                            label="Last Name"
+                            placeholder="Last Name"
+                            :error="form.errors.last_name"
+                        />
+                    </div>
+                    <div>
+                        <SelectInput
                             id="gender"
                             v-model="form.gender"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            label="Gender"
+                            :error="form.errors.gender"
+                            :canSearch="false"
                         >
-                            <option value="" selected hidden>
-                                Select Gender
-                            </option>
+                            <option value="" disabled selected hidden></option>
 
                             <option
                                 value="Male"
@@ -665,55 +860,27 @@ watch(
                             >
                                 Female
                             </option>
-                        </select>
-                        <p
-                            class="text-red-500 text-xs mt-1 absolute"
-                            v-if="form.errors.gender"
-                        >
-                            {{ form.errors.gender }}
-                        </p>
+                        </SelectInput>
                     </div>
                     <div>
-                        <label
-                            for="emailAddress"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Email Address</label
-                        >
-                        <input
-                            type="text"
-                            v-model="form.email"
-                            name="emailAddress"
+                        <InputField
                             id="emailAddress"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            v-model="form.email"
+                            type="email"
+                            label="Email Address"
                             placeholder="Email Address"
+                            :error="form.errors.email"
                         />
-                        <p
-                            class="text-red-500 text-xs mt-1 absolute"
-                            v-if="form.errors.email"
-                        >
-                            {{ form.errors.email }}
-                        </p>
                     </div>
                     <div>
-                        <label
-                            for="emailAddress"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Contact Number</label
-                        >
-                        <input
-                            type="text"
-                            v-model="form.contact_number"
-                            name="contactNumber"
+                        <InputField
                             id="contactNumber"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            v-model="form.contact_number"
+                            type="contactNumber"
+                            label="Contact Number"
                             placeholder="Contact Number"
+                            :error="form.errors.contact_number"
                         />
-                        <p
-                            class="text-red-500 text-xs mt-1 absolute"
-                            v-if="form.errors.contact_number"
-                        >
-                            {{ form.errors.contact_number }}
-                        </p>
                     </div>
                 </div>
                 <div
@@ -950,84 +1117,46 @@ watch(
                 <span class="sr-only">Close</span>
             </button>
             <form @submit.prevent="submit">
-                <div class="space-y-8">
+                <div class="space-y-10">
                     <div>
-                        <label
-                            for="firstName"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >First Name</label
-                        >
-                        <input
-                            type="text"
-                            v-model="form.first_name"
-                            name="firstName"
+                        <InputField
                             id="firstName"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            v-model="form.first_name"
+                            type="text"
+                            label="First Name"
                             placeholder="First Name"
+                            :error="form.errors.first_name"
                         />
-                        <p
-                            class="text-red-500 text-xs mt-1 absolute"
-                            v-if="form.errors.first_name"
-                        >
-                            {{ form.errors.first_name }}
-                        </p>
                     </div>
-                    <div class="mb-10">
-                        <label
-                            for="middleName"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Middle Name</label
-                        >
-                        <input
-                            type="text"
-                            v-model="form.middle_name"
-                            name="middleName"
+                    <div>
+                        <InputField
                             id="middleName"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="Middle Name"
-                        />
-                        <p
-                            class="text-red-500 text-xs mt-1 absolute"
-                            v-if="form.errors.middle_name"
-                        >
-                            {{ form.errors.middle_name }}
-                        </p>
-                    </div>
-                    <div>
-                        <label
-                            for="lastName"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Last Name</label
-                        >
-                        <input
+                            v-model="form.middle_name"
                             type="text"
-                            v-model="form.last_name"
-                            name="lastName"
-                            id="lastName"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="Last Name"
+                            label="Middle Name"
+                            placeholder="Middle Name"
+                            :error="form.errors.middle_name"
                         />
-                        <p
-                            class="text-red-500 text-xs mt-1 absolute"
-                            v-if="form.errors.last_name"
-                        >
-                            {{ form.errors.last_name }}
-                        </p>
                     </div>
                     <div>
-                        <label
-                            for="gender"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Gender</label
-                        >
-                        <select
+                        <InputField
+                            id="lastName"
+                            v-model="form.last_name"
+                            type="text"
+                            label="Last Name"
+                            placeholder="Last Name"
+                            :error="form.errors.last_name"
+                        />
+                    </div>
+                    <div>
+                        <SelectInput
                             id="gender"
                             v-model="form.gender"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            label="Gender"
+                            :error="form.errors.gender"
+                            :canSearch="false"
                         >
-                            <option value="" selected hidden>
-                                Select Gender
-                            </option>
+                            <option value="" disabled selected hidden></option>
 
                             <option
                                 value="Male"
@@ -1041,55 +1170,27 @@ watch(
                             >
                                 Female
                             </option>
-                        </select>
-                        <p
-                            class="text-red-500 text-xs mt-1 absolute"
-                            v-if="form.errors.gender"
-                        >
-                            {{ form.errors.gender }}
-                        </p>
+                        </SelectInput>
                     </div>
                     <div>
-                        <label
-                            for="emailAddress"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Email Address</label
-                        >
-                        <input
-                            type="text"
-                            v-model="form.email"
-                            name="emailAddress"
+                        <InputField
                             id="emailAddress"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            v-model="form.email"
+                            type="email"
+                            label="Email Address"
                             placeholder="Email Address"
+                            :error="form.errors.email"
                         />
-                        <p
-                            class="text-red-500 text-xs mt-1 absolute"
-                            v-if="form.errors.email"
-                        >
-                            {{ form.errors.email }}
-                        </p>
                     </div>
                     <div>
-                        <label
-                            for="emailAddress"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >Contact Number</label
-                        >
-                        <input
-                            type="text"
-                            v-model="form.contact_number"
-                            name="contactNumber"
+                        <InputField
                             id="contactNumber"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            v-model="form.contact_number"
+                            type="contactNumber"
+                            label="Contact Number"
                             placeholder="Contact Number"
+                            :error="form.errors.contact_number"
                         />
-                        <p
-                            class="text-red-500 text-xs mt-1 absolute"
-                            v-if="form.errors.contact_number"
-                        >
-                            {{ form.errors.contact_number }}
-                        </p>
                     </div>
                 </div>
                 <div

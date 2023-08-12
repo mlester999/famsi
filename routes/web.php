@@ -4,6 +4,7 @@ use App\Http\Controllers\ActivityLogsController;
 use App\Http\Controllers\HrManagerController;
 use App\Http\Controllers\HrStaffController;
 use App\Http\Controllers\ApplicantController;
+use App\Http\Controllers\FilesController;
 use App\Http\Controllers\HrManagerDashboardController;
 use App\Models\Applicant;
 use App\Models\HrManager;
@@ -162,9 +163,10 @@ Route::middleware([
                 Route::put('/deactivate/{id}', [ApplicantController::class, 'deactivate'])->name('deactivate');
             });
 
-        Route::get('/files', function () {
-            return Inertia::render('Files');
-        })->name('files');
+            Route::group(['prefix' => 'files', 'as' => 'files.'], function() {
+                Route::get('/', [FilesController::class, 'index'])->name('index');
+            });
+
     });
 });
 
