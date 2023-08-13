@@ -97,9 +97,19 @@ Route::middleware([
             Route::put('/deactivate/{id}', [ApplicantController::class, 'deactivate'])->name('deactivate');
         });
 
-        Route::get('/documents', function () {
-            return Inertia::render('Documents');
-        })->name('documents');
+        Route::group(['prefix' => 'documents', 'as' => 'documents.'], function() {
+            Route::get('/', [DocumentsController::class, 'index'])->name('index');
+
+            Route::post('/upload', [DocumentsController::class, 'upload'])->name('upload');
+
+            Route::post('/upload-revert', [DocumentsController::class, 'uploadRevert'])->name('upload-revert');
+
+            Route::post('/store', [DocumentsController::class, 'store'])->name('store');
+
+            Route::put('/update/{id}', [DocumentsController::class, 'update'])->name('update');
+
+            Route::delete('/destroy/{id}', [DocumentsController::class, 'destroy'])->name('destroy');
+        });
     });
 
     Route::group(['middleware' => 'role:admin', 'prefix' => 'admin', 'as' => 'admin.'], function () {
@@ -171,6 +181,10 @@ Route::middleware([
                 Route::post('/upload-revert', [DocumentsController::class, 'uploadRevert'])->name('upload-revert');
 
                 Route::post('/store', [DocumentsController::class, 'store'])->name('store');
+
+                Route::put('/update/{id}', [DocumentsController::class, 'update'])->name('update');
+
+                Route::delete('/destroy/{id}', [DocumentsController::class, 'destroy'])->name('destroy');
             });
 
     });

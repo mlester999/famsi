@@ -2,7 +2,7 @@
 import { router, usePage } from "@inertiajs/vue3";
 import { ref, watch, Transition, Teleport } from "vue";
 import debounce from "lodash.debounce";
-
+import { useToast } from "vue-toastification";
 import Pagination from "../Partials/Table/Pagination.vue";
 import InputField from "./InputField.vue";
 
@@ -16,6 +16,8 @@ const props = defineProps({
 
 const page = usePage();
 
+const toast = useToast();
+
 let search = ref(props.filters.search);
 
 let currentRemovingUserID = ref(false);
@@ -26,6 +28,7 @@ const remove = () => {
         `/${page.props.user.role}/${props.linkName}/destroy/${currentRemovingUserID.value}`,
         {
             onSuccess: () => {
+                toast.success("Document deleted successfully!");
                 hideDeleteModal();
                 clearErrors();
             },
@@ -225,7 +228,7 @@ watch(
                                     class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
                                     <div
-                                        class="text-base max-w-xs whitespace-normal text-gray-900 dark:text-white"
+                                        class="text-base max-w-md break-words whitespace-normal text-gray-900 dark:text-white"
                                     >
                                         {{ log.description }}
                                     </div>

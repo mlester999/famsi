@@ -2,7 +2,7 @@
 import { router, usePage, useForm } from "@inertiajs/vue3";
 import { ref, watch, Transition, Teleport } from "vue";
 import debounce from "lodash.debounce";
-
+import { useToast } from "vue-toastification";
 import Pagination from "../Partials/Table/Pagination.vue";
 import InputField from "./InputField.vue";
 import SelectInput from "./SelectInput.vue";
@@ -26,6 +26,8 @@ const form = useForm({
 
 const page = usePage();
 
+const toast = useToast();
+
 let search = ref(props.filters.search);
 
 let currentUpdatingUserID = ref(null);
@@ -41,6 +43,7 @@ let deactivationModalVisibility = ref(false);
 const submit = () => {
     form.post(`/${page.props.user.role}/${props.linkName}/store`, {
         onSuccess: () => {
+            toast.success("User created successfully!");
             document.body.classList.remove("overflow-hidden");
             updateModalVisibility.value = false;
             addModalVisibility.value = false;
@@ -55,6 +58,7 @@ const update = () => {
         `/${page.props.user.role}/${props.linkName}/update/${currentUpdatingUserID.value}`,
         {
             onSuccess: () => {
+                toast.success("User updated successfully!");
                 hideUpdateModal();
                 hideAddModal();
                 form.reset();
@@ -69,6 +73,7 @@ const activate = () => {
         `/${page.props.user.role}/${props.linkName}/activate/${currentUpdatingUserID.value}`,
         {
             onSuccess: () => {
+                toast.success("User activated successfully!");
                 hideUpdateModal();
                 hideAddModal();
                 hideActivationModal();
@@ -85,6 +90,7 @@ const deactivate = () => {
         `/${page.props.user.role}/${props.linkName}/deactivate/${currentUpdatingUserID.value}`,
         {
             onSuccess: () => {
+                toast.success("User deactivated successfully!");
                 hideUpdateModal();
                 hideAddModal();
                 hideActivationModal();
@@ -113,6 +119,7 @@ const hideActivationModal = () => {
 
     currentUpdatingUserID.value = null;
 
+    viewInfoModalVisibility.value = false;
     activationModalVisibility.value = false;
 };
 
@@ -133,6 +140,7 @@ const hideDeactivationModal = () => {
 
     currentUpdatingUserID.value = null;
 
+    viewInfoModalVisibility.value = false;
     deactivationModalVisibility.value = false;
 };
 
@@ -194,6 +202,7 @@ const hideUpdateModal = () => {
 
     currentUpdatingUserID.value = null;
 
+    viewInfoModalVisibility.value = false;
     updateModalVisibility.value = false;
 
     form.reset();

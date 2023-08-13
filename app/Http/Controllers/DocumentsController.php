@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Documents;
+use App\Models\Admin;
+use App\Models\Applicant;
+use App\Models\Document;
+use App\Models\HrManager;
+use App\Models\HrStaff;
+use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
@@ -17,7 +22,7 @@ class DocumentsController extends Controller
         $filters = Request::only(['search']);
         $searchReq = Request::input('search');
 
-        $documents = Documents::query()
+        $documents = Document::query()
         ->when($searchReq, function($query, $search) {
             $query->where(function ($query) use ($search) {
                     $query->whereRaw('LOWER(title) LIKE LOWER(?)', ['%' . $search . '%'])
@@ -179,7 +184,7 @@ class DocumentsController extends Controller
 
         $cloudPath = Storage::disk('spaces')->putFileAs('uploads/documents', $path, $documentValidate['filename']);
 
-        $user = Documents::create([
+        $user = Document::create([
             'title' => $documentValidate['title'],
             'description' => $documentValidate['description'],
             'filename' => $documentValidate['filename'],
@@ -211,9 +216,92 @@ class DocumentsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Files $files)
+    public function update($id)
     {
-        //
+        $documentValidate = Request::validate([
+            'title' => ['required'],
+            'description' => ['required'],
+        ]);
+
+        $document = Document::findOrFail($id);
+
+        $userInfo = null;
+        $userRole = '';
+
+        if(auth()->user()->user_type === User::ADMIN) {
+            $userInfo = Admin::where('user_id', auth()->user()->id)->first();
+            $userRole = "Admin";
+        } else if(auth()->user()->user_type === User::HR_MANAGER) {
+            $userInfo = HrManager::where('user_id', auth()->user()->id)->first();
+            $userRole = "Hr Manager";
+        } else if(auth()->user()->user_type === User::HR_STAFF) {
+            $userInfo = HrStaff::where('user_id', auth()->user()->id)->first();
+            $userRole = "Hr Staff";
+        } else if(auth()->user()->user_type === User::APPLICANT) {
+            $userInfo = Applicant::where('user_id', auth()->user()->id)->first();
+            $userRole = "Applicant";
+        }
+
+        if($documentValidate['title'] !== $document->title) {
+            activity()
+            ->performedOn(Document::where('id', $id)->first())
+            ->causedBy(auth()->user())
+            ->event('updated')
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
+            ->log("Updated a Document's title from {$document->title} to {$documentValidate['title']}");
+
+            $document->title = $documentValidate['title'];
+        }
+
+        if($documentValidate['description'] !== $document->description) {
+            activity()
+            ->performedOn(Document::where('id', $id)->first())
+            ->causedBy(auth()->user())
+            ->event('updated')
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
+            ->log("Updated a Document's description from {$document->description} to {$documentValidate['description']}");
+
+            $document->description = $documentValidate['description'];
+        }
+
+        if(request()->path !== $document->path) {
+            $path = request()->path;
+
+            $storagePath = storage_path('app/public/' . $path);
+
+            $cloudPathToDelete = Storage::disk('spaces')->delete('uploads/documents/' . $document->filename);
+            $cloudPathToReplace = Storage::disk('spaces')->putFileAs('uploads/documents', $storagePath, request()->filename);
+
+            $cloudStoragePath = env('DO_URL') . '/' . $cloudPathToReplace;
+
+            activity()
+            ->performedOn(Document::where('id', $id)->first())
+            ->causedBy(auth()->user())
+            ->event('updated')
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
+            ->log("Updated a Document's path from {$document->path} to {$cloudStoragePath}");
+
+            $document->path = $cloudStoragePath;
+
+            unlink($storagePath);
+        }
+
+        if(request()->filename !== $document->filename) {
+            $filename = request()->filename;
+
+            activity()
+            ->performedOn(Document::where('id', $id)->first())
+            ->causedBy(auth()->user())
+            ->event('updated')
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
+            ->log("Updated a Document's filename from {$document->filename} to {$filename}");
+
+            $document->filename = $filename;
+        }
+
+        $document->save();
+
+        return redirect()->back();
     }
 
     /**
@@ -221,8 +309,10 @@ class DocumentsController extends Controller
      */
     public function destroy($id)
     {
-        $file = Files::findOrFail($id);
+        $document = Document::findOrFail($id);
 
-        $file->delete();
+        $cloudPath = Storage::disk('spaces')->delete('uploads/documents/' . $document->filename);
+
+        $document->delete();
     }
 }

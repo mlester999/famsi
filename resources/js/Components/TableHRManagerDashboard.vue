@@ -259,11 +259,11 @@ const showAddScheduleModal = (arg) => {
     const startDay = format(new Date(arg.startStr), "EEEE");
     const endDay = format(new Date(arg.endStr), "EEEE");
 
-    if (startDay === endDay) {
+    if (startDay === endDay || arg.view.type === "dayGridMonth") {
         addScheduleModalVisibility.value = true;
 
-        form.date = format(new Date(arg.endStr), "MMMM d, yyyy");
-        form.day = format(new Date(arg.endStr), "EEEE");
+        form.date = format(new Date(arg.startStr), "MMMM d, yyyy");
+        form.day = format(new Date(arg.startStr), "EEEE");
         form.startTime = format(new Date(arg.startStr), "h:mm a");
         form.endTime = format(new Date(arg.endStr), "h:mm a");
     } else {
@@ -339,7 +339,22 @@ const calendarOptions = ref({
     },
     weekends: true,
     hiddenDays: [0],
+
     events: props.events,
+    eventDidMount: function (info) {
+        console.log(info);
+
+        var icon = info.event.extendedProps.icon;
+        if (info.event.extendedProps.icon) {
+            if (info.view.type == "dayGridMonth") {
+                document
+                    .querySelectorAll(info.el + " .fc-event-title")
+                    .forEach((eventTitleElement) => {
+                        eventTitleElement.innerHTML += `<i class="fa ${icon}"></i>`;
+                    });
+            }
+        }
+    },
 });
 </script>
 

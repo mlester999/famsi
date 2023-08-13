@@ -4,6 +4,10 @@ import { router, usePage, useForm } from "@inertiajs/vue3";
 import { ref, computed, watch, Transition, Teleport } from "vue";
 import debounce from "lodash.debounce";
 import vueFilePond from "vue-filepond";
+import { useToast } from "vue-toastification";
+import Pagination from "../Partials/Table/Pagination.vue";
+import InputField from "./InputField.vue";
+import TextArea from "./TextArea.vue";
 
 import "filepond/dist/filepond.min.css";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css";
@@ -11,6 +15,8 @@ import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 
 const page = usePage();
+
+const toast = useToast();
 
 // Create component
 const FilePond = vueFilePond(
@@ -21,7 +27,9 @@ const FilePond = vueFilePond(
 const pond = ref(null);
 
 // The `setup` function automatically exports everything you return
-const handleFilePondInit = () => {};
+const handleFilePondInit = () => {
+    console.log(pond);
+};
 
 const server = computed(() => ({
     url: "",
@@ -56,10 +64,6 @@ const server = computed(() => ({
     },
 }));
 
-import Pagination from "../Partials/Table/Pagination.vue";
-import InputField from "./InputField.vue";
-import SelectInput from "./SelectInput.vue";
-
 const props = defineProps({
     roles: Object,
     pagination: Object,
@@ -89,6 +93,7 @@ let deleteModalVisibility = ref(false);
 const submit = () => {
     form.post(`/${page.props.user.role}/${props.linkName}/store`, {
         onSuccess: () => {
+            toast.success("Document added successfully!");
             document.body.classList.remove("overflow-hidden");
             updateModalVisibility.value = false;
             addModalVisibility.value = false;
@@ -103,6 +108,7 @@ const update = () => {
         `/${page.props.user.role}/${props.linkName}/update/${currentUpdatingDocumentID.value}`,
         {
             onSuccess: () => {
+                toast.success("Document updated successfully!");
                 hideUpdateModal();
                 hideAddModal();
                 form.reset();
@@ -117,6 +123,7 @@ const destroy = () => {
         `/${page.props.user.role}/${props.linkName}/destroy/${currentUpdatingDocumentID.value}`,
         {
             onSuccess: () => {
+                toast.success("Document deleted successfully!");
                 hideUpdateModal();
                 hideAddModal();
                 hideDeleteModal();
@@ -197,6 +204,7 @@ const hideUpdateModal = () => {
     currentUpdatingDocumentID.value = null;
 
     updateModalVisibility.value = false;
+    viewInfoModalVisibility.value = false;
 
     form.reset();
     form.clearErrors();
@@ -381,6 +389,13 @@ watch(
                                     scope="col"
                                     class="px-2 py-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
+                                    Created At
+                                </th>
+
+                                <th
+                                    scope="col"
+                                    class="px-2 py-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                                >
                                     Actions
                                 </th>
                             </tr>
@@ -428,9 +443,27 @@ watch(
                                     class="max-w-sm px-2 py-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
                                 >
                                     <div
-                                        class="text-base max-w-xs truncate whitespace-normal text-gray-900 dark:text-white"
+                                        class="text-base max-w-xs break-words truncate whitespace-normal text-gray-900 dark:text-white"
                                     >
                                         {{ role.path }}
+                                    </div>
+                                </td>
+
+                                <td
+                                    class="px-2 py-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                                >
+                                    <div
+                                        class="text-base max-w-xs whitespace-normal text-gray-900 dark:text-white"
+                                    >
+                                        {{
+                                            new Date(
+                                                role.created_at
+                                            ).toLocaleDateString("en-US", {
+                                                month: "long",
+                                                day: "numeric",
+                                                year: "numeric",
+                                            })
+                                        }}
                                     </div>
                                 </td>
 
@@ -566,11 +599,11 @@ watch(
                             >File Path:
                         </span>
                     </h3>
-                    <p class="truncate">
+                    <p class="break-words">
                         <a
                             target="_blank"
                             :href="form.path"
-                            class="text-black whitespace-normal dark:text-blue-500 dark:hover:text-blue-600"
+                            class="text-blue-600 hover:text-blue-700 whitespace-normal dark:text-blue-500 dark:hover:text-blue-600"
                         >
                             {{ form.path }}
                         </a>
@@ -646,77 +679,48 @@ watch(
                 <div class="space-y-10">
                     <div>
                         <InputField
-                            id="firstName"
-                            v-model="form.first_name"
+                            id="title"
+                            v-model="form.title"
                             type="text"
-                            label="First Name"
-                            placeholder="First Name"
-                            :error="form.errors.first_name"
+                            label="Title"
+                            placeholder="Title"
+                            :error="form.errors.title"
                         />
                     </div>
-                    <div>
-                        <InputField
-                            id="middleName"
-                            v-model="form.middle_name"
-                            type="text"
-                            label="Middle Name"
-                            placeholder="Middle Name"
-                            :error="form.errors.middle_name"
-                        />
-                    </div>
-                    <div>
-                        <InputField
-                            id="lastName"
-                            v-model="form.last_name"
-                            type="text"
-                            label="Last Name"
-                            placeholder="Last Name"
-                            :error="form.errors.last_name"
-                        />
-                    </div>
-                    <div>
-                        <SelectInput
-                            id="gender"
-                            v-model="form.gender"
-                            label="Gender"
-                            :error="form.errors.gender"
-                            :canSearch="false"
-                        >
-                            <option value="" disabled selected hidden></option>
 
-                            <option
-                                value="Male"
-                                :selected="form.gender === 'Male'"
-                            >
-                                Male
-                            </option>
-                            <option
-                                value="Female"
-                                :selected="form.gender === 'Female'"
-                            >
-                                Female
-                            </option>
-                        </SelectInput>
-                    </div>
                     <div>
-                        <InputField
-                            id="emailAddress"
-                            v-model="form.email"
-                            type="email"
-                            label="Email Address"
-                            placeholder="Email Address"
-                            :error="form.errors.email"
+                        <TextArea
+                            id="description"
+                            v-model="form.description"
+                            rows="3"
+                            label="Description"
+                            placeholder="Description"
+                            :error="form.errors.description"
                         />
                     </div>
+
                     <div>
-                        <InputField
-                            id="contactNumber"
-                            v-model="form.contact_number"
-                            type="contactNumber"
-                            label="Contact Number"
-                            placeholder="Contact Number"
-                            :error="form.errors.contact_number"
+                        <label for="documentUpload" class="text-neutral-200"
+                            >File</label
+                        >
+                        <FilePond
+                            name="documentUpload"
+                            ref="pond"
+                            label-idle="Upload file here or <span class='filepond--label-action'>Browse</span>"
+                            :allow-drop="true"
+                            accepted-file-types="application/pdf, application/docx"
+                            :file="files"
+                            v-model="form.path"
+                            :server="server"
+                            @init="handleFilePondInit"
+                            credits="false"
                         />
+                        <p
+                            class="text-red-500 text-xs absolute -mt-2"
+                            v-if="form.errors.filename"
+                        >
+                            {{ form.errors.filename }}
+                        </p>
                     </div>
                 </div>
                 <div
@@ -889,17 +893,20 @@ watch(
                         />
                     </div>
                     <div>
-                        <InputField
+                        <TextArea
                             id="description"
                             v-model="form.description"
-                            type="text"
+                            rows="3"
                             label="Description"
                             placeholder="Description"
                             :error="form.errors.description"
                         />
                     </div>
 
-                    <div>
+                    <div class="-mt-3">
+                        <label for="documentUpload" class="text-neutral-200"
+                            >File</label
+                        >
                         <FilePond
                             name="documentUpload"
                             ref="pond"

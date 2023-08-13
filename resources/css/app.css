@@ -1,8 +1,8 @@
 @tailwind base;
 
-body * {
+/* body * {
     @apply transition-colors duration-200;
-}
+} */
 
 @layer base {
     html {
