@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Documents;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Storage;
 
 class DocumentsController extends Controller
 {
@@ -43,10 +44,10 @@ class DocumentsController extends Controller
         ->withQueryString()
         ->through(fn($file) => [
             'id' => $file->id,
-            'title' => $file->description,
-            'description' => $file->event,
-            'filename' => $file->properties,
-            'path' => $file->properties,
+            'title' => $file->title,
+            'description' => $file->description,
+            'filename' => $file->filename,
+            'path' => $file->path,
             'created_at' => $file->created_at,
         ]);
 
@@ -140,18 +141,55 @@ class DocumentsController extends Controller
     {
         if(request()->hasFile('documentUpload'))
         {
-            return request()->file('documentUpload')->store('uploads/documents', 'public');
+            $originalFilename = request()->file('documentUpload')->getClientOriginalName();
+            $storedPath = request()->file('documentUpload')->store('uploads/documents', 'public');
+
+            return [
+                'filename' => $originalFilename,
+                'path' => $storedPath,
+            ];
         }
 
         return '';
     }
 
+    public function uploadRevert() {
+        if($file = request()->get('path')) {
+            $path = storage_path('app/public/' . $file);
+
+            if(file_exists($path)) {
+                unlink($path);
+            }
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store()
     {
-        //
+        $documentValidate = Request::validate([
+            'title' => ['required', 'max:50'],
+            'description' => ['required'],
+            'filename' => ['required'],
+            'path' => ['required'],
+        ]);
+
+        $path = storage_path('app/public/' . $documentValidate['path']);
+
+        $cloudPath = Storage::disk('spaces')->putFileAs('uploads/documents', $path, $documentValidate['filename']);
+
+        $user = Documents::create([
+            'title' => $documentValidate['title'],
+            'description' => $documentValidate['description'],
+            'filename' => $documentValidate['filename'],
+            'path' => env('DO_URL') . '/' . $cloudPath,
+        ]);
+
+        unlink($path);
+
+        return redirect()->back();
+
     }
 
     /**

@@ -167,6 +167,10 @@ Route::middleware([
                 Route::get('/', [DocumentsController::class, 'index'])->name('index');
 
                 Route::post('/upload', [DocumentsController::class, 'upload'])->name('upload');
+
+                Route::post('/upload-revert', [DocumentsController::class, 'uploadRevert'])->name('upload-revert');
+
+                Route::post('/store', [DocumentsController::class, 'store'])->name('store');
             });
 
     });

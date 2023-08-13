@@ -1,4 +1,5 @@
 <script setup>
+import axios from "axios";
 import { router, usePage, useForm } from "@inertiajs/vue3";
 import { ref, computed, watch, Transition, Teleport } from "vue";
 import debounce from "lodash.debounce";
@@ -20,13 +21,7 @@ const FilePond = vueFilePond(
 const pond = ref(null);
 
 // The `setup` function automatically exports everything you return
-const handleFilePondInit = () => {
-    console.log(page.props.csrf_token);
-};
-
-const handleFilePondLoad = () => {
-    console.log("Loading...");
-};
+const handleFilePondInit = () => {};
 
 const server = computed(() => ({
     url: "",
@@ -37,7 +32,27 @@ const server = computed(() => ({
             "X-CSRF-TOKEN": page.props.csrf_token,
         },
         withCredentials: false,
-        onLoad: handleFilePondLoad,
+        onload: (response) => {
+            console.log(response);
+            const res = JSON.parse(response);
+
+            form.filename = res.filename;
+            form.path = res.path;
+        },
+    },
+    remove: (source, load, error) => {
+        form.filename = "";
+        form.path = "";
+        load();
+    },
+    revert: (uniqueId, load, error) => {
+        axios.post(`/${page.props.user.role}/${props.linkName}/upload-revert`, {
+            path: form.path,
+        });
+
+        form.filename = "";
+        form.path = "";
+        load();
     },
 }));
 
@@ -61,6 +76,8 @@ const form = useForm({
 });
 
 let search = ref(props.filters.search);
+
+let files = ref([]);
 
 let currentUpdatingDocumentID = ref(null);
 
@@ -391,25 +408,27 @@ watch(
                                     class="px-2 py-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
                                     <div
-                                        class="text-base text-gray-900 dark:text-white"
+                                        class="text-base max-w-xs whitespace-normal text-gray-900 dark:text-white"
                                     >
                                         {{ role.description }}
                                     </div>
                                 </td>
+
                                 <td
                                     class="px-2 py-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
                                     <div
-                                        class="text-base text-gray-900 dark:text-white"
+                                        class="text-base max-w-xs whitespace-normal text-gray-900 dark:text-white"
                                     >
                                         {{ role.filename }}
                                     </div>
                                 </td>
+
                                 <td
                                     class="max-w-sm px-2 py-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
                                 >
                                     <div
-                                        class="text-base text-gray-900 dark:text-white"
+                                        class="text-base max-w-xs truncate whitespace-normal text-gray-900 dark:text-white"
                                     >
                                         {{ role.path }}
                                     </div>
@@ -511,94 +530,51 @@ watch(
                 <div>
                     <h3 class="text-md text-gray-500 dark:text-white">
                         <span class="font-bold text-black dark:text-gray-400"
-                            >First Name:
+                            >Title:
                         </span>
                     </h3>
                     <p class="text-black dark:text-white">
-                        {{ form.first_name }}
+                        {{ form.title }}
                     </p>
                 </div>
 
                 <div>
                     <h3 class="text-md text-gray-500 dark:text-gray-400">
                         <span class="font-bold text-black dark:text-gray-400"
-                            >Middle Name:
-                        </span>
-                    </h3>
-                    <span v-if="form.middle_name">{{ form.middle_name }}</span>
-                    <p class="text-gray-500 dark:text-gray-600" v-else>N/A</p>
-                </div>
-
-                <div>
-                    <h3 class="text-md text-gray-500 dark:text-gray-400">
-                        <span class="font-bold text-black dark:text-gray-400"
-                            >Last Name:
+                            >Description:
                         </span>
                     </h3>
                     <p class="text-black dark:text-white">
-                        {{ form.last_name }}
+                        {{ form.description }}
                     </p>
                 </div>
 
                 <div>
                     <h3 class="text-md text-gray-500 dark:text-gray-400">
                         <span class="font-bold text-black dark:text-gray-400"
-                            >Gender:
-                        </span>
-                    </h3>
-                    <p class="text-black dark:text-white">{{ form.gender }}</p>
-                </div>
-
-                <div>
-                    <h3 class="text-md text-gray-500 dark:text-gray-400">
-                        <span class="font-bold text-black dark:text-gray-400"
-                            >Email Address:
-                        </span>
-                    </h3>
-                    <p class="text-black dark:text-white">{{ form.email }}</p>
-                </div>
-
-                <div>
-                    <h3 class="text-md text-gray-500 dark:text-gray-400">
-                        <span class="font-bold text-black dark:text-gray-400"
-                            >Contact Number:
+                            >File Name:
                         </span>
                     </h3>
                     <p class="text-black dark:text-white">
-                        {{ form.contact_number }}
+                        {{ form.filename }}
                     </p>
                 </div>
 
                 <div>
                     <h3 class="text-md text-gray-500 dark:text-gray-400">
                         <span class="font-bold text-black dark:text-gray-400"
-                            >Email Status:
+                            >File Path:
                         </span>
                     </h3>
-                    <p
-                        class="text-black dark:text-white"
-                        v-if="currentUserEmailIsVerified"
-                    >
-                        Verified
+                    <p class="truncate">
+                        <a
+                            target="_blank"
+                            :href="form.path"
+                            class="text-black whitespace-normal dark:text-blue-500 dark:hover:text-blue-600"
+                        >
+                            {{ form.path }}
+                        </a>
                     </p>
-                    <p class="text-black dark:text-white" v-else>
-                        Not Verified
-                    </p>
-                </div>
-
-                <div>
-                    <h3 class="text-md text-gray-500 dark:text-gray-400">
-                        <span class="font-bold text-black dark:text-gray-400"
-                            >Account Status:
-                        </span>
-                    </h3>
-                    <p
-                        class="text-black dark:text-white"
-                        v-if="currentUserIsActive"
-                    >
-                        Active
-                    </p>
-                    <p class="text-black dark:text-white" v-else>Inactive</p>
                 </div>
             </div>
 
@@ -930,11 +906,18 @@ watch(
                             label-idle="Upload file here or <span class='filepond--label-action'>Browse</span>"
                             :allow-drop="true"
                             accepted-file-types="application/pdf, application/docx"
-                            :file="form.filename"
+                            :file="files"
+                            v-model="form.path"
                             :server="server"
                             @init="handleFilePondInit"
-                            credits=""
+                            credits="false"
                         />
+                        <p
+                            class="text-red-500 text-xs absolute -mt-2"
+                            v-if="form.errors.filename"
+                        >
+                            {{ form.errors.filename }}
+                        </p>
                     </div>
                 </div>
                 <div
