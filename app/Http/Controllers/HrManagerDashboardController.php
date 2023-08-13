@@ -37,6 +37,7 @@ class HrManagerDashboardController extends Controller
                 'applicant_id' => $appointment->applicant_id,
                 'start' => $appointment->start_time,
                 'end' => $appointment->finish_time,
+                'backgroundColor' => $appointment->finish_time <= now() ? 'green' : 'rgb(55, 136, 216)'
             ];
         }
 

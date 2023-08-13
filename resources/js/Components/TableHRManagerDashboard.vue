@@ -338,23 +338,9 @@ const calendarOptions = ref({
         right: "dayGridMonth,timeGridWeek,timeGridDay", // user can switch between the two
     },
     weekends: true,
-    hiddenDays: [0],
+    hiddenDays: [],
 
     events: props.events,
-    eventDidMount: function (info) {
-        console.log(info);
-
-        var icon = info.event.extendedProps.icon;
-        if (info.event.extendedProps.icon) {
-            if (info.view.type == "dayGridMonth") {
-                document
-                    .querySelectorAll(info.el + " .fc-event-title")
-                    .forEach((eventTitleElement) => {
-                        eventTitleElement.innerHTML += `<i class="fa ${icon}"></i>`;
-                    });
-            }
-        }
-    },
 });
 </script>
 
