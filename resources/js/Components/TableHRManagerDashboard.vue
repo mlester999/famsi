@@ -571,6 +571,7 @@ const calendarOptions = ref({
                             <option value="" disabled selected hidden></option>
                             <option
                                 v-for="applicant in applicants"
+                                :key="applicant.id"
                                 :value="applicant.id"
                             >
                                 {{ applicant.first_name }}

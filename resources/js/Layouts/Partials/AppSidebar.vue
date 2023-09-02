@@ -22,7 +22,7 @@ const currentUser = computed(() => {
         aria-label="Sidebar"
     >
         <div
-            class="relative flex flex-col flex-1 min-h-0 py-5 bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700"
+            class="relative flex flex-col flex-1 min-h-0 py-5 overflow-y-auto bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700"
         >
             <SidebarCategory
                 v-if="
@@ -223,6 +223,28 @@ const currentUser = computed(() => {
                             </template>
 
                             <template #title> Company Assignments </template>
+                        </SidebarTab>
+                    </li>
+
+                    <li>
+                        <SidebarTab
+                            v-if="
+                                $page.props.auth.user.user_type == users.admin
+                            "
+                            :href="route(`${currentUser}.job-positions.index`)"
+                            :class="[
+                                $page.url.includes('jobPositions') &&
+                                    'bg-gray-100 dark:bg-gray-700',
+                            ]"
+                        >
+                            <template #icon>
+                                <font-awesome-icon
+                                    class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                    :icon="['fas', 'scroll']"
+                                />
+                            </template>
+
+                            <template #title> Job Positions </template>
                         </SidebarTab>
                     </li>
                 </template>

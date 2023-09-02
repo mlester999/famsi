@@ -8,6 +8,7 @@ use App\Http\Controllers\BenefitController;
 use App\Http\Controllers\CompanyAssignmentController;
 use App\Http\Controllers\DocumentsController;
 use App\Http\Controllers\HrManagerDashboardController;
+use App\Http\Controllers\JobPositionController;
 use App\Http\Controllers\QualificationController;
 use App\Models\Applicant;
 use App\Models\HrManager;
@@ -154,6 +155,16 @@ Route::middleware([
             Route::put('/update/{id}', [CompanyAssignmentController::class, 'update'])->name('update');
 
             Route::delete('/destroy/{id}', [CompanyAssignmentController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::group(['prefix' => 'job-positions', 'as' => 'job-positions.'], function() {
+            Route::get('/', [JobPositionController::class, 'index'])->name('index');
+
+            Route::post('/store', [JobPositionController::class, 'store'])->name('store');
+
+            Route::put('/update/{id}', [JobPositionController::class, 'update'])->name('update');
+
+            Route::delete('/destroy/{id}', [JobPositionController::class, 'destroy'])->name('destroy');
         });
 
         // Route::get('/landing-page', function () {
