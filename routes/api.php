@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthApplicantsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,5 +16,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+    $user = $request->user()->load('applicant'); // Eager load the 'applicant' relationship
+    return response()->json($user);
 });
+
+Route::post('login', [AuthApplicantsController::class, 'login']);
+Route::post('register', [AuthApplicantsController::class, 'register']);
+Route::post('logout', [AuthApplicantsController::class, 'logout']);
+Route::post('refresh', [AuthApplicantsController::class, 'refresh']);
+Route::get('details', [AuthApplicantsController::class, 'details']);

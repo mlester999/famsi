@@ -51,50 +51,6 @@ const currentUser = computed(() => {
                             <template #title> Dashboard </template>
                         </SidebarTab>
                     </li>
-
-                    <li>
-                        <SidebarTab
-                            v-if="
-                                $page.props.auth.user.user_type == users.admin
-                            "
-                            :href="route(`${currentUser}.homepage`)"
-                            :class="[
-                                $page.url.includes('homepage') &&
-                                    'bg-gray-100 dark:bg-gray-700',
-                            ]"
-                        >
-                            <template #icon>
-                                <font-awesome-icon
-                                    class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-                                    :icon="['fas', 'house']"
-                                />
-                            </template>
-
-                            <template #title> Home Page </template>
-                        </SidebarTab>
-                    </li>
-
-                    <li>
-                        <SidebarTab
-                            v-if="
-                                $page.props.auth.user.user_type == users.admin
-                            "
-                            :href="route(`${currentUser}.announcement`)"
-                            :class="[
-                                $page.url.includes('announcement') &&
-                                    'bg-gray-100 dark:bg-gray-700',
-                            ]"
-                        >
-                            <template #icon>
-                                <font-awesome-icon
-                                    class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-                                    :icon="['fas', 'scroll']"
-                                />
-                            </template>
-
-                            <template #title> Announcement </template>
-                        </SidebarTab>
-                    </li>
                 </template>
             </SidebarCategory>
 
@@ -190,6 +146,83 @@ const currentUser = computed(() => {
                             </template>
 
                             <template #title> Documents </template>
+                        </SidebarTab>
+                    </li>
+                </template>
+            </SidebarCategory>
+
+            <SidebarCategory
+                name="Job Related"
+                v-if="$page.props.auth.user.user_type == users.admin"
+            >
+                <template #tab>
+                    <li>
+                        <SidebarTab
+                            v-if="
+                                $page.props.auth.user.user_type == users.admin
+                            "
+                            :href="route(`${currentUser}.qualifications.index`)"
+                            :class="[
+                                $page.url.includes('qualifications') &&
+                                    'bg-gray-100 dark:bg-gray-700',
+                            ]"
+                        >
+                            <template #icon>
+                                <font-awesome-icon
+                                    class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                    :icon="['fas', 'house']"
+                                />
+                            </template>
+
+                            <template #title> Qualifications </template>
+                        </SidebarTab>
+                    </li>
+
+                    <li>
+                        <SidebarTab
+                            v-if="
+                                $page.props.auth.user.user_type == users.admin
+                            "
+                            :href="route(`${currentUser}.benefits.index`)"
+                            :class="[
+                                $page.url.includes('benefits') &&
+                                    'bg-gray-100 dark:bg-gray-700',
+                            ]"
+                        >
+                            <template #icon>
+                                <font-awesome-icon
+                                    class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                    :icon="['fas', 'scroll']"
+                                />
+                            </template>
+
+                            <template #title> Benefits </template>
+                        </SidebarTab>
+                    </li>
+
+                    <li>
+                        <SidebarTab
+                            v-if="
+                                $page.props.auth.user.user_type == users.admin
+                            "
+                            :href="
+                                route(
+                                    `${currentUser}.company-assignments.index`
+                                )
+                            "
+                            :class="[
+                                $page.url.includes('company-assignments') &&
+                                    'bg-gray-100 dark:bg-gray-700',
+                            ]"
+                        >
+                            <template #icon>
+                                <font-awesome-icon
+                                    class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                    :icon="['fas', 'scroll']"
+                                />
+                            </template>
+
+                            <template #title> Company Assignments </template>
                         </SidebarTab>
                     </li>
                 </template>

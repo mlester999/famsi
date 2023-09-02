@@ -41,47 +41,10 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::authenticateUsing(function (Request $request){
             $user = User::where(['email' => $request->email])->first();
 
-            // Admin
             if ($user && $user->is_active && Hash::check($request->password, $user->password)) {
 
                 return $user;
             }
-
-            // if ($hrManager && $hrManager->is_active && Hash::check($request->password, $hrManager->password)) {
-            //     $hrManagerInfo = HrManager::where('user_id', $hrManager->id)->first();
-
-            //     activity()
-            //     ->causedBy($hrManager)
-            //     ->event('login')
-            //     ->withProperties(['ipAddress' => $request->ip()])
-            //     ->log('HR Manager: ' . $hrManagerInfo->first_name . $hrManagerInfo->last_name . ', logged in to the website.');
-
-            //     return $hrManager;
-            // }
-
-            // if ($hrStaff && $hrStaff->is_active && Hash::check($request->password, $hrStaff->password)) {
-            //     $hrStaffInfo = HrStaff::where('user_id', $hrStaff->id)->first();
-
-            //     activity()
-            //     ->causedBy($hrStaff)
-            //     ->event('login')
-            //     ->withProperties(['ipAddress' => $request->ip()])
-            //     ->log('HR Staff: ' . $hrStaffInfo->first_name . $hrStaffInfo->last_name . ', logged in to the website.');
-
-            //     return $hrStaff;
-            // }
-
-            // if ($applicant && $applicant->is_active && Hash::check($request->password, $applicant->password)) {
-            //     $applicantInfo = Applicant::where('user_id', $applicant->id)->first();
-
-            //     activity()
-            //     ->causedBy($applicant)
-            //     ->event('login')
-            //     ->withProperties(['ipAddress' => $request->ip()])
-            //     ->log('Applicant: ' . $applicantInfo->first_name . $applicantInfo->last_name . ', logged in to the website.');
-
-            //     return $applicant;
-            // }
         });
 
         RateLimiter::for('login', function (Request $request) {

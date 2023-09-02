@@ -4,8 +4,11 @@ use App\Http\Controllers\ActivityLogsController;
 use App\Http\Controllers\HrManagerController;
 use App\Http\Controllers\HrStaffController;
 use App\Http\Controllers\ApplicantController;
+use App\Http\Controllers\BenefitController;
+use App\Http\Controllers\CompanyAssignmentController;
 use App\Http\Controllers\DocumentsController;
 use App\Http\Controllers\HrManagerDashboardController;
+use App\Http\Controllers\QualificationController;
 use App\Models\Applicant;
 use App\Models\HrManager;
 use App\Models\HrStaff;
@@ -123,13 +126,43 @@ Route::middleware([
             })->name('index');
         });
 
-        Route::get('/homepage', function () {
-            return Inertia::render('HomePage');
-        })->name('homepage');
+        Route::group(['prefix' => 'qualifications', 'as' => 'qualifications.'], function() {
+            Route::get('/', [QualificationController::class, 'index'])->name('index');
 
-        Route::get('/announcement', function () {
-            return Inertia::render('Announcement');
-        })->name('announcement');
+            Route::post('/store', [QualificationController::class, 'store'])->name('store');
+
+            Route::put('/update/{id}', [QualificationController::class, 'update'])->name('update');
+
+            Route::delete('/destroy/{id}', [QualificationController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::group(['prefix' => 'benefits', 'as' => 'benefits.'], function() {
+            Route::get('/', [BenefitController::class, 'index'])->name('index');
+
+            Route::post('/store', [BenefitController::class, 'store'])->name('store');
+
+            Route::put('/update/{id}', [BenefitController::class, 'update'])->name('update');
+
+            Route::delete('/destroy/{id}', [BenefitController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::group(['prefix' => 'company-assignments', 'as' => 'company-assignments.'], function() {
+            Route::get('/', [CompanyAssignmentController::class, 'index'])->name('index');
+
+            Route::post('/store', [CompanyAssignmentController::class, 'store'])->name('store');
+
+            Route::put('/update/{id}', [CompanyAssignmentController::class, 'update'])->name('update');
+
+            Route::delete('/destroy/{id}', [CompanyAssignmentController::class, 'destroy'])->name('destroy');
+        });
+
+        // Route::get('/landing-page', function () {
+        //     return Inertia::render('LandingPage');
+        // })->name('landingpage');
+
+        // Route::get('/mainpage', function () {
+        //     return Inertia::render('MainPage');
+        // })->name('mainpage');
 
             Route::group(['prefix' => 'activity-logs', 'as' => 'activity-logs.'], function () {
                 Route::get('/', [ActivityLogsController::class, 'index'])->name('index');
