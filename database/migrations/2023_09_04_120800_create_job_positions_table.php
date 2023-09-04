@@ -18,8 +18,6 @@ return new class extends Migration
             $table->string('location');
             $table->string('job_type');
             $table->string('employment_type');
-            $table->string('responsibilities');
-            $table->string('qualifications');
             $table->string('schedule');
             $table->timestamps();
         });

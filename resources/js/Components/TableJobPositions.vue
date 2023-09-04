@@ -1,12 +1,16 @@
 <script setup>
 import { router, usePage, useForm } from "@inertiajs/vue3";
-import { ref, watch, Transition, Teleport } from "vue";
+import { ref, watch, Transition, Teleport, provide } from "vue";
 import debounce from "lodash.debounce";
 import { useToast } from "vue-toastification";
 import Pagination from "../Partials/Table/Pagination.vue";
 import InputField from "./InputField.vue";
 import TextArea from "./TextArea.vue";
 import SelectInput from "./SelectInput.vue";
+import TextEditorModal from "./TextEditorModal.vue";
+import { QuillEditor } from "@vueup/vue-quill";
+import "@vueup/vue-quill/dist/vue-quill.snow.css";
+import "@vueup/vue-quill/dist/vue-quill.bubble.css";
 
 const page = usePage();
 const toast = useToast();
@@ -20,18 +24,23 @@ const props = defineProps({
     title: String,
 });
 
-console.log(props.companyAssignments);
-
 const form = useForm({
     title: "",
     description: "",
     location: "",
     job_type: "",
     employment_type: "",
-    responsibilities: "",
-    qualifications: "",
     schedule: "",
 });
+
+const richTextEditorOptions = ref({
+    debug: "info",
+    placeholder: "Please edit in full screen.",
+    readOnly: true,
+    theme: "snow",
+});
+
+const richTextEditorModal = ref(false);
 
 let search = ref(props.filters.search);
 
@@ -85,6 +94,16 @@ const destroy = () => {
         }
     );
 };
+
+const showRichTextModal = () => {
+    richTextEditorModal.value = true;
+};
+
+const hideRichTextModal = () => {
+    richTextEditorModal.value = false;
+};
+
+provide("hideRichTextModal", hideRichTextModal);
 
 // Delete Modal
 const showDeleteModal = (id) => {
@@ -233,6 +252,11 @@ watch(
                 @click="hideInfoModal"
                 class="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-30 transition duration-200"
             ></div>
+
+            <TextEditorModal
+                v-if="richTextEditorModal"
+                v-model="form.description"
+            />
         </Teleport>
     </Transition>
     <div
@@ -613,28 +637,6 @@ watch(
                 <div>
                     <h3 class="text-md text-gray-500 dark:text-gray-400">
                         <span class="font-bold text-black dark:text-gray-400"
-                            >Responsibilities:
-                        </span>
-                    </h3>
-                    <p class="text-black dark:text-white">
-                        {{ form.responsibilities }}
-                    </p>
-                </div>
-
-                <div>
-                    <h3 class="text-md text-gray-500 dark:text-gray-400">
-                        <span class="font-bold text-black dark:text-gray-400"
-                            >Qualifications:
-                        </span>
-                    </h3>
-                    <p class="text-black dark:text-white">
-                        {{ form.qualifications }}
-                    </p>
-                </div>
-
-                <div>
-                    <h3 class="text-md text-gray-500 dark:text-gray-400">
-                        <span class="font-bold text-black dark:text-gray-400"
                             >Schedule:
                         </span>
                     </h3>
@@ -762,28 +764,6 @@ watch(
                             label="Employment Type"
                             placeholder="Employment Type"
                             :error="form.errors.employment_type"
-                        />
-                    </div>
-
-                    <div>
-                        <InputField
-                            id="responsibilities"
-                            v-model="form.responsibilities"
-                            type="text"
-                            label="Responsibilities"
-                            placeholder="Responsibilities"
-                            :error="form.errors.responsibilities"
-                        />
-                    </div>
-
-                    <div>
-                        <InputField
-                            id="qualifications"
-                            v-model="form.qualifications"
-                            type="text"
-                            label="Qualifications"
-                            placeholder="Qualifications"
-                            :error="form.errors.qualifications"
                         />
                     </div>
 
@@ -968,14 +948,27 @@ watch(
                         />
                     </div>
                     <div>
-                        <TextArea
+                        <h1 class="text-gray-500">Description</h1>
+                        <QuillEditor
+                            v-model="form.description"
+                            :options="richTextEditorOptions"
+                        />
+
+                        <!-- <TextArea
                             id="description"
                             v-model="form.description"
                             rows="3"
                             label="Description"
                             placeholder="Description"
                             :error="form.errors.description"
-                        />
+                        /> -->
+                        <button
+                            type="button"
+                            @click="showRichTextModal"
+                            class="uppercase bg-gray-300 hover:bg-gray-400 duration-200 transition px-6 py-2 w-full"
+                        >
+                            Edit in Full Screen
+                        </button>
                     </div>
 
                     <div>
@@ -1017,28 +1010,6 @@ watch(
                             label="Employment Type"
                             placeholder="Employment Type"
                             :error="form.errors.employment_type"
-                        />
-                    </div>
-
-                    <div>
-                        <InputField
-                            id="responsibilities"
-                            v-model="form.responsibilities"
-                            type="text"
-                            label="Responsibilities"
-                            placeholder="Responsibilities"
-                            :error="form.errors.responsibilities"
-                        />
-                    </div>
-
-                    <div>
-                        <InputField
-                            id="qualifications"
-                            v-model="form.qualifications"
-                            type="text"
-                            label="Qualifications"
-                            placeholder="Qualifications"
-                            :error="form.errors.qualifications"
                         />
                     </div>
 

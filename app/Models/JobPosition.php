@@ -15,8 +15,6 @@ class JobPosition extends Model
         'location',
         'job_type',
         'employment_type',
-        'responsibilities',
-        'qualifications',
         'schedule'
     ];
 }

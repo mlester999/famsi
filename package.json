@@ -30,6 +30,7 @@
         "@fullcalendar/timegrid": "^6.1.8",
         "@fullcalendar/vue3": "^6.1.8",
         "@tailwindcss/line-clamp": "^0.4.4",
+        "@vueup/vue-quill": "^1.2.0",
         "@vueuse/core": "^10.2.0",
         "date-fns": "^2.30.0",
         "date-fns-tz": "^2.0.0",
