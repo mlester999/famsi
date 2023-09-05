@@ -22,16 +22,20 @@ const currentUser = computed(() => {
         aria-label="Sidebar"
     >
         <div
-            class="relative flex flex-col flex-1 min-h-0 py-5 bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700"
+            class="relative flex flex-col flex-1 min-h-0 py-5 overflow-y-auto bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700"
         >
             <SidebarCategory
-                v-if="$page.props.auth.user.user_type == users.admin"
+                v-if="
+                    $page.props.auth.user.user_type == users.admin ||
+                    $page.props.auth.user.user_type == users.hr_manager ||
+                    $page.props.auth.user.user_type == users.applicant
+                "
                 name="Menu"
             >
                 <template #tab>
                     <li>
                         <SidebarTab
-                            :href="route(`${currentUser}.dashboard`)"
+                            :href="route(`${currentUser}.dashboard.index`)"
                             :class="[
                                 $page.url.includes('dashboard') &&
                                     'bg-gray-100 dark:bg-gray-700',
@@ -47,44 +51,6 @@ const currentUser = computed(() => {
                             <template #title> Dashboard </template>
                         </SidebarTab>
                     </li>
-
-                    <li>
-                        <SidebarTab
-                            :href="route(`${currentUser}.homepage`)"
-                            :class="[
-                                $page.url.includes('homepage') &&
-                                    'bg-gray-100 dark:bg-gray-700',
-                            ]"
-                        >
-                            <template #icon>
-                                <font-awesome-icon
-                                    class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-                                    :icon="['fas', 'house']"
-                                />
-                            </template>
-
-                            <template #title> Home Page </template>
-                        </SidebarTab>
-                    </li>
-
-                    <li>
-                        <SidebarTab
-                            :href="route(`${currentUser}.announcement`)"
-                            :class="[
-                                $page.url.includes('announcement') &&
-                                    'bg-gray-100 dark:bg-gray-700',
-                            ]"
-                        >
-                            <template #icon>
-                                <font-awesome-icon
-                                    class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-                                    :icon="['fas', 'scroll']"
-                                />
-                            </template>
-
-                            <template #title> Announcement </template>
-                        </SidebarTab>
-                    </li>
                 </template>
             </SidebarCategory>
 
@@ -98,7 +64,7 @@ const currentUser = computed(() => {
                 <template #tab>
                     <li v-if="$page.props.auth.user.user_type == users.admin">
                         <SidebarTab
-                            :href="route(`${currentUser}.hr-managers`)"
+                            :href="route(`${currentUser}.hr-managers.index`)"
                             :class="[
                                 $page.url.includes('managers') &&
                                     'bg-gray-100 dark:bg-gray-700',
@@ -117,7 +83,7 @@ const currentUser = computed(() => {
 
                     <li>
                         <SidebarTab
-                            :href="route(`${currentUser}.hr-staffs`)"
+                            :href="route(`${currentUser}.hr-staffs.index`)"
                             :class="[
                                 $page.url.includes('staffs') &&
                                     'bg-gray-100 dark:bg-gray-700',
@@ -136,11 +102,18 @@ const currentUser = computed(() => {
                 </template>
             </SidebarCategory>
 
-            <SidebarCategory name="Recruitments">
+            <SidebarCategory
+                name="Recruitments"
+                v-if="
+                    $page.props.auth.user.user_type == users.admin ||
+                    $page.props.auth.user.user_type == users.hr_manager ||
+                    $page.props.auth.user.user_type == users.hr_staff
+                "
+            >
                 <template #tab>
                     <li>
                         <SidebarTab
-                            :href="route(`${currentUser}.applicants`)"
+                            :href="route(`${currentUser}.applicants.index`)"
                             :class="[
                                 $page.url.includes('applicants') &&
                                     'bg-gray-100 dark:bg-gray-700',
@@ -159,9 +132,9 @@ const currentUser = computed(() => {
 
                     <li>
                         <SidebarTab
-                            :href="route(`${currentUser}.files`)"
+                            :href="route(`${currentUser}.documents.index`)"
                             :class="[
-                                $page.url.includes('files') &&
+                                $page.url.includes('documents') &&
                                     'bg-gray-100 dark:bg-gray-700',
                             ]"
                         >
@@ -172,7 +145,132 @@ const currentUser = computed(() => {
                                 />
                             </template>
 
-                            <template #title> Files </template>
+                            <template #title> Documents </template>
+                        </SidebarTab>
+                    </li>
+                </template>
+            </SidebarCategory>
+
+            <SidebarCategory
+                name="Job Related"
+                v-if="$page.props.auth.user.user_type == users.admin"
+            >
+                <template #tab>
+                    <li>
+                        <SidebarTab
+                            v-if="
+                                $page.props.auth.user.user_type == users.admin
+                            "
+                            :href="route(`${currentUser}.qualifications.index`)"
+                            :class="[
+                                $page.url.includes('qualifications') &&
+                                    'bg-gray-100 dark:bg-gray-700',
+                            ]"
+                        >
+                            <template #icon>
+                                <font-awesome-icon
+                                    class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                    :icon="['fas', 'house']"
+                                />
+                            </template>
+
+                            <template #title> Qualifications </template>
+                        </SidebarTab>
+                    </li>
+
+                    <li>
+                        <SidebarTab
+                            v-if="
+                                $page.props.auth.user.user_type == users.admin
+                            "
+                            :href="route(`${currentUser}.benefits.index`)"
+                            :class="[
+                                $page.url.includes('benefits') &&
+                                    'bg-gray-100 dark:bg-gray-700',
+                            ]"
+                        >
+                            <template #icon>
+                                <font-awesome-icon
+                                    class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                    :icon="['fas', 'scroll']"
+                                />
+                            </template>
+
+                            <template #title> Benefits </template>
+                        </SidebarTab>
+                    </li>
+
+                    <li>
+                        <SidebarTab
+                            v-if="
+                                $page.props.auth.user.user_type == users.admin
+                            "
+                            :href="
+                                route(
+                                    `${currentUser}.company-assignments.index`
+                                )
+                            "
+                            :class="[
+                                $page.url.includes('company-assignments') &&
+                                    'bg-gray-100 dark:bg-gray-700',
+                            ]"
+                        >
+                            <template #icon>
+                                <font-awesome-icon
+                                    class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                    :icon="['fas', 'scroll']"
+                                />
+                            </template>
+
+                            <template #title> Company Assignments </template>
+                        </SidebarTab>
+                    </li>
+
+                    <li>
+                        <SidebarTab
+                            v-if="
+                                $page.props.auth.user.user_type == users.admin
+                            "
+                            :href="route(`${currentUser}.job-positions.index`)"
+                            :class="[
+                                $page.url.includes('jobPositions') &&
+                                    'bg-gray-100 dark:bg-gray-700',
+                            ]"
+                        >
+                            <template #icon>
+                                <font-awesome-icon
+                                    class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                    :icon="['fas', 'scroll']"
+                                />
+                            </template>
+
+                            <template #title> Job Positions </template>
+                        </SidebarTab>
+                    </li>
+                </template>
+            </SidebarCategory>
+
+            <SidebarCategory
+                name="Logs"
+                v-if="$page.props.auth.user.user_type == users.admin"
+            >
+                <template #tab>
+                    <li v-if="$page.props.auth.user.user_type == users.admin">
+                        <SidebarTab
+                            :href="route(`${currentUser}.activity-logs.index`)"
+                            :class="[
+                                $page.url.includes('activity-logs') &&
+                                    'bg-gray-100 dark:bg-gray-700',
+                            ]"
+                        >
+                            <template #icon>
+                                <font-awesome-icon
+                                    class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                    :icon="['fas', 'user-check']"
+                                />
+                            </template>
+
+                            <template #title> Activity Logs </template>
                         </SidebarTab>
                     </li>
                 </template>

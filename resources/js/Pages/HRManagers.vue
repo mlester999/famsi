@@ -34,7 +34,7 @@ defineProps({
 
             <template #title>HR Managers</template>
             <template #description
-                >This is the section of HR Manager accounts</template
+                >This section pertains to HR Manager accounts.</template
             >
         </TableCrud>
     </AppLayout>

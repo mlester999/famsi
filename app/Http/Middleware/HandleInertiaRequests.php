@@ -80,8 +80,11 @@ class HandleInertiaRequests extends Middleware
                             return "applicant";
                         }
                     }
-                }
-            ]
+                },
+
+
+            ],
+            'csrf_token' => csrf_token(),
         ]);
     }
 }

@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin;
+use App\Models\Applicant;
 use App\Models\HrManager;
-use App\Http\Requests\StoreHrManagerRequest;
-use App\Http\Requests\UpdateHrManagerRequest;
+use App\Models\HrStaff;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class HrManagerController extends Controller
@@ -58,6 +59,7 @@ class HrManagerController extends Controller
             'last_name' => $hrManager->last_name,
             'gender' => $hrManager->gender,
             'email' => $hrManager->user->email,
+            'email_verified_at' => $hrManager->user->email_verified_at,
             'contact_number' => $hrManager->contact_number,
             'is_active' => $hrManager->user->is_active,
             'created_at' => $hrManager->created_at,
@@ -176,6 +178,30 @@ class HrManagerController extends Controller
             'gender' => $hrManagerValidate['gender'],
             'contact_number' => $hrManagerValidate['contact_number'],
         ]);
+
+        $userInfo = null;
+        $userRole = '';
+
+        if(auth()->user()->user_type === User::ADMIN) {
+            $userInfo = Admin::where('user_id', auth()->user()->id)->first();
+            $userRole = "Admin";
+        } else if(auth()->user()->user_type === User::HR_MANAGER) {
+            $userInfo = HrManager::where('user_id', auth()->user()->id)->first();
+            $userRole = "Hr Manager";
+        } else if(auth()->user()->user_type === User::HR_STAFF) {
+            $userInfo = HrStaff::where('user_id', auth()->user()->id)->first();
+            $userRole = "Hr Staff";
+        } else if(auth()->user()->user_type === User::APPLICANT) {
+            $userInfo = Applicant::where('user_id', auth()->user()->id)->first();
+            $userRole = "Applicant";
+        }
+
+        activity()
+        ->performedOn(HrManager::where('user_id', $user['id'])->first())
+        ->causedBy(auth()->user())
+        ->event('created')
+        ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
+        ->log("Created a HR Manager account with the name of {$hrManagerValidate['first_name']} {$hrManagerValidate['last_name']}");
     }
 
     /**
@@ -211,12 +237,88 @@ class HrManagerController extends Controller
         $hrManager = HrManager::findOrFail($id);
         $user = HrManager::findOrFail($id)->user;
 
-        $hrManager->first_name = $hrManagerValidate['first_name'];
-        $hrManager->middle_name = $hrManagerValidate['middle_name'];
-        $hrManager->last_name = $hrManagerValidate['last_name'];
-        $hrManager->gender = $hrManagerValidate['gender'];
-        $user->email = $hrManagerValidate['email'];
-        $hrManager->contact_number = $hrManagerValidate['contact_number'];
+        $userInfo = null;
+        $userRole = '';
+
+        if(auth()->user()->user_type === User::ADMIN) {
+            $userInfo = Admin::where('user_id', auth()->user()->id)->first();
+            $userRole = "Admin";
+        } else if(auth()->user()->user_type === User::HR_MANAGER) {
+            $userInfo = HrManager::where('user_id', auth()->user()->id)->first();
+            $userRole = "Hr Manager";
+        } else if(auth()->user()->user_type === User::HR_STAFF) {
+            $userInfo = HrStaff::where('user_id', auth()->user()->id)->first();
+            $userRole = "Hr Staff";
+        } else if(auth()->user()->user_type === User::APPLICANT) {
+            $userInfo = Applicant::where('user_id', auth()->user()->id)->first();
+            $userRole = "Applicant";
+        }
+
+        if($hrManagerValidate['first_name'] !== $hrManager->first_name) {
+            activity()
+            ->performedOn(HrManager::where('user_id', $user['id'])->first())
+            ->causedBy(auth()->user())
+            ->event('updated')
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
+            ->log("Updated a HR Manager account's first name from {$hrManager->first_name} to {$hrManagerValidate['first_name']}");
+
+            $hrManager->first_name = $hrManagerValidate['first_name'];
+        }
+
+        if($hrManagerValidate['middle_name'] !== $hrManager->middle_name) {
+            activity()
+            ->performedOn(HrManager::where('user_id', $user['id'])->first())
+            ->causedBy(auth()->user())
+            ->event('updated')
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
+            ->log("Updated a HR Manager account's middle name from {$hrManager->middle_name} to {$hrManagerValidate['middle_name']}");
+
+            $hrManager->middle_name = $hrManagerValidate['middle_name'];
+        }
+
+        if($hrManagerValidate['last_name'] !== $hrManager->last_name) {
+            activity()
+            ->performedOn(HrManager::where('user_id', $user['id'])->first())
+            ->causedBy(auth()->user())
+            ->event('updated')
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
+            ->log("Updated a HR Manager account's last name from {$hrManager->last_name} to {$hrManagerValidate['last_name']}");
+
+            $hrManager->last_name = $hrManagerValidate['last_name'];
+        }
+
+        if($hrManagerValidate['gender'] !== $hrManager->gender) {
+            activity()
+            ->performedOn(HrManager::where('user_id', $user['id'])->first())
+            ->causedBy(auth()->user())
+            ->event('updated')
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
+            ->log("Updated a HR Manager account's gender from {$hrManager->gender} to {$hrManagerValidate['gender']}");
+
+            $hrManager->gender = $hrManagerValidate['gender'];
+        }
+
+        if($hrManagerValidate['email'] !== $user->email) {
+            activity()
+            ->performedOn(HrManager::where('user_id', $user['id'])->first())
+            ->causedBy(auth()->user())
+            ->event('updated')
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
+            ->log("Updated a HR Manager account's email from {$user->email} to {$hrManagerValidate['email']}");
+
+            $hrManager->email = $hrManagerValidate['email'];
+        }
+
+        if($hrManagerValidate['contact_number'] !== $hrManager->contact_number) {
+            activity()
+            ->performedOn(HrManager::where('user_id', $user['id'])->first())
+            ->causedBy(auth()->user())
+            ->event('updated')
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
+            ->log("Updated a HR Manager account's contact number from {$hrManager->contact_number} to {$hrManagerValidate['contact_number']}");
+
+            $hrManager->contact_number = $hrManagerValidate['contact_number'];
+        }
 
         $user->save();
         $hrManager->save();

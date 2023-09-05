@@ -19,6 +19,20 @@ class Applicant extends Model
         'contact_number',
     ];
 
+    // public function getActivitylogOptions(): LogOptions
+    // {
+    //     $logOptions = LogOptions::defaults()
+    //     ->logFillable();
+
+    //     $logOptions->setDescriptionForEvent(function (string $eventName) {
+    //         $description = "{$eventName} a Applicant account under the name of {$this->first_name} {$this->last_name}";
+
+    //         return $description;
+    //     });
+
+    //     return $logOptions;
+    // }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

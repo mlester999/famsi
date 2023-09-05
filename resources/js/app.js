@@ -13,6 +13,14 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 /* import font awesome icon component */
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
+/* import loading overlay */
+import { LoadingPlugin } from "vue-loading-overlay";
+import "vue-loading-overlay/dist/css/index.css";
+
+/* import Toast Notification */
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css";
+
 /* import specific icons */
 import {
     faGauge,
@@ -57,6 +65,8 @@ createInertiaApp({
         return createApp({ render: () => h(App, props) })
             .component("font-awesome-icon", FontAwesomeIcon)
             .use(clickOutside)
+            .use(LoadingPlugin)
+            .use(Toast, { timeout: 4000, maxToasts: 5 })
             .use(plugin)
             .use(ZiggyVue, Ziggy)
             .mount(el);
