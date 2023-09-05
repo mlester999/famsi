@@ -1,12 +1,7 @@
 <script setup>
-import { QuillEditor } from "@vueup/vue-quill";
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
 import "@vueup/vue-quill/dist/vue-quill.bubble.css";
 import { inject } from "vue";
-
-const props = defineProps({
-    modelValue: String,
-});
 
 const hideRichTextModal = inject("hideRichTextModal");
 </script>
@@ -53,19 +48,10 @@ const hideRichTextModal = inject("hideRichTextModal");
                         class="bg-white space-y-2 px-4 pb-4 pt-5 sm:p-6 sm:pb-4"
                     >
                         <h1 class="font-normal text-lg text-gray-500">
-                            Description
+                            Company Profile
                         </h1>
                         <div>
-                            <QuillEditor
-                                theme="snow"
-                                :value="modelValue"
-                                @input="
-                                    $emit(
-                                        'update:modelValue',
-                                        $event.target.value
-                                    )
-                                "
-                            />
+                            <slot></slot>
                         </div>
                     </div>
                     <div

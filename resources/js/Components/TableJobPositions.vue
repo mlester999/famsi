@@ -27,6 +27,7 @@ const props = defineProps({
 const form = useForm({
     title: "",
     description: "",
+    company_profile: null,
     location: "",
     job_type: "",
     employment_type: "",
@@ -129,6 +130,11 @@ const hideDeleteModal = () => {
 const showInfoModal = (data) => {
     form.title = data.title;
     form.description = data.description;
+    form.company_profile = data.company_profile;
+    form.location = data.location;
+    form.job_type = data.job_type;
+    form.employment_type = data.employment_type;
+    form.schedule = data.schedule;
 
     document.body.classList.add("overflow-hidden");
 
@@ -156,11 +162,10 @@ const showUpdateModal = (data) => {
     if (data) {
         form.title = data.title;
         form.description = data.description;
+        form.company_profile = data.company_profile;
         form.location = data.location;
         form.job_type = data.job_type;
         form.employment_type = data.employment_type;
-        form.responsibilities = data.responsibilities;
-        form.qualifications = data.qualifications;
         form.schedule = data.schedule;
 
         currentUpdatingJobID.value = data.id;
@@ -186,11 +191,10 @@ const hideUpdateModal = () => {
 const showAddModal = () => {
     form.title = "";
     form.description = "";
+    form.company_profile = "";
     form.location = "";
     form.job_type = "";
     form.employment_type = "";
-    form.responsibilities = "";
-    form.qualifications = "";
     form.schedule = "";
 
     document.body.classList.add("overflow-hidden");
@@ -253,10 +257,13 @@ watch(
                 class="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-30 transition duration-200"
             ></div>
 
-            <TextEditorModal
-                v-if="richTextEditorModal"
-                v-model="form.description"
-            />
+            <TextEditorModal v-if="richTextEditorModal">
+                <QuillEditor
+                    v-model:content="form.company_profile"
+                    contentType="html"
+                    theme="snow"
+                />
+            </TextEditorModal>
         </Teleport>
     </Transition>
     <div
@@ -353,13 +360,6 @@ watch(
                                     scope="col"
                                     class="px-2 py-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
-                                    Description
-                                </th>
-
-                                <th
-                                    scope="col"
-                                    class="px-2 py-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                                >
                                     Location
                                 </th>
 
@@ -415,16 +415,6 @@ watch(
                                         class="text-base text-gray-900 dark:text-white"
                                     >
                                         {{ role.title }}
-                                    </div>
-                                </td>
-
-                                <td
-                                    class="px-2 py-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                                >
-                                    <div
-                                        class="text-base max-w-xs whitespace-normal text-gray-900 dark:text-white"
-                                    >
-                                        {{ role.description }}
                                     </div>
                                 </td>
 
@@ -735,6 +725,19 @@ watch(
                     </div>
 
                     <div>
+                        <h1 class="text-gray-500">Company Profile</h1>
+                        <QuillEditor :options="richTextEditorOptions" />
+
+                        <button
+                            type="button"
+                            @click="showRichTextModal"
+                            class="uppercase bg-gray-300 hover:bg-gray-400 duration-200 transition px-6 py-2 w-full"
+                        >
+                            Edit in Full Screen
+                        </button>
+                    </div>
+
+                    <div>
                         <InputField
                             id="location"
                             v-model="form.location"
@@ -778,9 +781,7 @@ watch(
                         />
                     </div>
                 </div>
-                <div
-                    class="bottom-0 left-0 flex justify-center w-full pb-4 mt-4 space-x-4 sm:absolute sm:px-4 sm:mt-0"
-                >
+                <div class="flex justify-center w-full py-4 space-x-4">
                     <button
                         type="submit"
                         class="w-full justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
@@ -947,21 +948,22 @@ watch(
                             :error="form.errors.title"
                         />
                     </div>
-                    <div>
-                        <h1 class="text-gray-500">Description</h1>
-                        <QuillEditor
-                            v-model="form.description"
-                            :options="richTextEditorOptions"
-                        />
 
-                        <!-- <TextArea
+                    <div>
+                        <TextArea
                             id="description"
                             v-model="form.description"
                             rows="3"
                             label="Description"
                             placeholder="Description"
                             :error="form.errors.description"
-                        /> -->
+                        />
+                    </div>
+
+                    <div>
+                        <h1 class="text-gray-500">Company Profile</h1>
+                        <QuillEditor :options="richTextEditorOptions" />
+
                         <button
                             type="button"
                             @click="showRichTextModal"

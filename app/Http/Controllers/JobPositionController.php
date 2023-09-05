@@ -28,12 +28,9 @@ class JobPositionController extends Controller
         ->when($searchReq, function($query, $search) {
             $query->where(function ($query) use ($search) {
                     $query->whereRaw('LOWER(title) LIKE LOWER(?)', ['%' . $search . '%'])
-                        ->orWhereRaw('LOWER(description) LIKE LOWER(?)', ['%' . $search . '%'])
                         ->orWhereRaw('LOWER(location) LIKE LOWER(?)', ['%' . $search . '%'])
                         ->orWhereRaw('LOWER(job_type) LIKE LOWER(?)', ['%' . $search . '%'])
                         ->orWhereRaw('LOWER(employment_type) LIKE LOWER(?)', ['%' . $search . '%'])
-                        ->orWhereRaw('LOWER(responsibilities) LIKE LOWER(?)', ['%' . $search . '%'])
-                        ->orWhereRaw('LOWER(qualifications) LIKE LOWER(?)', ['%' . $search . '%'])
                         ->orWhereRaw('LOWER(schedule) LIKE LOWER(?)', ['%' . $search . '%']);
             });
 
@@ -57,11 +54,10 @@ class JobPositionController extends Controller
             'id' => $jobPosition->id,
             'title' => $jobPosition->title,
             'description' => $jobPosition->description,
+            'company_profile' => $jobPosition->company_profile,
             'location' => $jobPosition->location,
             'job_type' => $jobPosition->job_type,
             'employment_type' => $jobPosition->employment_type,
-            'responsibilities' => $jobPosition->responsibilities,
-            'qualifications' => $jobPosition->qualifications,
             'schedule' => $jobPosition->schedule,
             'created_at' => $jobPosition->created_at,
         ]);
@@ -158,22 +154,20 @@ class JobPositionController extends Controller
         $jobPositionValidate = Request::validate([
             'title' => ['required', 'max:50'],
             'description' => ['required'],
+            'company_profile' => ['required'],
             'location' => ['required', 'max:50'],
             'job_type' => ['required', 'max:50'],
             'employment_type' => ['required', 'max:50'],
-            'responsibilities' => ['required'],
-            'qualifications' => ['required'],
             'schedule' => ['required'],
         ]);
 
         $user = JobPosition::create([
             'title' => $jobPositionValidate['title'],
             'description' => $jobPositionValidate['description'],
+            'company_profile' => $jobPositionValidate['company_profile'],
             'location' => $jobPositionValidate['location'],
             'job_type' => $jobPositionValidate['job_type'],
             'employment_type' => $jobPositionValidate['employment_type'],
-            'responsibilities' => $jobPositionValidate['responsibilities'],
-            'qualifications' => $jobPositionValidate['qualifications'],
             'schedule' => $jobPositionValidate['schedule'],
         ]);
 
@@ -205,11 +199,10 @@ class JobPositionController extends Controller
         $jobPositionValidate = Request::validate([
             'title' => ['required', 'max:50'],
             'description' => ['required'],
+            'company_profile' => ['required'],
             'location' => ['required', 'max:50'],
             'job_type' => ['required', 'max:50'],
             'employment_type' => ['required', 'max:50'],
-            'responsibilities' => ['required'],
-            'qualifications' => ['required'],
             'schedule' => ['required'],
         ]);
 
@@ -254,6 +247,17 @@ class JobPositionController extends Controller
             $jobPosition->description = $jobPositionValidate['description'];
         }
 
+        if($jobPositionValidate['company_profile'] !== $jobPosition->company_profile) {
+            activity()
+            ->performedOn(JobPosition::where('id', $id)->first())
+            ->causedBy(auth()->user())
+            ->event('updated')
+            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
+            ->log("Updated a Job Position's Company Profile");
+
+            $jobPosition->company_profile = $jobPositionValidate['company_profile'];
+        }
+
         if($jobPositionValidate['location'] !== $jobPosition->location) {
             activity()
             ->performedOn(JobPosition::where('id', $id)->first())
@@ -285,28 +289,6 @@ class JobPositionController extends Controller
             ->log("Updated a Job Position's employment_type from {$jobPosition->employment_type} to {$jobPositionValidate['employment_type']}");
 
             $jobPosition->employment_type = $jobPositionValidate['employment_type'];
-        }
-
-        if($jobPositionValidate['responsibilities'] !== $jobPosition->responsibilities) {
-            activity()
-            ->performedOn(JobPosition::where('id', $id)->first())
-            ->causedBy(auth()->user())
-            ->event('updated')
-            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
-            ->log("Updated a Job Position's responsibilities from {$jobPosition->responsibilities} to {$jobPositionValidate['responsibilities']}");
-
-            $jobPosition->responsibilities = $jobPositionValidate['responsibilities'];
-        }
-
-        if($jobPositionValidate['qualifications'] !== $jobPosition->qualifications) {
-            activity()
-            ->performedOn(JobPosition::where('id', $id)->first())
-            ->causedBy(auth()->user())
-            ->event('updated')
-            ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
-            ->log("Updated a Job Position's qualifications from {$jobPosition->qualifications} to {$jobPositionValidate['qualifications']}");
-
-            $jobPosition->qualifications = $jobPositionValidate['qualifications'];
         }
 
         if($jobPositionValidate['schedule'] !== $jobPosition->schedule) {
