@@ -4,6 +4,12 @@ use App\Http\Controllers\ActivityLogsController;
 use App\Http\Controllers\HrManagerController;
 use App\Http\Controllers\HrStaffController;
 use App\Http\Controllers\ApplicantController;
+use App\Http\Controllers\BenefitController;
+use App\Http\Controllers\CompanyAssignmentController;
+use App\Http\Controllers\DocumentsController;
+use App\Http\Controllers\HrManagerDashboardController;
+use App\Http\Controllers\JobPositionController;
+use App\Http\Controllers\QualificationController;
 use App\Models\Applicant;
 use App\Models\HrManager;
 use App\Models\HrStaff;
@@ -55,19 +61,21 @@ Route::middleware([
             Route::put('/deactivate/{id}', [ApplicantController::class, 'deactivate'])->name('deactivate');
         });
 
-        Route::get('/files', function () {
-            return Inertia::render('Files');
-        })->name('files');
+        Route::get('/documents', function () {
+            return Inertia::render('Documents');
+        })->name('documents');
     });
 
     Route::group(['middleware' => 'role:hr-manager', 'prefix' => 'hr-manager', 'as' => 'hr-manager.'], function () {
-        Route::get('/dashboard', function () {
-            return Inertia::render('Dashboard', [
-                'totalApplicants' => Applicant::count(),
-                'totalHrStaffs' => HrStaff::count(),
-                'totalHrManagers' => HrManager::count()
-            ]);
-        })->name('dashboard');
+        Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.'], function() {
+            Route::get('/', HrManagerDashboardController::class)->name('index');
+
+            Route::post('/store', [HrManagerDashboardController::class, 'store'])->name('store');
+
+            Route::put('/update/{id}', [HrManagerDashboardController::class, 'update'])->name('update');
+
+            Route::delete('/delete/{id}', [HrManagerDashboardController::class, 'delete'])->name('delete');
+        });
 
         Route::group(['prefix' => 'hr-staffs', 'as' => 'hr-staffs.'], function() {
             Route::get('/', [HrStaffController::class, 'index'])->name('index');
@@ -93,27 +101,79 @@ Route::middleware([
             Route::put('/deactivate/{id}', [ApplicantController::class, 'deactivate'])->name('deactivate');
         });
 
-        Route::get('/files', function () {
-            return Inertia::render('Files');
-        })->name('files');
+        Route::group(['prefix' => 'documents', 'as' => 'documents.'], function() {
+            Route::get('/', [DocumentsController::class, 'index'])->name('index');
+
+            Route::post('/upload', [DocumentsController::class, 'upload'])->name('upload');
+
+            Route::post('/upload-revert', [DocumentsController::class, 'uploadRevert'])->name('upload-revert');
+
+            Route::post('/store', [DocumentsController::class, 'store'])->name('store');
+
+            Route::put('/update/{id}', [DocumentsController::class, 'update'])->name('update');
+
+            Route::delete('/destroy/{id}', [DocumentsController::class, 'destroy'])->name('destroy');
+        });
     });
 
     Route::group(['middleware' => 'role:admin', 'prefix' => 'admin', 'as' => 'admin.'], function () {
-        Route::get('/dashboard', function () {
-            return Inertia::render('Dashboard', [
-                'totalApplicants' => Applicant::count(),
-                'totalHrStaffs' => HrStaff::count(),
-                'totalHrManagers' => HrManager::count()
-            ]);
-        })->name('dashboard');
+        Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.'], function() {
+            Route::get('/', function () {
+                return Inertia::render('Dashboard', [
+                    'totalApplicants' => Applicant::count(),
+                    'totalHrStaffs' => HrStaff::count(),
+                    'totalHrManagers' => HrManager::count()
+                ]);
+            })->name('index');
+        });
 
-        Route::get('/homepage', function () {
-            return Inertia::render('HomePage');
-        })->name('homepage');
+        Route::group(['prefix' => 'qualifications', 'as' => 'qualifications.'], function() {
+            Route::get('/', [QualificationController::class, 'index'])->name('index');
 
-        Route::get('/announcement', function () {
-            return Inertia::render('Announcement');
-        })->name('announcement');
+            Route::post('/store', [QualificationController::class, 'store'])->name('store');
+
+            Route::put('/update/{id}', [QualificationController::class, 'update'])->name('update');
+
+            Route::delete('/destroy/{id}', [QualificationController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::group(['prefix' => 'benefits', 'as' => 'benefits.'], function() {
+            Route::get('/', [BenefitController::class, 'index'])->name('index');
+
+            Route::post('/store', [BenefitController::class, 'store'])->name('store');
+
+            Route::put('/update/{id}', [BenefitController::class, 'update'])->name('update');
+
+            Route::delete('/destroy/{id}', [BenefitController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::group(['prefix' => 'company-assignments', 'as' => 'company-assignments.'], function() {
+            Route::get('/', [CompanyAssignmentController::class, 'index'])->name('index');
+
+            Route::post('/store', [CompanyAssignmentController::class, 'store'])->name('store');
+
+            Route::put('/update/{id}', [CompanyAssignmentController::class, 'update'])->name('update');
+
+            Route::delete('/destroy/{id}', [CompanyAssignmentController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::group(['prefix' => 'job-positions', 'as' => 'job-positions.'], function() {
+            Route::get('/', [JobPositionController::class, 'index'])->name('index');
+
+            Route::post('/store', [JobPositionController::class, 'store'])->name('store');
+
+            Route::put('/update/{id}', [JobPositionController::class, 'update'])->name('update');
+
+            Route::delete('/destroy/{id}', [JobPositionController::class, 'destroy'])->name('destroy');
+        });
+
+        // Route::get('/landing-page', function () {
+        //     return Inertia::render('LandingPage');
+        // })->name('landingpage');
+
+        // Route::get('/mainpage', function () {
+        //     return Inertia::render('MainPage');
+        // })->name('mainpage');
 
             Route::group(['prefix' => 'activity-logs', 'as' => 'activity-logs.'], function () {
                 Route::get('/', [ActivityLogsController::class, 'index'])->name('index');
@@ -157,9 +217,20 @@ Route::middleware([
                 Route::put('/deactivate/{id}', [ApplicantController::class, 'deactivate'])->name('deactivate');
             });
 
-        Route::get('/files', function () {
-            return Inertia::render('Files');
-        })->name('files');
+            Route::group(['prefix' => 'documents', 'as' => 'documents.'], function() {
+                Route::get('/', [DocumentsController::class, 'index'])->name('index');
+
+                Route::post('/upload', [DocumentsController::class, 'upload'])->name('upload');
+
+                Route::post('/upload-revert', [DocumentsController::class, 'uploadRevert'])->name('upload-revert');
+
+                Route::post('/store', [DocumentsController::class, 'store'])->name('store');
+
+                Route::put('/update/{id}', [DocumentsController::class, 'update'])->name('update');
+
+                Route::delete('/destroy/{id}', [DocumentsController::class, 'destroy'])->name('destroy');
+            });
+
     });
 });
 

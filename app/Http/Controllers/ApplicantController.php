@@ -164,7 +164,7 @@ class ApplicantController extends Controller
         $user = User::create([
             'email' => $applicantValidate['email'],
             'password' => Hash::make('12345678'),
-            'user_type' => 2,
+            'user_type' => 0,
             'is_active' => 1
         ]);
 

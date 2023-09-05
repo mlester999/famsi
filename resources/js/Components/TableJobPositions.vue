@@ -1,49 +1,61 @@
 <script setup>
 import { router, usePage, useForm } from "@inertiajs/vue3";
-import { ref, watch, Transition, Teleport } from "vue";
+import { ref, watch, Transition, Teleport, provide } from "vue";
 import debounce from "lodash.debounce";
 import { useToast } from "vue-toastification";
 import Pagination from "../Partials/Table/Pagination.vue";
 import InputField from "./InputField.vue";
+import TextArea from "./TextArea.vue";
 import SelectInput from "./SelectInput.vue";
+import TextEditorModal from "./TextEditorModal.vue";
+import { QuillEditor } from "@vueup/vue-quill";
+import "@vueup/vue-quill/dist/vue-quill.snow.css";
+import "@vueup/vue-quill/dist/vue-quill.bubble.css";
+
+const page = usePage();
+const toast = useToast();
 
 const props = defineProps({
     roles: Object,
     pagination: Object,
     filters: Object,
+    companyAssignments: Array,
     linkName: String,
     title: String,
 });
 
 const form = useForm({
-    first_name: "",
-    middle_name: "",
-    last_name: "",
-    gender: "",
-    email: "",
-    contact_number: "",
+    title: "",
+    description: "",
+    company_profile: null,
+    location: "",
+    job_type: "",
+    employment_type: "",
+    schedule: "",
 });
 
-const page = usePage();
+const richTextEditorOptions = ref({
+    debug: "info",
+    placeholder: "Please edit in full screen.",
+    readOnly: true,
+    theme: "snow",
+});
 
-const toast = useToast();
+const richTextEditorModal = ref(false);
 
 let search = ref(props.filters.search);
 
-let currentUpdatingUserID = ref(null);
-let currentUserIsActive = ref(null);
-let currentUserEmailIsVerified = ref(null);
+let currentUpdatingJobID = ref(null);
 
 let updateModalVisibility = ref(false);
 let addModalVisibility = ref(false);
 let viewInfoModalVisibility = ref(false);
-let activationModalVisibility = ref(false);
-let deactivationModalVisibility = ref(false);
+let deleteModalVisibility = ref(false);
 
 const submit = () => {
     form.post(`/${page.props.user.role}/${props.linkName}/store`, {
         onSuccess: () => {
-            toast.success("User created successfully!");
+            toast.success(`${props.title} added successfully!`);
             document.body.classList.remove("overflow-hidden");
             updateModalVisibility.value = false;
             addModalVisibility.value = false;
@@ -55,10 +67,10 @@ const submit = () => {
 
 const update = () => {
     form.put(
-        `/${page.props.user.role}/${props.linkName}/update/${currentUpdatingUserID.value}`,
+        `/${page.props.user.role}/${props.linkName}/update/${currentUpdatingJobID.value}`,
         {
             onSuccess: () => {
-                toast.success("User updated successfully!");
+                toast.success(`${props.title} updated successfully!`);
                 hideUpdateModal();
                 hideAddModal();
                 form.reset();
@@ -68,16 +80,15 @@ const update = () => {
     );
 };
 
-const activate = () => {
-    form.put(
-        `/${page.props.user.role}/${props.linkName}/activate/${currentUpdatingUserID.value}`,
+const destroy = () => {
+    form.delete(
+        `/${page.props.user.role}/${props.linkName}/destroy/${currentUpdatingJobID.value}`,
         {
             onSuccess: () => {
-                toast.success("User activated successfully!");
+                toast.success(`${props.title} deleted successfully!`);
                 hideUpdateModal();
                 hideAddModal();
-                hideActivationModal();
-                hideDeactivationModal();
+                hideDeleteModal();
                 form.reset();
                 clearErrors();
             },
@@ -85,79 +96,49 @@ const activate = () => {
     );
 };
 
-const deactivate = () => {
-    form.put(
-        `/${page.props.user.role}/${props.linkName}/deactivate/${currentUpdatingUserID.value}`,
-        {
-            onSuccess: () => {
-                toast.success("User deactivated successfully!");
-                hideUpdateModal();
-                hideAddModal();
-                hideActivationModal();
-                hideDeactivationModal();
-                form.reset();
-                clearErrors();
-            },
-        }
-    );
+const showRichTextModal = () => {
+    richTextEditorModal.value = true;
 };
 
-// Activation Modal
-const showActivationModal = (id) => {
+const hideRichTextModal = () => {
+    richTextEditorModal.value = false;
+};
+
+provide("hideRichTextModal", hideRichTextModal);
+
+// Delete Modal
+const showDeleteModal = (id) => {
     document.body.classList.remove("overflow-hidden");
     viewInfoModalVisibility.value = false;
 
     document.body.classList.add("overflow-hidden");
 
-    currentUpdatingUserID.value = id;
+    currentUpdatingJobID.value = id;
 
-    activationModalVisibility.value = true;
+    deleteModalVisibility.value = true;
 };
 
-const hideActivationModal = () => {
+const hideDeleteModal = () => {
     document.body.classList.remove("overflow-hidden");
 
-    currentUpdatingUserID.value = null;
+    currentUpdatingJobID.value = null;
 
-    viewInfoModalVisibility.value = false;
-    activationModalVisibility.value = false;
-};
-
-// Deactivation Modal
-const showDeactivationModal = (id) => {
-    document.body.classList.remove("overflow-hidden");
-    viewInfoModalVisibility.value = false;
-
-    document.body.classList.add("overflow-hidden");
-
-    currentUpdatingUserID.value = id;
-
-    deactivationModalVisibility.value = true;
-};
-
-const hideDeactivationModal = () => {
-    document.body.classList.remove("overflow-hidden");
-
-    currentUpdatingUserID.value = null;
-
-    viewInfoModalVisibility.value = false;
-    deactivationModalVisibility.value = false;
+    deleteModalVisibility.value = false;
 };
 
 // Show Info Modal
 const showInfoModal = (data) => {
-    form.first_name = data.first_name;
-    form.middle_name = data.middle_name;
-    form.last_name = data.last_name;
-    form.gender = data.gender;
-    form.email = data.email;
-    form.contact_number = data.contact_number;
+    form.title = data.title;
+    form.description = data.description;
+    form.company_profile = data.company_profile;
+    form.location = data.location;
+    form.job_type = data.job_type;
+    form.employment_type = data.employment_type;
+    form.schedule = data.schedule;
 
     document.body.classList.add("overflow-hidden");
 
-    currentUpdatingUserID.value = data.id;
-    currentUserIsActive.value = data.is_active;
-    currentUserEmailIsVerified.value = data.email_verified_at;
+    currentUpdatingJobID.value = data.id;
 
     viewInfoModalVisibility.value = true;
 };
@@ -165,14 +146,11 @@ const showInfoModal = (data) => {
 const hideInfoModal = () => {
     document.body.classList.remove("overflow-hidden");
 
-    currentUpdatingUserID.value = null;
-    currentUserIsActive.value = null;
-    currentUserEmailIsVerified.value = null;
+    currentUpdatingJobID.value = null;
 
     viewInfoModalVisibility.value = false;
 
     form.reset();
-
     form.clearErrors();
 };
 
@@ -182,14 +160,15 @@ const showUpdateModal = (data) => {
     viewInfoModalVisibility.value = false;
 
     if (data) {
-        form.first_name = data.first_name;
-        form.middle_name = data.middle_name;
-        form.last_name = data.last_name;
-        form.gender = data.gender;
-        form.email = data.email;
-        form.contact_number = data.contact_number;
+        form.title = data.title;
+        form.description = data.description;
+        form.company_profile = data.company_profile;
+        form.location = data.location;
+        form.job_type = data.job_type;
+        form.employment_type = data.employment_type;
+        form.schedule = data.schedule;
 
-        currentUpdatingUserID.value = data.id;
+        currentUpdatingJobID.value = data.id;
     }
 
     document.body.classList.add("overflow-hidden");
@@ -200,23 +179,23 @@ const showUpdateModal = (data) => {
 const hideUpdateModal = () => {
     document.body.classList.remove("overflow-hidden");
 
-    currentUpdatingUserID.value = null;
+    currentUpdatingJobID.value = null;
 
-    viewInfoModalVisibility.value = false;
     updateModalVisibility.value = false;
+    viewInfoModalVisibility.value = false;
 
     form.reset();
-
     form.clearErrors();
 };
 
 const showAddModal = () => {
-    form.first_name = "";
-    form.middle_name = "";
-    form.last_name = "";
-    form.gender = "";
-    form.email = "";
-    form.contact_number = "";
+    form.title = "";
+    form.description = "";
+    form.company_profile = "";
+    form.location = "";
+    form.job_type = "";
+    form.employment_type = "";
+    form.schedule = "";
 
     document.body.classList.add("overflow-hidden");
 
@@ -229,7 +208,6 @@ const hideAddModal = () => {
     addModalVisibility.value = false;
 
     form.reset();
-
     form.clearErrors();
 };
 
@@ -268,14 +246,8 @@ watch(
             ></div>
 
             <div
-                v-else-if="activationModalVisibility"
-                @click="hideActivationModal"
-                class="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-30 transition duration-200"
-            ></div>
-
-            <div
-                v-else-if="deactivationModalVisibility"
-                @click="hideDeactivationModal"
+                v-else-if="deleteModalVisibility"
+                @click="hideDeleteModal"
                 class="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-30 transition duration-200"
             ></div>
 
@@ -284,6 +256,14 @@ watch(
                 @click="hideInfoModal"
                 class="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-30 transition duration-200"
             ></div>
+
+            <TextEditorModal v-if="richTextEditorModal">
+                <QuillEditor
+                    v-model:content="form.company_profile"
+                    contentType="html"
+                    theme="snow"
+                />
+            </TextEditorModal>
         </Teleport>
     </Transition>
     <div
@@ -373,50 +353,42 @@ watch(
                                     scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
-                                    First Name
-                                </th>
-                                <th
-                                    scope="col"
-                                    class="px-2 py-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                                >
-                                    Middle Name
-                                </th>
-                                <th
-                                    scope="col"
-                                    class="px-2 py-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                                >
-                                    Last Name
-                                </th>
-                                <th
-                                    scope="col"
-                                    class="px-2 py-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                                >
-                                    Gender
-                                </th>
-                                <th
-                                    scope="col"
-                                    class="px-2 py-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                                >
-                                    Email Address
-                                </th>
-                                <th
-                                    scope="col"
-                                    class="px-2 py-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                                >
-                                    Contact Number
-                                </th>
-                                <th
-                                    scope="col"
-                                    class="px-2 py-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                                >
-                                    Email Status
+                                    Title
                                 </th>
 
                                 <th
                                     scope="col"
                                     class="px-2 py-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
-                                    Account Status
+                                    Location
+                                </th>
+
+                                <th
+                                    scope="col"
+                                    class="px-2 py-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                                >
+                                    Job Type
+                                </th>
+
+                                <th
+                                    scope="col"
+                                    class="px-2 py-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                                >
+                                    Employment Type
+                                </th>
+
+                                <th
+                                    scope="col"
+                                    class="px-2 py-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                                >
+                                    Schedule
+                                </th>
+
+                                <th
+                                    scope="col"
+                                    class="px-2 py-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                                >
+                                    Created At
                                 </th>
 
                                 <th
@@ -442,103 +414,65 @@ watch(
                                     <div
                                         class="text-base text-gray-900 dark:text-white"
                                     >
-                                        {{ role.first_name }}
+                                        {{ role.title }}
                                     </div>
                                 </td>
+
                                 <td
                                     class="px-2 py-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
                                     <div
-                                        v-if="role.middle_name"
-                                        class="text-base text-gray-900 dark:text-white"
+                                        class="text-base max-w-xs whitespace-normal text-gray-900 dark:text-white"
                                     >
-                                        {{ role.middle_name }}
-                                    </div>
-
-                                    <div
-                                        v-else
-                                        class="text-base font-light text-gray-400 dark:text-gray-600"
-                                    >
-                                        N/A
+                                        {{ role.location }}
                                     </div>
                                 </td>
+
                                 <td
                                     class="px-2 py-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
                                     <div
-                                        class="text-base text-gray-900 dark:text-white"
+                                        class="text-base max-w-xs whitespace-normal text-gray-900 dark:text-white"
                                     >
-                                        {{ role.last_name }}
+                                        {{ role.job_type }}
                                     </div>
                                 </td>
+
                                 <td
                                     class="px-2 py-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
                                     <div
-                                        class="text-base text-gray-900 dark:text-white"
+                                        class="text-base max-w-xs whitespace-normal text-gray-900 dark:text-white"
                                     >
-                                        {{ role.gender }}
-                                    </div>
-                                </td>
-                                <td
-                                    class="max-w-sm px-2 py-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
-                                >
-                                    <div
-                                        class="text-base text-gray-900 dark:text-white"
-                                    >
-                                        {{ role.email }}
+                                        {{ role.employment_type }}
                                     </div>
                                 </td>
 
                                 <td
-                                    class="max-w-sm px-2 py-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
+                                    class="px-2 py-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
                                     <div
-                                        class="text-base text-gray-900 dark:text-white"
+                                        class="text-base max-w-xs whitespace-normal text-gray-900 dark:text-white"
                                     >
-                                        {{ role.contact_number }}
+                                        {{ role.schedule }}
                                     </div>
                                 </td>
 
                                 <td
-                                    class="px-2 py-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white"
+                                    class="px-2 py-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
                                     <div
-                                        v-if="role.email_verified_at"
-                                        class="flex items-center"
+                                        class="text-base max-w-xs whitespace-normal text-gray-900 dark:text-white"
                                     >
-                                        <div
-                                            class="h-2.5 w-2.5 rounded-full bg-green-400 mr-2"
-                                        ></div>
-                                        Verified
-                                    </div>
-
-                                    <div v-else class="flex items-center">
-                                        <div
-                                            class="h-2.5 w-2.5 rounded-full bg-red-500 mr-2"
-                                        ></div>
-                                        Not Verified
-                                    </div>
-                                </td>
-
-                                <td
-                                    class="px-2 py-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white"
-                                >
-                                    <div
-                                        v-if="role.is_active"
-                                        class="flex items-center"
-                                    >
-                                        <div
-                                            class="h-2.5 w-2.5 rounded-full bg-green-400 mr-2"
-                                        ></div>
-                                        Active
-                                    </div>
-
-                                    <div v-else class="flex items-center">
-                                        <div
-                                            class="h-2.5 w-2.5 rounded-full bg-red-500 mr-2"
-                                        ></div>
-                                        Inactive
+                                        {{
+                                            new Date(
+                                                role.created_at
+                                            ).toLocaleDateString("en-US", {
+                                                month: "long",
+                                                day: "numeric",
+                                                year: "numeric",
+                                            })
+                                        }}
                                     </div>
                                 </td>
 
@@ -556,23 +490,12 @@ watch(
                                         Update
                                     </button>
                                     <button
-                                        v-if="role.is_active"
-                                        @click="showDeactivationModal(role.id)"
+                                        @click="showDeleteModal(role.id)"
                                         type="button"
-                                        id="deactivateUserButton"
+                                        id="deleteJobsButton"
                                         class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900"
                                     >
-                                        Deactivate
-                                    </button>
-
-                                    <button
-                                        v-else
-                                        @click="showActivationModal(role.id)"
-                                        type="button"
-                                        id="activateUserButton"
-                                        class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:ring-green-300 dark:focus:ring-green-900"
-                                    >
-                                        Activate
+                                        Delete
                                     </button>
                                 </td>
                             </tr>
@@ -649,94 +572,67 @@ watch(
                 <div>
                     <h3 class="text-md text-gray-500 dark:text-white">
                         <span class="font-bold text-black dark:text-gray-400"
-                            >First Name:
+                            >Title:
                         </span>
                     </h3>
                     <p class="text-black dark:text-white">
-                        {{ form.first_name }}
+                        {{ form.title }}
                     </p>
                 </div>
 
                 <div>
                     <h3 class="text-md text-gray-500 dark:text-gray-400">
                         <span class="font-bold text-black dark:text-gray-400"
-                            >Middle Name:
-                        </span>
-                    </h3>
-                    <span v-if="form.middle_name">{{ form.middle_name }}</span>
-                    <p class="text-gray-500 dark:text-gray-600" v-else>N/A</p>
-                </div>
-
-                <div>
-                    <h3 class="text-md text-gray-500 dark:text-gray-400">
-                        <span class="font-bold text-black dark:text-gray-400"
-                            >Last Name:
+                            >Description:
                         </span>
                     </h3>
                     <p class="text-black dark:text-white">
-                        {{ form.last_name }}
+                        {{ form.description }}
                     </p>
                 </div>
 
                 <div>
                     <h3 class="text-md text-gray-500 dark:text-gray-400">
                         <span class="font-bold text-black dark:text-gray-400"
-                            >Gender:
-                        </span>
-                    </h3>
-                    <p class="text-black dark:text-white">{{ form.gender }}</p>
-                </div>
-
-                <div>
-                    <h3 class="text-md text-gray-500 dark:text-gray-400">
-                        <span class="font-bold text-black dark:text-gray-400"
-                            >Email Address:
-                        </span>
-                    </h3>
-                    <p class="text-black dark:text-white">{{ form.email }}</p>
-                </div>
-
-                <div>
-                    <h3 class="text-md text-gray-500 dark:text-gray-400">
-                        <span class="font-bold text-black dark:text-gray-400"
-                            >Contact Number:
+                            >Location:
                         </span>
                     </h3>
                     <p class="text-black dark:text-white">
-                        {{ form.contact_number }}
+                        {{ form.location }}
                     </p>
                 </div>
 
                 <div>
                     <h3 class="text-md text-gray-500 dark:text-gray-400">
                         <span class="font-bold text-black dark:text-gray-400"
-                            >Email Status:
+                            >Job Type:
                         </span>
                     </h3>
-                    <p
-                        class="text-black dark:text-white"
-                        v-if="currentUserEmailIsVerified"
-                    >
-                        Verified
-                    </p>
-                    <p class="text-black dark:text-white" v-else>
-                        Not Verified
+                    <p class="text-black dark:text-white">
+                        {{ form.job_type }}
                     </p>
                 </div>
 
                 <div>
                     <h3 class="text-md text-gray-500 dark:text-gray-400">
                         <span class="font-bold text-black dark:text-gray-400"
-                            >Account Status:
+                            >Employment Type:
                         </span>
                     </h3>
-                    <p
-                        class="text-black dark:text-white"
-                        v-if="currentUserIsActive"
-                    >
-                        Active
+                    <p class="text-black dark:text-white">
+                        {{ form.employment_type }}
                     </p>
-                    <p class="text-black dark:text-white" v-else>Inactive</p>
+                </div>
+
+                <div>
+                    <h3 class="text-md text-gray-500 dark:text-gray-400">
+                        <span class="font-bold text-black dark:text-gray-400"
+                            >Schedule:
+                        </span>
+                    </h3>
+                    <p class="text-black dark:text-white">
+                        {{ form.schedule }}
+                    </p>
                 </div>
             </div>
 
@@ -751,23 +647,12 @@ watch(
                 </button>
 
                 <button
-                    v-if="currentUserIsActive"
-                    @click="showDeactivationModal(currentUpdatingUserID)"
+                    @click="showDeleteModal(currentUpdatingJobID)"
                     type="button"
-                    id="deactivateUserButton"
+                    id="deleteJobsButton"
                     class="inline-flex w-full justify-center text-white items-center bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 rounded-lg text-sm font-medium px-5 py-2.5 focus:z-10 dark:bg-red-700 dark:hover:bg-red-900 dark:focus:ring-red-900"
                 >
-                    Deactivate
-                </button>
-
-                <button
-                    v-else
-                    @click="showActivationModal(currentUpdatingUserID)"
-                    type="button"
-                    id="activateUserButton"
-                    class="inline-flex w-full justify-center text-white items-center bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 rounded-lg text-sm font-medium px-5 py-2.5 focus:z-10 dark:bg-green-700 dark:hover:bg-green-900 dark:focus:ring-green-900"
-                >
-                    Activate
+                    Delete
                 </button>
             </div>
         </div>
@@ -819,82 +704,84 @@ watch(
                 <div class="space-y-10">
                     <div>
                         <InputField
-                            id="firstName"
-                            v-model="form.first_name"
+                            id="title"
+                            v-model="form.title"
                             type="text"
-                            label="First Name"
-                            placeholder="First Name"
-                            :error="form.errors.first_name"
+                            label="Title"
+                            placeholder="Title"
+                            :error="form.errors.title"
                         />
                     </div>
-                    <div>
-                        <InputField
-                            id="middleName"
-                            v-model="form.middle_name"
-                            type="text"
-                            label="Middle Name"
-                            placeholder="Middle Name"
-                            :error="form.errors.middle_name"
-                        />
-                    </div>
-                    <div>
-                        <InputField
-                            id="lastName"
-                            v-model="form.last_name"
-                            type="text"
-                            label="Last Name"
-                            placeholder="Last Name"
-                            :error="form.errors.last_name"
-                        />
-                    </div>
-                    <div>
-                        <SelectInput
-                            id="gender"
-                            v-model="form.gender"
-                            label="Gender"
-                            :error="form.errors.gender"
-                            :canSearch="false"
-                        >
-                            <option value="" disabled selected hidden></option>
 
-                            <option
-                                value="Male"
-                                :selected="form.gender === 'Male'"
-                            >
-                                Male
-                            </option>
-                            <option
-                                value="Female"
-                                :selected="form.gender === 'Female'"
-                            >
-                                Female
-                            </option>
-                        </SelectInput>
-                    </div>
                     <div>
-                        <InputField
-                            id="emailAddress"
-                            v-model="form.email"
-                            type="email"
-                            label="Email Address"
-                            placeholder="Email Address"
-                            :error="form.errors.email"
+                        <TextArea
+                            id="description"
+                            v-model="form.description"
+                            rows="3"
+                            label="Description"
+                            placeholder="Description"
+                            :error="form.errors.description"
                         />
                     </div>
+
+                    <div>
+                        <h1 class="text-gray-500">Company Profile</h1>
+                        <QuillEditor :options="richTextEditorOptions" />
+
+                        <button
+                            type="button"
+                            @click="showRichTextModal"
+                            class="uppercase bg-gray-300 hover:bg-gray-400 duration-200 transition px-6 py-2 w-full"
+                        >
+                            Edit in Full Screen
+                        </button>
+                    </div>
+
                     <div>
                         <InputField
-                            id="contactNumber"
-                            v-model="form.contact_number"
-                            type="contactNumber"
-                            label="Contact Number"
-                            placeholder="Contact Number"
-                            :error="form.errors.contact_number"
+                            id="location"
+                            v-model="form.location"
+                            type="text"
+                            label="Location"
+                            placeholder="Location"
+                            :error="form.errors.location"
+                        />
+                    </div>
+
+                    <div>
+                        <InputField
+                            id="job_type"
+                            v-model="form.job_type"
+                            type="text"
+                            label="Job Type"
+                            placeholder="Job Type"
+                            :error="form.errors.job_type"
+                        />
+                    </div>
+
+                    <div>
+                        <InputField
+                            id="employment_type"
+                            v-model="form.employment_type"
+                            type="text"
+                            label="Employment Type"
+                            placeholder="Employment Type"
+                            :error="form.errors.employment_type"
+                        />
+                    </div>
+
+                    <div>
+                        <InputField
+                            id="schedule"
+                            v-model="form.schedule"
+                            type="text"
+                            label="Schedule"
+                            placeholder="Schedule"
+                            :error="form.errors.schedule"
                         />
                     </div>
                 </div>
-                <div
-                    class="bottom-0 left-0 flex justify-center w-full pb-4 mt-4 space-x-4 sm:absolute sm:px-4 sm:mt-0"
-                >
+                <div class="flex justify-center w-full py-4 space-x-4">
                     <button
                         type="submit"
                         class="w-full justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
@@ -929,7 +816,7 @@ watch(
         </div>
     </Transition>
 
-    <!-- Deactivation Product Drawer -->
+    <!-- Delete Job -->
     <Transition
         enter-from-class="translate-x-full"
         enter-active-class="transition-transform translate-x-0"
@@ -937,7 +824,7 @@ watch(
         leave-to-class="translate-x-full"
     >
         <div
-            v-if="deactivationModalVisibility"
+            v-if="deleteModalVisibility"
             id="drawer-delete-product-default"
             class="fixed top-0 right-0 z-40 w-full h-screen max-w-xs p-4 overflow-y-auto bg-white dark:bg-gray-800"
             tabindex="-1"
@@ -948,10 +835,10 @@ watch(
                 id="drawer-label"
                 class="inline-flex items-center text-sm font-semibold text-gray-500 uppercase dark:text-gray-400"
             >
-                Deactivate
+                Delete
             </h5>
             <button
-                @click="hideDeactivationModal"
+                @click="hideDeleteModal"
                 type="button"
                 aria-controls="drawer-delete-product-default"
                 class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 absolute top-2.5 right-2.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
@@ -986,10 +873,10 @@ watch(
                 ></path>
             </svg>
             <h3 class="mb-6 text-lg text-gray-500 dark:text-gray-400">
-                Are you sure you want to deactivate this {{ title }}?
+                Are you sure you want to delete this {{ title }}?
             </h3>
 
-            <form @submit.prevent="deactivate" class="inline-block">
+            <form @submit.prevent="destroy" class="inline-block">
                 <button
                     type="submit"
                     class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-3 py-2.5 text-center mr-2 dark:focus:ring-red-900"
@@ -998,85 +885,9 @@ watch(
                 </button>
             </form>
             <button
-                @click="hideDeactivationModal"
+                @click="hideDeleteModal"
                 class="text-gray-900 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-blue-300 border border-gray-200 font-medium inline-flex items-center rounded-lg text-sm px-3 py-2.5 text-center dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-700"
                 data-modal-toggle="delete-product-modal"
-            >
-                No, cancel
-            </button>
-        </div>
-    </Transition>
-
-    <!-- Activation Product Drawer -->
-    <Transition
-        enter-from-class="translate-x-full"
-        enter-active-class="transition-transform translate-x-0"
-        leave-active-class="transition-transform translate-x-0"
-        leave-to-class="translate-x-full"
-    >
-        <div
-            v-if="activationModalVisibility"
-            id="drawer-delete-product-default"
-            class="fixed top-0 right-0 z-40 w-full h-screen max-w-xs p-4 overflow-y-auto bg-white dark:bg-gray-800"
-            tabindex="-1"
-            aria-labelledby="drawer-label"
-            aria-hidden="true"
-        >
-            <h5
-                id="drawer-label"
-                class="inline-flex items-center text-sm font-semibold text-gray-500 uppercase dark:text-gray-400"
-            >
-                Activate
-            </h5>
-            <button
-                @click="hideActivationModal"
-                type="button"
-                aria-controls="drawer-delete-product-default"
-                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 absolute top-2.5 right-2.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-            >
-                <svg
-                    aria-hidden="true"
-                    class="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        fill-rule="evenodd"
-                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                        clip-rule="evenodd"
-                    ></path>
-                </svg>
-                <span class="sr-only">Close menu</span>
-            </button>
-            <svg
-                class="w-10 h-10 mt-8 mb-4 text-green-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-            >
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                ></path>
-            </svg>
-            <h3 class="mb-6 text-lg text-gray-500 dark:text-gray-400">
-                Are you sure you want to activate this {{ title }}?
-            </h3>
-            <form @submit.prevent="activate" class="inline-block">
-                <button
-                    type="submit"
-                    class="text-white bg-green-600 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm inline-flex items-center px-3 py-2.5 text-center mr-2 dark:focus:ring-green-900"
-                >
-                    Yes, I'm sure
-                </button>
-            </form>
-            <button
-                @click="hideActivationModal"
-                class="text-gray-900 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-blue-300 border border-gray-200 font-medium inline-flex items-center rounded-lg text-sm px-3 py-2.5 text-center dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-700"
             >
                 No, cancel
             </button>
@@ -1129,82 +940,93 @@ watch(
                 <div class="space-y-10">
                     <div>
                         <InputField
-                            id="firstName"
-                            v-model="form.first_name"
+                            id="title"
+                            v-model="form.title"
                             type="text"
-                            label="First Name"
-                            placeholder="First Name"
-                            :error="form.errors.first_name"
+                            label="Title"
+                            placeholder="Title"
+                            :error="form.errors.title"
                         />
                     </div>
+
                     <div>
-                        <InputField
-                            id="middleName"
-                            v-model="form.middle_name"
-                            type="text"
-                            label="Middle Name"
-                            placeholder="Middle Name"
-                            :error="form.errors.middle_name"
+                        <TextArea
+                            id="description"
+                            v-model="form.description"
+                            rows="3"
+                            label="Description"
+                            placeholder="Description"
+                            :error="form.errors.description"
                         />
                     </div>
+
                     <div>
-                        <InputField
-                            id="lastName"
-                            v-model="form.last_name"
-                            type="text"
-                            label="Last Name"
-                            placeholder="Last Name"
-                            :error="form.errors.last_name"
-                        />
+                        <h1 class="text-gray-500">Company Profile</h1>
+                        <QuillEditor :options="richTextEditorOptions" />
+
+                        <button
+                            type="button"
+                            @click="showRichTextModal"
+                            class="uppercase bg-gray-300 hover:bg-gray-400 duration-200 transition px-6 py-2 w-full"
+                        >
+                            Edit in Full Screen
+                        </button>
                     </div>
+
                     <div>
                         <SelectInput
-                            id="gender"
-                            v-model="form.gender"
-                            label="Gender"
-                            :error="form.errors.gender"
+                            id="location"
+                            v-model="form.location"
+                            label="Location"
+                            :error="form.errors.location"
                             :canSearch="false"
                         >
                             <option value="" disabled selected hidden></option>
 
                             <option
-                                value="Male"
-                                :selected="form.gender === 'Male'"
+                                v-for="companyAssignment in props.companyAssignments"
+                                :key="companyAssignment.id"
+                                :value="companyAssignment.title"
                             >
-                                Male
-                            </option>
-                            <option
-                                value="Female"
-                                :selected="form.gender === 'Female'"
-                            >
-                                Female
+                                {{ companyAssignment.title }}
                             </option>
                         </SelectInput>
                     </div>
+
                     <div>
                         <InputField
-                            id="emailAddress"
-                            v-model="form.email"
-                            type="email"
-                            label="Email Address"
-                            placeholder="Email Address"
-                            :error="form.errors.email"
+                            id="job_type"
+                            v-model="form.job_type"
+                            type="text"
+                            label="Job Type"
+                            placeholder="Job Type"
+                            :error="form.errors.job_type"
                         />
                     </div>
+
                     <div>
                         <InputField
-                            id="contactNumber"
-                            v-model="form.contact_number"
-                            type="contactNumber"
-                            label="Contact Number"
-                            placeholder="Contact Number"
-                            :error="form.errors.contact_number"
+                            id="employment_type"
+                            v-model="form.employment_type"
+                            type="text"
+                            label="Employment Type"
+                            placeholder="Employment Type"
+                            :error="form.errors.employment_type"
+                        />
+                    </div>
+
+                    <div>
+                        <InputField
+                            id="schedule"
+                            v-model="form.schedule"
+                            type="text"
+                            label="Schedule"
+                            placeholder="Schedule"
+                            :error="form.errors.schedule"
                         />
                     </div>
                 </div>
-                <div
-                    class="bottom-0 left-0 flex justify-center w-full pb-4 space-x-4 md:px-4 md:absolute"
-                >
+                <div class="flex justify-center w-full py-4 space-x-4">
                     <button
                         type="submit"
                         :disabled="form.processing"

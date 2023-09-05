@@ -5,7 +5,7 @@ defineProps({
 </script>
 
 <template>
-    <div class="flex flex-col overflow-y-auto">
+    <div class="flex flex-col">
         <h1
             class="px-4 pt-3 pb-2 font-black uppercase text-gray-500 dark:text-gray-400 text-xs sm:text-sm"
         >

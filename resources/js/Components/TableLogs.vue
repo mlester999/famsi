@@ -2,8 +2,9 @@
 import { router, usePage } from "@inertiajs/vue3";
 import { ref, watch, Transition, Teleport } from "vue";
 import debounce from "lodash.debounce";
-
+import { useToast } from "vue-toastification";
 import Pagination from "../Partials/Table/Pagination.vue";
+import InputField from "./InputField.vue";
 
 const props = defineProps({
     logs: Object,
@@ -15,6 +16,8 @@ const props = defineProps({
 
 const page = usePage();
 
+const toast = useToast();
+
 let search = ref(props.filters.search);
 
 let currentRemovingUserID = ref(false);
@@ -25,6 +28,7 @@ const remove = () => {
         `/${page.props.user.role}/${props.linkName}/destroy/${currentRemovingUserID.value}`,
         {
             onSuccess: () => {
+                toast.success("Document deleted successfully!");
                 hideDeleteModal();
                 clearErrors();
             },
@@ -128,13 +132,12 @@ watch(
             >
                 <div class="flex items-center mb-4 sm:mb-0">
                     <div class="relative w-48 mt-1 sm:w-64 xl:w-96">
-                        <input
+                        <InputField
+                            id="search"
                             v-model="search"
-                            type="text"
-                            name="search"
-                            id="products-search"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="Search..."
+                            type="search"
+                            label="Search"
+                            placeholder="Search"
                         />
                     </div>
                 </div>
@@ -150,12 +153,6 @@ watch(
                     >
                         <thead class="bg-gray-100 dark:bg-gray-700">
                             <tr>
-                                <th
-                                    scope="col"
-                                    class="p-4 text-xs font-medium text-center text-gray-500 uppercase dark:text-gray-400"
-                                >
-                                    #
-                                </th>
                                 <th
                                     scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
@@ -203,15 +200,6 @@ watch(
                                 class="hover:bg-gray-100 dark:hover:bg-gray-700"
                             >
                                 <td
-                                    class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400"
-                                >
-                                    <div
-                                        class="text-base text-center font-semibold text-gray-900 dark:text-white"
-                                    >
-                                        {{ log.id }}
-                                    </div>
-                                </td>
-                                <td
                                     class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
                                     <div class="max-w-xs whitespace-normal">
@@ -240,7 +228,7 @@ watch(
                                     class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
                                     <div
-                                        class="text-base max-w-xs whitespace-normal text-gray-900 dark:text-white"
+                                        class="text-base max-w-md break-words whitespace-normal text-gray-900 dark:text-white"
                                     >
                                         {{ log.description }}
                                     </div>
