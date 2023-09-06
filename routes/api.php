@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\ApiJobPositionController;
 use App\Http\Controllers\AuthApplicantsController;
+use App\Models\JobPosition;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,8 +22,18 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return response()->json($user);
 });
 
+// Route::middleware('auth:sanctum')->get('/job-positions/details', function (Request $request) {
+//     $jobPositionDetails = JobPosition::all();
+//     return response()->json($jobPositionDetails);
+// });
+
+// Authenticating and signing up user
 Route::post('login', [AuthApplicantsController::class, 'login']);
 Route::post('register', [AuthApplicantsController::class, 'register']);
 Route::post('logout', [AuthApplicantsController::class, 'logout']);
 Route::post('refresh', [AuthApplicantsController::class, 'refresh']);
 Route::get('details', [AuthApplicantsController::class, 'details']);
+
+Route::get('job-positions/details', [ApiJobPositionController::class, 'details']);
+
+
