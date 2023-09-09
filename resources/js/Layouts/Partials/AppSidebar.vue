@@ -170,7 +170,7 @@ const currentUser = computed(() => {
                             <template #icon>
                                 <font-awesome-icon
                                     class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-                                    :icon="['fas', 'house']"
+                                    :icon="['fas', 'scroll']"
                                 />
                             </template>
 
@@ -231,9 +231,75 @@ const currentUser = computed(() => {
                             v-if="
                                 $page.props.auth.user.user_type == users.admin
                             "
+                            :href="route(`${currentUser}.job-types.index`)"
+                            :class="[
+                                $page.url.includes('job-types') &&
+                                    'bg-gray-100 dark:bg-gray-700',
+                            ]"
+                        >
+                            <template #icon>
+                                <font-awesome-icon
+                                    class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                    :icon="['fas', 'scroll']"
+                                />
+                            </template>
+
+                            <template #title> Job Types </template>
+                        </SidebarTab>
+                    </li>
+
+                    <li>
+                        <SidebarTab
+                            v-if="
+                                $page.props.auth.user.user_type == users.admin
+                            "
+                            :href="route(`${currentUser}.employee-types.index`)"
+                            :class="[
+                                $page.url.includes('employee-types') &&
+                                    'bg-gray-100 dark:bg-gray-700',
+                            ]"
+                        >
+                            <template #icon>
+                                <font-awesome-icon
+                                    class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                    :icon="['fas', 'scroll']"
+                                />
+                            </template>
+
+                            <template #title> Employee Types </template>
+                        </SidebarTab>
+                    </li>
+
+                    <li>
+                        <SidebarTab
+                            v-if="
+                                $page.props.auth.user.user_type == users.admin
+                            "
+                            :href="route(`${currentUser}.industries.index`)"
+                            :class="[
+                                $page.url.includes('industries') &&
+                                    'bg-gray-100 dark:bg-gray-700',
+                            ]"
+                        >
+                            <template #icon>
+                                <font-awesome-icon
+                                    class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                    :icon="['fas', 'scroll']"
+                                />
+                            </template>
+
+                            <template #title> Industries </template>
+                        </SidebarTab>
+                    </li>
+
+                    <li>
+                        <SidebarTab
+                            v-if="
+                                $page.props.auth.user.user_type == users.admin
+                            "
                             :href="route(`${currentUser}.job-positions.index`)"
                             :class="[
-                                $page.url.includes('jobPositions') &&
+                                $page.url.includes('job-positions') &&
                                     'bg-gray-100 dark:bg-gray-700',
                             ]"
                         >

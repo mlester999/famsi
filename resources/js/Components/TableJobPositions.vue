@@ -1,6 +1,6 @@
 <script setup>
 import { router, usePage, useForm } from "@inertiajs/vue3";
-import { ref, watch, Transition, Teleport, provide } from "vue";
+import { ref, computed, watch, Transition, Teleport, provide } from "vue";
 import debounce from "lodash.debounce";
 import { useToast } from "vue-toastification";
 import Pagination from "../Partials/Table/Pagination.vue";
@@ -20,6 +20,9 @@ const props = defineProps({
     pagination: Object,
     filters: Object,
     companyAssignments: Array,
+    jobTypes: Array,
+    employeeTypes: Array,
+    industries: Array,
     linkName: String,
     title: String,
 });
@@ -29,8 +32,9 @@ const form = useForm({
     description: "",
     company_profile: null,
     location: "",
-    job_type: "",
-    employment_type: "",
+    job_type_id: "",
+    employment_type_id: "",
+    industry_id: "",
     schedule: "",
 });
 
@@ -44,6 +48,7 @@ const richTextEditorOptions = ref({
 const richTextEditorModal = ref(false);
 
 let search = ref(props.filters.search);
+let employeeTypesList = ref(null);
 
 let currentUpdatingJobID = ref(null);
 
@@ -124,6 +129,7 @@ const hideDeleteModal = () => {
     currentUpdatingJobID.value = null;
 
     deleteModalVisibility.value = false;
+    viewInfoModalVisibility.value = false;
 };
 
 // Show Info Modal
@@ -132,8 +138,9 @@ const showInfoModal = (data) => {
     form.description = data.description;
     form.company_profile = data.company_profile;
     form.location = data.location;
-    form.job_type = data.job_type;
-    form.employment_type = data.employment_type;
+    form.job_type_id = data.job_type_id;
+    form.employment_type_id = data.employee_type_id;
+    form.industry_id = data.industry_id;
     form.schedule = data.schedule;
 
     document.body.classList.add("overflow-hidden");
@@ -164,8 +171,9 @@ const showUpdateModal = (data) => {
         form.description = data.description;
         form.company_profile = data.company_profile;
         form.location = data.location;
-        form.job_type = data.job_type;
-        form.employment_type = data.employment_type;
+        form.job_type_id = data.job_type_id;
+        form.employment_type_id = data.employee_type_id;
+        form.industry_id = data.industry_id;
         form.schedule = data.schedule;
 
         currentUpdatingJobID.value = data.id;
@@ -193,8 +201,9 @@ const showAddModal = () => {
     form.description = "";
     form.company_profile = "";
     form.location = "";
-    form.job_type = "";
-    form.employment_type = "";
+    form.job_type_id = "";
+    form.employment_type_id = "";
+    form.industry_id = "";
     form.schedule = "";
 
     document.body.classList.add("overflow-hidden");
@@ -211,6 +220,12 @@ const hideAddModal = () => {
     form.clearErrors();
 };
 
+const updateEmployeeTypes = computed(() => {
+    return props.employeeTypes.filter(
+        (val, index) => val.job_type_id == form.job_type_id
+    );
+});
+
 watch(
     search,
     debounce((value) => {
@@ -224,6 +239,15 @@ watch(
             replace: true,
         });
     }, 500)
+);
+
+watch(
+    () => form.job_type_id,
+    (value) => {
+        employeeTypesList = props.employeeTypes.filter(
+            (val, index) => val.job_type_id == value
+        );
+    }
 );
 </script>
 
@@ -381,6 +405,13 @@ watch(
                                     scope="col"
                                     class="px-2 py-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
+                                    Industry
+                                </th>
+
+                                <th
+                                    scope="col"
+                                    class="px-2 py-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                                >
                                     Schedule
                                 </th>
 
@@ -434,7 +465,10 @@ watch(
                                     <div
                                         class="text-base max-w-xs whitespace-normal text-gray-900 dark:text-white"
                                     >
-                                        {{ role.job_type }}
+                                        {{
+                                            props.jobTypes[role.job_type_id - 1]
+                                                .title
+                                        }}
                                     </div>
                                 </td>
 
@@ -444,7 +478,25 @@ watch(
                                     <div
                                         class="text-base max-w-xs whitespace-normal text-gray-900 dark:text-white"
                                     >
-                                        {{ role.employment_type }}
+                                        {{
+                                            props.employeeTypes[
+                                                role.employee_type_id - 1
+                                            ].title
+                                        }}
+                                    </div>
+                                </td>
+
+                                <td
+                                    class="px-2 py-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                                >
+                                    <div
+                                        class="text-base max-w-xs whitespace-normal text-gray-900 dark:text-white"
+                                    >
+                                        {{
+                                            props.industries[
+                                                role.industry_id - 1
+                                            ].title
+                                        }}
                                     </div>
                                 </td>
 
@@ -609,7 +661,7 @@ watch(
                         </span>
                     </h3>
                     <p class="text-black dark:text-white">
-                        {{ form.job_type }}
+                        {{ props.jobTypes[form.job_type_id - 1].title }}
                     </p>
                 </div>
 
@@ -620,7 +672,21 @@ watch(
                         </span>
                     </h3>
                     <p class="text-black dark:text-white">
-                        {{ form.employment_type }}
+                        {{
+                            props.employeeTypes[form.employment_type_id - 1]
+                                .title
+                        }}
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-md text-gray-500 dark:text-gray-400">
+                        <span class="font-bold text-black dark:text-gray-400"
+                            >Industry:
+                        </span>
+                    </h3>
+                    <p class="text-black dark:text-white">
+                        {{ props.industries[form.industry_id - 1].title }}
                     </p>
                 </div>
 
@@ -738,36 +804,84 @@ watch(
                     </div>
 
                     <div>
-                        <InputField
+                        <SelectInput
                             id="location"
                             v-model="form.location"
-                            type="text"
                             label="Location"
-                            placeholder="Location"
                             :error="form.errors.location"
-                        />
+                            :canSearch="false"
+                        >
+                            <option value="" disabled selected hidden></option>
+
+                            <option
+                                v-for="companyAssignment in props.companyAssignments"
+                                :key="companyAssignment.id"
+                                :value="companyAssignment.title"
+                            >
+                                {{ companyAssignment.title }}
+                            </option>
+                        </SelectInput>
                     </div>
 
                     <div>
-                        <InputField
-                            id="job_type"
-                            v-model="form.job_type"
-                            type="text"
+                        <SelectInput
+                            id="job_type_id"
+                            v-model="form.job_type_id"
                             label="Job Type"
-                            placeholder="Job Type"
-                            :error="form.errors.job_type"
-                        />
+                            :error="form.errors.job_type_id"
+                            :canSearch="false"
+                        >
+                            <option value="" disabled selected hidden></option>
+
+                            <option
+                                v-for="jobType in props.jobTypes"
+                                :key="jobType.id"
+                                :value="jobType.id"
+                            >
+                                {{ jobType.title }}
+                            </option>
+                        </SelectInput>
                     </div>
 
                     <div>
-                        <InputField
-                            id="employment_type"
-                            v-model="form.employment_type"
-                            type="text"
+                        <SelectInput
+                            id="employment_type_id"
+                            v-model="form.employment_type_id"
                             label="Employment Type"
-                            placeholder="Employment Type"
-                            :error="form.errors.employment_type"
-                        />
+                            :error="form.errors.employment_type_id"
+                            :canSearch="false"
+                            :disabled="!Boolean(updateEmployeeTypes)"
+                        >
+                            <option value="" disabled selected hidden></option>
+
+                            <option
+                                v-for="employeeType in updateEmployeeTypes"
+                                :key="employeeType.id"
+                                :value="employeeType.id"
+                            >
+                                {{ employeeType.title }}
+                            </option>
+                        </SelectInput>
+                    </div>
+
+                    <div>
+                        <SelectInput
+                            id="industry_id"
+                            v-model="form.industry_id"
+                            label="Industry"
+                            :error="form.errors.industry_id"
+                            :canSearch="false"
+                        >
+                            <option value="" disabled selected hidden></option>
+
+                            <option
+                                v-for="industry in props.industries"
+                                :key="industry.id"
+                                :value="industry.id"
+                            >
+                                {{ industry.title }}
+                            </option>
+                        </SelectInput>
                     </div>
 
                     <div>
@@ -994,25 +1108,64 @@ watch(
                     </div>
 
                     <div>
-                        <InputField
-                            id="job_type"
-                            v-model="form.job_type"
-                            type="text"
+                        <SelectInput
+                            id="job_type_id"
+                            v-model="form.job_type_id"
                             label="Job Type"
-                            placeholder="Job Type"
-                            :error="form.errors.job_type"
-                        />
+                            :error="form.errors.job_type_id"
+                            :canSearch="false"
+                        >
+                            <option value="" disabled selected hidden></option>
+
+                            <option
+                                v-for="jobType in props.jobTypes"
+                                :key="jobType.id"
+                                :value="jobType.id"
+                            >
+                                {{ jobType.title }}
+                            </option>
+                        </SelectInput>
                     </div>
 
                     <div>
-                        <InputField
-                            id="employment_type"
-                            v-model="form.employment_type"
-                            type="text"
+                        <SelectInput
+                            id="employment_type_id"
+                            v-model="form.employment_type_id"
                             label="Employment Type"
-                            placeholder="Employment Type"
-                            :error="form.errors.employment_type"
-                        />
+                            :error="form.errors.employment_type_id"
+                            :canSearch="false"
+                            :disabled="!Boolean(employeeTypesList)"
+                        >
+                            <option value="" disabled selected hidden></option>
+
+                            <option
+                                v-for="employeeType in employeeTypesList"
+                                :key="employeeType.id"
+                                :value="employeeType.id"
+                            >
+                                {{ employeeType.title }}
+                            </option>
+                        </SelectInput>
+                    </div>
+
+                    <div>
+                        <SelectInput
+                            id="industry_id"
+                            v-model="form.industry_id"
+                            label="Industry"
+                            :error="form.errors.industry_id"
+                            :canSearch="false"
+                        >
+                            <option value="" disabled selected hidden></option>
+
+                            <option
+                                v-for="industry in props.industries"
+                                :key="industry.id"
+                                :value="industry.id"
+                            >
+                                {{ industry.title }}
+                            </option>
+                        </SelectInput>
                     </div>
 
                     <div>

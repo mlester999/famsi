@@ -15,7 +15,6 @@ const props = defineProps({
 });
 
 const page = usePage();
-
 const toast = useToast();
 
 let search = ref(props.filters.search);

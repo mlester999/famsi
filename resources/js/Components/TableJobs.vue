@@ -40,7 +40,7 @@ const submit = () => {
             updateModalVisibility.value = false;
             addModalVisibility.value = false;
             form.reset();
-            clearErrors();
+            form.clearErrors();
         },
     });
 };
@@ -54,7 +54,7 @@ const update = () => {
                 hideUpdateModal();
                 hideAddModal();
                 form.reset();
-                clearErrors();
+                form.clearErrors();
             },
         }
     );
@@ -70,7 +70,7 @@ const destroy = () => {
                 hideAddModal();
                 hideDeleteModal();
                 form.reset();
-                clearErrors();
+                form.clearErrors();
             },
         }
     );
@@ -94,6 +94,7 @@ const hideDeleteModal = () => {
     currentUpdatingJobID.value = null;
 
     deleteModalVisibility.value = false;
+    viewInfoModalVisibility.value = false;
 };
 
 // Show Info Modal
@@ -580,7 +581,8 @@ watch(
                 >
                     <button
                         type="submit"
-                        class="w-full justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                        :disabled="form.processing"
+                        class="w-full justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:bg-blue-200 dark:disabled:bg-blue-"
                     >
                         Update
                     </button>

@@ -210,6 +210,7 @@ const hideDeleteScheduleModal = () => {
     document.body.classList.remove("overflow-hidden");
 
     deleteScheduleModalVisibility.value = false;
+    optionsModalVisibility.value = false;
 
     form.reset();
     form.clearErrors();
