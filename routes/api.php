@@ -36,5 +36,6 @@ Route::get('details', [AuthApplicantsController::class, 'details']);
 
 Route::get('job-positions/details', [ApiJobPositionController::class, 'details']);
 Route::get('job-positions/details/{id}/{slug}', [ApiJobPositionController::class, 'findOne']);
+Route::get('job-positions/related-jobs/{id}', [ApiJobPositionController::class, 'findRelatedJobs']);
 
 

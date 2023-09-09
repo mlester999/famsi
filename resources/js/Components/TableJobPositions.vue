@@ -33,7 +33,7 @@ const form = useForm({
     company_profile: null,
     location: "",
     job_type_id: "",
-    employment_type_id: "",
+    employee_type_id: "",
     industry_id: "",
     schedule: "",
 });
@@ -139,7 +139,7 @@ const showInfoModal = (data) => {
     form.company_profile = data.company_profile;
     form.location = data.location;
     form.job_type_id = data.job_type_id;
-    form.employment_type_id = data.employee_type_id;
+    form.employee_type_id = data.employee_type_id;
     form.industry_id = data.industry_id;
     form.schedule = data.schedule;
 
@@ -172,7 +172,7 @@ const showUpdateModal = (data) => {
         form.company_profile = data.company_profile;
         form.location = data.location;
         form.job_type_id = data.job_type_id;
-        form.employment_type_id = data.employee_type_id;
+        form.employee_type_id = data.employee_type_id;
         form.industry_id = data.industry_id;
         form.schedule = data.schedule;
 
@@ -202,7 +202,7 @@ const showAddModal = () => {
     form.company_profile = "";
     form.location = "";
     form.job_type_id = "";
-    form.employment_type_id = "";
+    form.employee_type_id = "";
     form.industry_id = "";
     form.schedule = "";
 
@@ -673,8 +673,7 @@ watch(
                     </h3>
                     <p class="text-black dark:text-white">
                         {{
-                            props.employeeTypes[form.employment_type_id - 1]
-                                .title
+                            props.employeeTypes[form.employee_type_id - 1].title
                         }}
                     </p>
                 </div>
@@ -702,9 +701,7 @@ watch(
                 </div>
             </div>
 
-            <div
-                class="bottom-0 left-0 flex justify-center w-full pb-4 space-x-4 md:px-4 absolute"
-            >
+            <div class="flex justify-center w-full py-4 space-x-4">
                 <button
                     @click="showUpdateModal(form)"
                     class="text-white w-full justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:bg-blue-200 dark:disabled:bg-blue-900"
@@ -845,10 +842,10 @@ watch(
 
                     <div>
                         <SelectInput
-                            id="employment_type_id"
-                            v-model="form.employment_type_id"
+                            id="employee_type_id"
+                            v-model="form.employee_type_id"
                             label="Employment Type"
-                            :error="form.errors.employment_type_id"
+                            :error="form.errors.employee_type_id"
                             :canSearch="false"
                             :disabled="!Boolean(updateEmployeeTypes)"
                         >
@@ -1129,10 +1126,10 @@ watch(
 
                     <div>
                         <SelectInput
-                            id="employment_type_id"
-                            v-model="form.employment_type_id"
+                            id="employee_type_id"
+                            v-model="form.employee_type_id"
                             label="Employment Type"
-                            :error="form.errors.employment_type_id"
+                            :error="form.errors.employee_type_id"
                             :canSearch="false"
                             :disabled="!Boolean(employeeTypesList)"
                         >

@@ -165,7 +165,7 @@ class JobPositionController extends Controller
             'company_profile' => ['required'],
             'location' => ['required', 'max:50'],
             'job_type_id' => ['required'],
-            'employment_type_id' => ['required'],
+            'employee_type_id' => ['required'],
             'industry_id' => ['required'],
             'schedule' => ['required'],
         ]);
@@ -176,7 +176,7 @@ class JobPositionController extends Controller
             'company_profile' => $jobPositionValidate['company_profile'],
             'location' => $jobPositionValidate['location'],
             'job_type_id' => $jobPositionValidate['job_type_id'],
-            'employee_type_id' => $jobPositionValidate['employment_type_id'],
+            'employee_type_id' => $jobPositionValidate['employee_type_id'],
             'industry_id' => $jobPositionValidate['industry_id'],
             'schedule' => $jobPositionValidate['schedule'],
         ]);
@@ -212,7 +212,7 @@ class JobPositionController extends Controller
             'company_profile' => ['required'],
             'location' => ['required', 'max:50'],
             'job_type_id' => ['required'],
-            'employment_type_id' => ['required'],
+            'employee_type_id' => ['required'],
             'industry_id' => ['required'],
             'schedule' => ['required'],
         ]);
@@ -291,15 +291,15 @@ class JobPositionController extends Controller
             $jobPosition->job_type_id = $jobPositionValidate['job_type_id'];
         }
 
-        if($jobPositionValidate['employment_type_id'] !== $jobPosition->employee_type_id) {
+        if($jobPositionValidate['employee_type_id'] !== $jobPosition->employee_type_id) {
             activity()
             ->performedOn(JobPosition::where('id', $id)->first())
             ->causedBy(auth()->user())
             ->event('updated')
             ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
-            ->log("Updated a Job Position's employment_type_id from {$jobPosition->employee_type_id} to {$jobPositionValidate['employment_type_id']}");
+            ->log("Updated a Job Position's employee_type_id from {$jobPosition->employee_type_id} to {$jobPositionValidate['employee_type_id']}");
 
-            $jobPosition->employee_type_id = $jobPositionValidate['employment_type_id'];
+            $jobPosition->employee_type_id = $jobPositionValidate['employee_type_id'];
         }
 
         if($jobPositionValidate['industry_id'] !== $jobPosition->industry_id) {
