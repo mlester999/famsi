@@ -193,11 +193,7 @@ watch(
                         <tbody
                             class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700"
                         >
-                            <tr
-                                v-for="(log, index) in logs.data"
-                                :key="log.id"
-                                class="hover:bg-gray-100 dark:hover:bg-gray-700"
-                            >
+                            <tr v-for="(log, index) in logs.data" :key="log.id">
                                 <td
                                     class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >

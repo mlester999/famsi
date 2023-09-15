@@ -18,6 +18,15 @@ const page = usePage();
 
 const toast = useToast();
 
+const form = useForm({
+    title: "",
+    description: "",
+    filename: "",
+    path: "",
+});
+
+const isFileUploading = ref(false);
+
 // Create component
 const FilePond = vueFilePond(
     FilePondPluginFileValidateType,
@@ -41,11 +50,15 @@ const server = computed(() => ({
         },
         withCredentials: false,
         onload: (response) => {
-            console.log(response);
             const res = JSON.parse(response);
 
             form.filename = res.filename;
             form.path = res.path;
+            isFileUploading.value = false;
+        },
+        ondata: (formData) => {
+            isFileUploading.value = true;
+            return formData;
         },
     },
     remove: (source, load, error) => {
@@ -70,13 +83,6 @@ const props = defineProps({
     filters: Object,
     linkName: String,
     title: String,
-});
-
-const form = useForm({
-    title: "",
-    description: "",
-    filename: "",
-    path: "",
 });
 
 let search = ref(props.filters.search);
@@ -379,12 +385,6 @@ watch(
                                 >
                                     File Name
                                 </th>
-                                <th
-                                    scope="col"
-                                    class="px-2 py-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                                >
-                                    File Path
-                                </th>
 
                                 <th
                                     scope="col"
@@ -437,16 +437,6 @@ watch(
                                         class="text-base max-w-xs whitespace-normal text-gray-900 dark:text-white"
                                     >
                                         {{ role.filename }}
-                                    </div>
-                                </td>
-
-                                <td
-                                    class="max-w-sm px-2 py-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
-                                >
-                                    <div
-                                        class="text-base max-w-xs break-words truncate whitespace-normal text-gray-900 dark:text-white"
-                                    >
-                                        {{ role.path }}
                                     </div>
                                 </td>
 
@@ -701,7 +691,9 @@ watch(
                     </div>
 
                     <div>
-                        <label for="documentUpload" class="text-neutral-200"
+                        <label
+                            for="documentUpload"
+                            class="text-gray-700 dark:text-neutral-200"
                             >File</label
                         >
                         <FilePond
@@ -728,8 +720,9 @@ watch(
                     class="bottom-0 left-0 flex justify-center w-full pb-4 mt-4 space-x-4 sm:absolute sm:px-4 sm:mt-0"
                 >
                     <button
+                        :disabled="form.processing || isFileUploading"
                         type="submit"
-                        class="w-full justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                        class="text-white w-full justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:bg-blue-200 dark:disabled:bg-blue-900"
                     >
                         Update
                     </button>
@@ -905,7 +898,9 @@ watch(
                     </div>
 
                     <div class="-mt-3">
-                        <label for="documentUpload" class="text-neutral-200"
+                        <label
+                            for="documentUpload"
+                            class="text-gray-700 dark:text-neutral-200"
                             >File</label
                         >
                         <FilePond
@@ -933,7 +928,7 @@ watch(
                 >
                     <button
                         type="submit"
-                        :disabled="form.processing"
+                        :disabled="form.processing || isFileUploading"
                         class="text-white w-full justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:bg-blue-200 dark:disabled:bg-blue-900"
                     >
                         Add
