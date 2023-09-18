@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApiJobPositionController;
+use App\Http\Controllers\ApiJobRelatedController;
 use App\Http\Controllers\AuthApplicantsController;
 use App\Models\JobPosition;
 use Illuminate\Http\Request;
@@ -33,6 +34,12 @@ Route::post('register', [AuthApplicantsController::class, 'register']);
 Route::post('logout', [AuthApplicantsController::class, 'logout']);
 Route::post('refresh', [AuthApplicantsController::class, 'refresh']);
 Route::get('details', [AuthApplicantsController::class, 'details']);
+
+Route::get('qualifications', [ApiJobRelatedController::class, 'qualifications']);
+Route::get('benefits', [ApiJobRelatedController::class, 'benefits']);
+Route::get('company-assignments', [ApiJobRelatedController::class, 'companyAssignments']);
+Route::get('job-types', [ApiJobRelatedController::class, 'jobTypes']);
+Route::get('employment-types', [ApiJobRelatedController::class, 'employmentTypes']);
 
 Route::get('job-positions/details', [ApiJobPositionController::class, 'details']);
 Route::get('job-positions/details/{id}/{slug}', [ApiJobPositionController::class, 'findOne']);
