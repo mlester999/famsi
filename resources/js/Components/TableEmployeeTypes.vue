@@ -1,95 +1,34 @@
 <script setup>
-import axios from "axios";
 import { router, usePage, useForm } from "@inertiajs/vue3";
-import { ref, computed, watch, Transition, Teleport } from "vue";
+import { ref, watch, Transition, Teleport } from "vue";
 import debounce from "lodash.debounce";
-import vueFilePond from "vue-filepond";
 import { useToast } from "vue-toastification";
 import Pagination from "../Partials/Table/Pagination.vue";
 import InputField from "./InputField.vue";
 import TextArea from "./TextArea.vue";
-
-import "filepond/dist/filepond.min.css";
-import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css";
-import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
-import FilePondPluginImagePreview from "filepond-plugin-image-preview";
+import SelectInput from "./SelectInput.vue";
 
 const page = usePage();
-
 const toast = useToast();
-
-const form = useForm({
-    title: "",
-    description: "",
-    filename: "",
-    path: "",
-});
-
-const isFileUploading = ref(false);
-
-// Create component
-const FilePond = vueFilePond(
-    FilePondPluginFileValidateType,
-    FilePondPluginImagePreview
-);
-
-const pond = ref(null);
-
-// The `setup` function automatically exports everything you return
-const handleFilePondInit = () => {
-    console.log(pond);
-};
-
-const server = computed(() => ({
-    url: "",
-    process: {
-        url: `/${page.props.user.role}/${props.linkName}/upload`,
-        method: "POST",
-        headers: {
-            "X-CSRF-TOKEN": page.props.csrf_token,
-        },
-        withCredentials: false,
-        onload: (response) => {
-            const res = JSON.parse(response);
-
-            form.filename = res.filename;
-            form.path = res.path;
-            isFileUploading.value = false;
-        },
-        ondata: (formData) => {
-            isFileUploading.value = true;
-            return formData;
-        },
-    },
-    remove: (source, load, error) => {
-        form.filename = "";
-        form.path = "";
-        load();
-    },
-    revert: (uniqueId, load, error) => {
-        axios.post(`/${page.props.user.role}/${props.linkName}/upload-revert`, {
-            path: form.path,
-        });
-
-        form.filename = "";
-        form.path = "";
-        load();
-    },
-}));
 
 const props = defineProps({
     roles: Object,
     pagination: Object,
     filters: Object,
+    jobTypes: Array,
     linkName: String,
     title: String,
 });
 
+const form = useForm({
+    title: "",
+    description: "",
+    job_type_id: "",
+});
+
 let search = ref(props.filters.search);
 
-let files = ref([]);
-
-let currentUpdatingDocumentID = ref(null);
+let currentUpdatingJobID = ref(null);
 
 let updateModalVisibility = ref(false);
 let addModalVisibility = ref(false);
@@ -99,26 +38,26 @@ let deleteModalVisibility = ref(false);
 const submit = () => {
     form.post(`/${page.props.user.role}/${props.linkName}/store`, {
         onSuccess: () => {
-            toast.success("Document added successfully!");
+            toast.success(`${props.title} added successfully!`);
             document.body.classList.remove("overflow-hidden");
             updateModalVisibility.value = false;
             addModalVisibility.value = false;
             form.reset();
-            clearErrors();
+            form.clearErrors();
         },
     });
 };
 
 const update = () => {
     form.put(
-        `/${page.props.user.role}/${props.linkName}/update/${currentUpdatingDocumentID.value}`,
+        `/${page.props.user.role}/${props.linkName}/update/${currentUpdatingJobID.value}`,
         {
             onSuccess: () => {
-                toast.success("Document updated successfully!");
+                toast.success(`${props.title} updated successfully!`);
                 hideUpdateModal();
                 hideAddModal();
                 form.reset();
-                clearErrors();
+                form.clearErrors();
             },
         }
     );
@@ -126,15 +65,15 @@ const update = () => {
 
 const destroy = () => {
     form.delete(
-        `/${page.props.user.role}/${props.linkName}/destroy/${currentUpdatingDocumentID.value}`,
+        `/${page.props.user.role}/${props.linkName}/destroy/${currentUpdatingJobID.value}`,
         {
             onSuccess: () => {
-                toast.success("Document deleted successfully!");
+                toast.success(`${props.title} deleted successfully!`);
                 hideUpdateModal();
                 hideAddModal();
                 hideDeleteModal();
                 form.reset();
-                clearErrors();
+                form.clearErrors();
             },
         }
     );
@@ -147,7 +86,7 @@ const showDeleteModal = (id) => {
 
     document.body.classList.add("overflow-hidden");
 
-    currentUpdatingDocumentID.value = id;
+    currentUpdatingJobID.value = id;
 
     deleteModalVisibility.value = true;
 };
@@ -155,7 +94,7 @@ const showDeleteModal = (id) => {
 const hideDeleteModal = () => {
     document.body.classList.remove("overflow-hidden");
 
-    currentUpdatingDocumentID.value = null;
+    currentUpdatingJobID.value = null;
 
     deleteModalVisibility.value = false;
     viewInfoModalVisibility.value = false;
@@ -165,12 +104,11 @@ const hideDeleteModal = () => {
 const showInfoModal = (data) => {
     form.title = data.title;
     form.description = data.description;
-    form.filename = data.filename;
-    form.path = data.path;
+    form.job_type_id = data.job_type_id;
 
     document.body.classList.add("overflow-hidden");
 
-    currentUpdatingDocumentID.value = data.id;
+    currentUpdatingJobID.value = data.id;
 
     viewInfoModalVisibility.value = true;
 };
@@ -178,7 +116,7 @@ const showInfoModal = (data) => {
 const hideInfoModal = () => {
     document.body.classList.remove("overflow-hidden");
 
-    currentUpdatingDocumentID.value = null;
+    currentUpdatingJobID.value = null;
 
     viewInfoModalVisibility.value = false;
 
@@ -194,10 +132,9 @@ const showUpdateModal = (data) => {
     if (data) {
         form.title = data.title;
         form.description = data.description;
-        form.filename = data.filename;
-        form.path = data.path;
+        form.job_type_id = data.job_type_id;
 
-        currentUpdatingDocumentID.value = data.id;
+        currentUpdatingJobID.value = data.id;
     }
 
     document.body.classList.add("overflow-hidden");
@@ -208,7 +145,7 @@ const showUpdateModal = (data) => {
 const hideUpdateModal = () => {
     document.body.classList.remove("overflow-hidden");
 
-    currentUpdatingDocumentID.value = null;
+    currentUpdatingJobID.value = null;
 
     updateModalVisibility.value = false;
     viewInfoModalVisibility.value = false;
@@ -220,8 +157,7 @@ const hideUpdateModal = () => {
 const showAddModal = () => {
     form.title = "";
     form.description = "";
-    form.filename = "";
-    form.path = "";
+    form.job_type_id = "";
 
     document.body.classList.add("overflow-hidden");
 
@@ -379,11 +315,12 @@ watch(
                                 >
                                     Description
                                 </th>
+
                                 <th
                                     scope="col"
                                     class="px-2 py-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
-                                    File Name
+                                    Job Type
                                 </th>
 
                                 <th
@@ -436,7 +373,10 @@ watch(
                                     <div
                                         class="text-base max-w-xs whitespace-normal text-gray-900 dark:text-white"
                                     >
-                                        {{ role.filename }}
+                                        {{
+                                            props.jobTypes[role.job_type_id - 1]
+                                                .title
+                                        }}
                                     </div>
                                 </td>
 
@@ -474,7 +414,7 @@ watch(
                                     <button
                                         @click="showDeleteModal(role.id)"
                                         type="button"
-                                        id="deleteDocumentsButton"
+                                        id="deleteJobsButton"
                                         class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900"
                                     >
                                         Delete
@@ -576,28 +516,11 @@ watch(
                 <div>
                     <h3 class="text-md text-gray-500 dark:text-gray-400">
                         <span class="font-bold text-black dark:text-gray-400"
-                            >File Name:
+                            >Job Type:
                         </span>
                     </h3>
                     <p class="text-black dark:text-white">
-                        {{ form.filename }}
-                    </p>
-                </div>
-
-                <div>
-                    <h3 class="text-md text-gray-500 dark:text-gray-400">
-                        <span class="font-bold text-black dark:text-gray-400"
-                            >File Path:
-                        </span>
-                    </h3>
-                    <p class="break-words">
-                        <a
-                            target="_blank"
-                            :href="form.path"
-                            class="text-blue-600 hover:text-blue-700 whitespace-normal dark:text-blue-500 dark:hover:text-blue-600"
-                        >
-                            {{ form.path }}
-                        </a>
+                        {{ props.jobTypes[form.job_type_id - 1].title }}
                     </p>
                 </div>
             </div>
@@ -613,9 +536,9 @@ watch(
                 </button>
 
                 <button
-                    @click="showDeleteModal(currentUpdatingDocumentID)"
+                    @click="showDeleteModal(currentUpdatingJobID)"
                     type="button"
-                    id="deleteDocumentsButton"
+                    id="deleteJobsButton"
                     class="inline-flex w-full justify-center text-white items-center bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 rounded-lg text-sm font-medium px-5 py-2.5 focus:z-10 dark:bg-red-700 dark:hover:bg-red-900 dark:focus:ring-red-900"
                 >
                     Delete
@@ -691,38 +614,32 @@ watch(
                     </div>
 
                     <div>
-                        <label
-                            for="documentUpload"
-                            class="text-gray-700 dark:text-neutral-200"
-                            >File</label
+                        <SelectInput
+                            id="job_type_id"
+                            v-model="form.job_type_id"
+                            label="Job Type"
+                            :error="form.errors.job_type_id"
+                            :canSearch="false"
                         >
-                        <FilePond
-                            name="documentUpload"
-                            ref="pond"
-                            label-idle="Upload file here or <span class='filepond--label-action'>Browse</span>"
-                            :allow-drop="true"
-                            accepted-file-types="application/pdf, application/docx"
-                            :file="files"
-                            v-model="form.path"
-                            :server="server"
-                            @init="handleFilePondInit"
-                            credits="false"
-                        />
-                        <p
-                            class="text-red-500 text-xs absolute -mt-2"
-                            v-if="form.errors.filename"
-                        >
-                            {{ form.errors.filename }}
-                        </p>
+                            <option value="" disabled selected hidden></option>
+
+                            <option
+                                v-for="jobType in props.jobTypes"
+                                :key="jobType.id"
+                                :value="jobType.id"
+                            >
+                                {{ jobType.title }}
+                            </option>
+                        </SelectInput>
                     </div>
                 </div>
                 <div
                     class="bottom-0 left-0 flex justify-center w-full pb-4 mt-4 space-x-4 sm:absolute sm:px-4 sm:mt-0"
                 >
                     <button
-                        :disabled="form.processing || isFileUploading"
                         type="submit"
-                        class="text-white w-full justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:bg-blue-200 dark:disabled:bg-blue-900"
+                        :disabled="form.processing"
+                        class="w-full justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:bg-blue-200 dark:disabled:bg-blue-"
                     >
                         Update
                     </button>
@@ -754,7 +671,7 @@ watch(
         </div>
     </Transition>
 
-    <!-- Delete Document -->
+    <!-- Delete Job -->
     <Transition
         enter-from-class="translate-x-full"
         enter-active-class="transition-transform translate-x-0"
@@ -896,31 +813,24 @@ watch(
                             :error="form.errors.description"
                         />
                     </div>
+                    <div>
+                        <SelectInput
+                            id="job_type_id"
+                            v-model="form.job_type_id"
+                            label="Job Type"
+                            :error="form.errors.job_type_id"
+                            :canSearch="false"
+                        >
+                            <option value="" disabled selected hidden></option>
 
-                    <div class="-mt-3">
-                        <label
-                            for="documentUpload"
-                            class="text-gray-700 dark:text-neutral-200"
-                            >File</label
-                        >
-                        <FilePond
-                            name="documentUpload"
-                            ref="pond"
-                            label-idle="Upload file here or <span class='filepond--label-action'>Browse</span>"
-                            :allow-drop="true"
-                            accepted-file-types="application/pdf, application/docx"
-                            :file="files"
-                            v-model="form.path"
-                            :server="server"
-                            @init="handleFilePondInit"
-                            credits="false"
-                        />
-                        <p
-                            class="text-red-500 text-xs absolute -mt-2"
-                            v-if="form.errors.filename"
-                        >
-                            {{ form.errors.filename }}
-                        </p>
+                            <option
+                                v-for="jobType in props.jobTypes"
+                                :key="jobType.id"
+                                :value="jobType.id"
+                            >
+                                {{ jobType.title }}
+                            </option>
+                        </SelectInput>
                     </div>
                 </div>
                 <div
@@ -928,7 +838,7 @@ watch(
                 >
                     <button
                         type="submit"
-                        :disabled="form.processing || isFileUploading"
+                        :disabled="form.processing"
                         class="text-white w-full justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:bg-blue-200 dark:disabled:bg-blue-900"
                     >
                         Add

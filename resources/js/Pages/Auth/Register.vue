@@ -3,10 +3,10 @@ import { Head, Link, useForm } from "@inertiajs/vue3";
 import AuthenticationCard from "@/Components/AuthenticationCard.vue";
 import AuthenticationCardLogo from "@/Components/AuthenticationCardLogo.vue";
 import Checkbox from "@/Components/Checkbox.vue";
-import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-import TextInput from "@/Components/TextInput.vue";
+import SelectInput from "@/Components/SelectInput.vue";
+import InputField from "@/Components/InputField.vue";
 
 const form = useForm({
     firstName: "",
@@ -40,64 +40,60 @@ const submit = () => {
         <form @submit.prevent="submit">
             <div class="flex flex-col md:flex-row justify-between md:space-x-8">
                 <div class="mt-4 flex-1">
-                    <InputLabel for="firstName" value="First Name" />
-                    <TextInput
+                    <InputField
                         id="firstName"
                         v-model="form.firstName"
                         type="text"
-                        class="mt-1 block w-full"
-                        autofocus
-                        autocomplete="firstName"
+                        label="First Name"
+                        placeholder="First Name"
+                        :error="form.errors.firstName"
                     />
-                    <InputError class="mt-2" :message="form.errors.firstName" />
                 </div>
             </div>
 
             <div class="mt-4 flex-1">
-                <InputLabel for="middleName" value="Middle Name (Optional)" />
-                <TextInput
+                <InputField
                     id="middleName"
                     v-model="form.middleName"
                     type="text"
-                    class="mt-1 block w-full"
-                    autocomplete="middleName"
+                    label="Middle Name (Optional)"
+                    placeholder="Middle Name (Optional)"
+                    :error="form.errors.middleName"
                 />
-                <InputError class="mt-2" :message="form.errors.middleName" />
             </div>
 
-            <div class="mt-4 flex-1">
-                <InputLabel for="lastName" value="Last Name" />
-                <TextInput
+            <div class="mt-8 flex-1">
+                <InputField
                     id="lastName"
                     v-model="form.lastName"
                     type="text"
-                    class="mt-1 block w-full"
-                    autocomplete="lastName"
+                    label="Last Name"
+                    placeholder="Last Name"
+                    :error="form.errors.lastName"
                 />
-                <InputError class="mt-2" :message="form.errors.lastName" />
             </div>
 
-            <div class="mt-6">
-                <InputLabel for="email" value="Email" />
-                <TextInput
+            <div class="mt-8">
+                <InputField
                     id="email"
                     v-model="form.email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    autocomplete="username"
+                    type="text"
+                    label="Email Address"
+                    placeholder="Email Address"
+                    :error="form.errors.email"
                 />
-                <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
             <div class="flex justify-between space-x-8">
                 <div class="mt-6 flex-1">
-                    <InputLabel for="password" value="Gender" />
-                    <select
+                    <SelectInput
                         id="gender"
                         v-model="form.gender"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        label="Gender"
+                        :error="form.errors.gender"
+                        :canSearch="false"
                     >
-                        <option value="" selected hidden>Select Gender</option>
+                        <option value="" selected hidden></option>
 
                         <option value="Male" :selected="form.gender === 'Male'">
                             Male
@@ -108,54 +104,41 @@ const submit = () => {
                         >
                             Female
                         </option>
-                    </select>
-                    <InputError class="mt-2" :message="form.errors.gender" />
+                    </SelectInput>
                 </div>
 
                 <div class="mt-6 flex-1">
-                    <InputLabel for="contact_number" value="Contact Number" />
-                    <TextInput
+                    <InputField
                         id="contact_number"
                         v-model="form.contact_number"
                         type="number"
-                        class="mt-1 block w-full"
-                        autocomplete="contact_number"
-                    />
-                    <InputError
-                        class="mt-2"
-                        :message="form.errors.contact_number"
+                        label="Contact Number"
+                        placeholder="Contact Number"
+                        :error="form.errors.contact_number"
                     />
                 </div>
             </div>
 
             <div class="flex justify-between space-x-8">
                 <div class="mt-6 flex-1">
-                    <InputLabel for="password" value="Password" />
-                    <TextInput
+                    <InputField
                         id="password"
                         v-model="form.password"
                         type="password"
-                        class="mt-1 block w-full"
-                        autocomplete="new-password"
+                        label="Password"
+                        placeholder="Password"
+                        :error="form.errors.password"
                     />
-                    <InputError class="mt-2" :message="form.errors.password" />
                 </div>
 
                 <div class="mt-6 flex-1">
-                    <InputLabel
-                        for="password_confirmation"
-                        value="Confirm Password"
-                    />
-                    <TextInput
+                    <InputField
                         id="password_confirmation"
                         v-model="form.password_confirmation"
                         type="password"
-                        class="mt-1 block w-full"
-                        autocomplete="new-password"
-                    />
-                    <InputError
-                        class="mt-2"
-                        :message="form.errors.password_confirmation"
+                        label="Confirm Password"
+                        placeholder="Confirm Password"
+                        :error="form.errors.password_confirmation"
                     />
                 </div>
             </div>
@@ -189,7 +172,6 @@ const submit = () => {
                             >
                         </div>
                     </div>
-                    <InputError class="mt-2" :message="form.errors.terms" />
                 </InputLabel>
             </div>
 

@@ -8,10 +8,12 @@ const props = defineProps({
     label: String,
     error: String,
     canSearch: Boolean,
+    disabled: Boolean,
 });
 
 onMounted(() => {
     const options = {
+        disabled: props.disabled,
         selectFilter: props.canSearch ?? true,
         selectSize: "lg",
         selectClearButton: false,

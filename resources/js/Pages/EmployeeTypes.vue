@@ -1,30 +1,24 @@
 <script setup>
-import TableJobPositions from "@/Components/TableJobPositions.vue";
+import TableEmployeeTypes from "@/Components/TableEmployeeTypes.vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
 
 defineProps({
-    jobPositions: Object,
+    employeeTypes: Object,
     pagination: Object,
     filters: Object,
-    companyAssignments: Object,
     jobTypes: Object,
-    employeeTypes: Object,
-    industries: Object,
 });
 </script>
 
 <template>
-    <AppLayout title="Job Positions">
-        <TableJobPositions
-            :roles="jobPositions"
+    <AppLayout title="Employee Types">
+        <TableEmployeeTypes
+            :roles="employeeTypes"
             :pagination="pagination"
             :filters="filters"
-            :companyAssignments="companyAssignments"
             :jobTypes="jobTypes"
-            :employeeTypes="employeeTypes"
-            :industries="industries"
-            linkName="job-positions"
-            title="Job Position"
+            linkName="employee-types"
+            title="Employee Type"
         >
             <template #first-tab>
                 <p
@@ -38,13 +32,13 @@ defineProps({
                 </p>
             </template>
 
-            <template #second-tab> Job Positions </template>
+            <template #second-tab> Employee Types </template>
 
-            <template #title>Job Positions</template>
+            <template #title>Employee Types</template>
             <template #description
-                >This is the layout of the Job Positions of the
+                >This is the layout of the Employee Types of the
                 website</template
             >
-        </TableJobPositions>
+        </TableEmployeeTypes>
     </AppLayout>
 </template>

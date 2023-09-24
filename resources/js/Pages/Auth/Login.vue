@@ -3,10 +3,8 @@ import { Head, Link, useForm } from "@inertiajs/vue3";
 import AuthenticationCard from "@/Components/AuthenticationCard.vue";
 import AuthenticationCardLogo from "@/Components/AuthenticationCardLogo.vue";
 import Checkbox from "@/Components/Checkbox.vue";
-import InputError from "@/Components/InputError.vue";
-import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-import TextInput from "@/Components/TextInput.vue";
+import InputField from "@/Components/InputField.vue";
 
 defineProps({
     canResetPassword: Boolean,
@@ -45,32 +43,27 @@ const submit = () => {
             Sign in to platform
         </h2>
 
-        <form class="mt-8 space-y-6" @submit.prevent="submit">
+        <form class="mt-8 space-y-8" @submit.prevent="submit">
             <div class="mt-4">
-                <InputLabel for="email" value="Email" />
-                <TextInput
+                <InputField
                     id="email"
                     v-model="form.email"
-                    type="email"
-                    class="mt-2 block w-full text-sm md:text-md"
-                    required
-                    autofocus
-                    autocomplete="username"
+                    type="text"
+                    label="Email Address"
+                    placeholder="Email Address"
+                    :error="form.errors.email"
                 />
-                <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
             <div class="mt-6">
-                <InputLabel for="password" value="Password" />
-                <TextInput
+                <InputField
                     id="password"
                     v-model="form.password"
                     type="password"
-                    class="mt-2 block w-full text-sm md:text-md"
-                    required
-                    autocomplete="current-password"
+                    label="Password"
+                    placeholder="Password"
+                    :error="form.errors.password"
                 />
-                <InputError class="mt-2" :message="form.errors.password" />
             </div>
 
             <div class="mt-6 flex justify-between">
