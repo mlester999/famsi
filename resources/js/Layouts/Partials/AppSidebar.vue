@@ -132,6 +132,25 @@ const currentUser = computed(() => {
 
                     <li>
                         <SidebarTab
+                            :href="route(`${currentUser}.applications.index`)"
+                            :class="[
+                                $page.url.includes('applications') &&
+                                    'bg-gray-100 dark:bg-gray-700',
+                            ]"
+                        >
+                            <template #icon>
+                                <font-awesome-icon
+                                    class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                    :icon="['fas', 'scroll']"
+                                />
+                            </template>
+
+                            <template #title> Applications </template>
+                        </SidebarTab>
+                    </li>
+
+                    <li>
+                        <SidebarTab
                             :href="route(`${currentUser}.documents.index`)"
                             :class="[
                                 $page.url.includes('documents') &&

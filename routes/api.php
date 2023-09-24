@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApiApplicationController;
 use App\Http\Controllers\ApiJobPositionController;
 use App\Http\Controllers\ApiJobRelatedController;
 use App\Http\Controllers\AuthApplicantsController;
@@ -40,9 +41,12 @@ Route::get('benefits', [ApiJobRelatedController::class, 'benefits']);
 Route::get('company-assignments', [ApiJobRelatedController::class, 'companyAssignments']);
 Route::get('job-types', [ApiJobRelatedController::class, 'jobTypes']);
 Route::get('employment-types', [ApiJobRelatedController::class, 'employmentTypes']);
+Route::get('industries', [ApiJobRelatedController::class, 'industries']);
 
 Route::get('job-positions/details', [ApiJobPositionController::class, 'details']);
 Route::get('job-positions/details/{id}/{slug}', [ApiJobPositionController::class, 'findOne']);
 Route::get('job-positions/related-jobs/{id}', [ApiJobPositionController::class, 'findRelatedJobs']);
+
+Route::post('application', [ApiApplicationController::class, 'application']);
 
 

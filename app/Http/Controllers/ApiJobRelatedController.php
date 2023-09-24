@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Benefit;
 use App\Models\CompanyAssignment;
 use App\Models\EmployeeType;
+use App\Models\Industry;
 use App\Models\JobType;
 use App\Models\Qualification;
 
@@ -28,5 +29,9 @@ class ApiJobRelatedController extends Controller
 
     public function employmentTypes() {
         return EmployeeType::all();
+    }
+
+    public function industries() {
+        return Industry::all();
     }
 }
