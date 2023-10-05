@@ -23,7 +23,7 @@ class ApiApplicationController extends Controller
 
         $path = storage_path('app/' . $storedFilePath);
 
-        $cloudPath = Storage::disk('spaces')->putFileAs('uploads/applications/' . $applicationValidate['applicant_id'] . '/', $path, $fileName);
+        $cloudPath = Storage::disk('spaces')->putFileAs('uploads/applications/' . $applicationValidate['applicant_id'], $path, $fileName);
 
         $user = Application::create([
             'applicant_id' => $applicationValidate['applicant_id'],

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
 
-class ApplicationController extends Controller
+class DisqualifiedController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -22,7 +22,8 @@ class ApplicationController extends Controller
         $filters = Request::only(['search']);
         $searchReq = Request::input('search');
 
-        $applications = Application::query()
+        $disqualified = Application::query()
+        ->where('status', 0)
         ->with(['applicant', 'jobPosition'])
         ->when($searchReq, function($query, $search) {
             $query->where(function ($query) use ($search) {
@@ -75,8 +76,8 @@ class ApplicationController extends Controller
             unset($filters['search']);
         }
 
-        $currentPage = $applications->currentPage();
-        $lastPage = $applications->lastPage();
+        $currentPage = $disqualified->currentPage();
+        $lastPage = $disqualified->lastPage();
         $firstPage = 1;
 
         $previousPage = $currentPage - 1 > 0 ? $currentPage - 1 : null;
@@ -86,19 +87,19 @@ class ApplicationController extends Controller
 
         if ($previousPage !== null) {
             $links[] = [
-                'url' => $applications->url($previousPage),
+                'url' => $disqualified->url($previousPage),
                 'label' => 'Previous',
             ];
         }
 
         $links[] = [
-            'url' => $applications->url(1),
+            'url' => $disqualified->url(1),
             'label' => 1,
         ];
 
         if ($currentPage > 3) {
             $links[] = [
-                'url' => $applications->url($currentPage - 1),
+                'url' => $disqualified->url($currentPage - 1),
                 'label' => '...',
             ];
         }
@@ -108,7 +109,7 @@ class ApplicationController extends Controller
 
         for ($i = $rangeStart; $i <= $rangeEnd; $i++) {
             $links[] = [
-                'url' => $applications->url($i),
+                'url' => $disqualified->url($i),
                 'label' => $i,
             ];
         }
@@ -116,28 +117,28 @@ class ApplicationController extends Controller
 
         if ($currentPage < $lastPage - 2) {
             $links[] = [
-                'url' => $applications->url($currentPage + 1),
+                'url' => $disqualified->url($currentPage + 1),
                 'label' => '...',
             ];
         }
 
         if ($firstPage !== $lastPage) {
             $links[] = [
-                'url' => $applications->url($lastPage),
+                'url' => $disqualified->url($lastPage),
                 'label' => $lastPage,
             ];
         }
 
         if ($nextPage !== null) {
             $links[] = [
-                'url' => $applications->url($nextPage),
+                'url' => $disqualified->url($nextPage),
                 'label' => 'Next',
             ];
         }
 
 
-        return Inertia::render('Applications', [
-            'applications' => $applications,
+        return Inertia::render('Disqualified', [
+            'disqualified' => $disqualified,
             'filters' => $filters,
             'pagination' => [
                 'current_page' => $currentPage,
@@ -192,22 +193,10 @@ class ApplicationController extends Controller
      */
     public function approve($id)
     {
-        $application = Application::findOrFail($id)->user;
+        $disqualified = Application::findOrFail($id)->user;
 
-        $application->is_active = 2;
+        $disqualified->is_active = 2;
 
-        $application->save();
-    }
-
-    /**
-     * Deactivate the specified resource.
-     */
-    public function disapprove($id)
-    {
-        $application = Application::findOrFail($id)->user;
-
-        $application->is_active = 0;
-
-        $application->save();
+        $disqualified->save();
     }
 }

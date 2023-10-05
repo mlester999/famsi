@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
 
-class ApplicationController extends Controller
+class QualifiedController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -22,7 +22,8 @@ class ApplicationController extends Controller
         $filters = Request::only(['search']);
         $searchReq = Request::input('search');
 
-        $applications = Application::query()
+        $qualified = Application::query()
+        ->where('status', 2)
         ->with(['applicant', 'jobPosition'])
         ->when($searchReq, function($query, $search) {
             $query->where(function ($query) use ($search) {
@@ -52,31 +53,31 @@ class ApplicationController extends Controller
         ->orderBy('id', 'asc')
         ->paginate(10)
         ->withQueryString()
-        ->through(fn($application) => [
-            'id' => $application->id,
-            'first_name' => $application->applicant->first_name,
-            'middle_name' => $application->applicant->middle_name,
-            'last_name' => $application->applicant->last_name,
-            'gender' => $application->applicant->gender,
-            'email' => $application->applicant->user->email,
-            'contact_number' => $application->applicant->contact_number,
-            'is_active' => $application->applicant->user->is_active,
-            'created_at' => $application->created_at,
-            'file_name' => $application->file_name,
-            'file_path' => $application->file_path,
-            'job_id' => $application->jobPosition->id,
-            'title' => $application->jobPosition->title,
-            'location' => $application->jobPosition->location,
-            'schedule' => $application->jobPosition->schedule,
-            'status' => $application->status
+        ->through(fn($qualify) => [
+            'id' => $qualify->id,
+            'first_name' => $qualify->applicant->first_name,
+            'middle_name' => $qualify->applicant->middle_name,
+            'last_name' => $qualify->applicant->last_name,
+            'gender' => $qualify->applicant->gender,
+            'email' => $qualify->applicant->user->email,
+            'contact_number' => $qualify->applicant->contact_number,
+            'is_active' => $qualify->applicant->user->is_active,
+            'created_at' => $qualify->created_at,
+            'file_name' => $qualify->file_name,
+            'file_path' => $qualify->file_path,
+            'job_id' => $qualify->jobPosition->id,
+            'title' => $qualify->jobPosition->title,
+            'location' => $qualify->jobPosition->location,
+            'schedule' => $qualify->jobPosition->schedule,
+            'status' => $qualify->status
         ]);
 
         if (empty($searchReq)) {
             unset($filters['search']);
         }
 
-        $currentPage = $applications->currentPage();
-        $lastPage = $applications->lastPage();
+        $currentPage = $qualified->currentPage();
+        $lastPage = $qualified->lastPage();
         $firstPage = 1;
 
         $previousPage = $currentPage - 1 > 0 ? $currentPage - 1 : null;
@@ -86,19 +87,19 @@ class ApplicationController extends Controller
 
         if ($previousPage !== null) {
             $links[] = [
-                'url' => $applications->url($previousPage),
+                'url' => $qualified->url($previousPage),
                 'label' => 'Previous',
             ];
         }
 
         $links[] = [
-            'url' => $applications->url(1),
+            'url' => $qualified->url(1),
             'label' => 1,
         ];
 
         if ($currentPage > 3) {
             $links[] = [
-                'url' => $applications->url($currentPage - 1),
+                'url' => $qualified->url($currentPage - 1),
                 'label' => '...',
             ];
         }
@@ -108,7 +109,7 @@ class ApplicationController extends Controller
 
         for ($i = $rangeStart; $i <= $rangeEnd; $i++) {
             $links[] = [
-                'url' => $applications->url($i),
+                'url' => $qualified->url($i),
                 'label' => $i,
             ];
         }
@@ -116,28 +117,28 @@ class ApplicationController extends Controller
 
         if ($currentPage < $lastPage - 2) {
             $links[] = [
-                'url' => $applications->url($currentPage + 1),
+                'url' => $qualified->url($currentPage + 1),
                 'label' => '...',
             ];
         }
 
         if ($firstPage !== $lastPage) {
             $links[] = [
-                'url' => $applications->url($lastPage),
+                'url' => $qualified->url($lastPage),
                 'label' => $lastPage,
             ];
         }
 
         if ($nextPage !== null) {
             $links[] = [
-                'url' => $applications->url($nextPage),
+                'url' => $qualified->url($nextPage),
                 'label' => 'Next',
             ];
         }
 
 
-        return Inertia::render('Applications', [
-            'applications' => $applications,
+        return Inertia::render('Qualified', [
+            'qualified' => $qualified,
             'filters' => $filters,
             'pagination' => [
                 'current_page' => $currentPage,
@@ -187,27 +188,16 @@ class ApplicationController extends Controller
         //
     }
 
-    /**
-     * Activate the specified resource.
-     */
-    public function approve($id)
-    {
-        $application = Application::findOrFail($id)->user;
-
-        $application->is_active = 2;
-
-        $application->save();
-    }
 
     /**
      * Deactivate the specified resource.
      */
     public function disapprove($id)
     {
-        $application = Application::findOrFail($id)->user;
+        $qualified = Application::findOrFail($id)->user;
 
-        $application->is_active = 0;
+        $qualified->is_active = 0;
 
-        $application->save();
+        $qualified->save();
     }
 }

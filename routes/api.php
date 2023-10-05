@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    $user = $request->user()->load('applicant'); // Eager load the 'applicant' relationship
+    $user = $request->user()->load(['applicant', 'applicant.applications']); // Eager load the 'applicant' relationship
     return response()->json($user);
 });
 

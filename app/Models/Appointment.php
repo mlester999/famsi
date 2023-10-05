@@ -23,8 +23,13 @@ class Appointment extends Model
         return $this->belongsTo(Applicant::class);
     }
 
-    public function hr_manager(): BelongsTo
+    public function hrManager(): BelongsTo
     {
-        return $this->belongsTo(HrManager::class);
+        return $this->belongsTo(HrManager::class, 'interviewer_id');
+    }
+
+    public function hrStaff(): BelongsTo
+    {
+        return $this->belongsTo(HrStaff::class, 'interviewer_id');
     }
 }

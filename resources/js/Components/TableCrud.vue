@@ -189,7 +189,7 @@ const showUpdateModal = (data) => {
         form.email = data.email;
         form.contact_number = data.contact_number;
 
-        currentUpdatingUserID.value = data.id;
+        if (!currentUpdatingUserID.value) currentUpdatingUserID.value = data.id;
     }
 
     document.body.classList.add("overflow-hidden");

@@ -1,6 +1,6 @@
 <script setup>
-import { router, usePage, useForm } from "@inertiajs/vue3";
-import { ref, watch, Transition, Teleport } from "vue";
+import { router, usePage, useForm, Link } from "@inertiajs/vue3";
+import { ref, watch, computed, Transition, Teleport } from "vue";
 import debounce from "lodash.debounce";
 import { useToast } from "vue-toastification";
 import Pagination from "../Partials/Table/Pagination.vue";
@@ -30,29 +30,17 @@ const form = useForm({
 
 const page = usePage();
 
+const currentUser = computed(() => {
+    return page.props.user.role;
+});
+
 const toast = useToast();
 
 let search = ref(props.filters.search);
 
 let currentUpdatingUserID = ref(null);
 let viewInfoModalVisibility = ref(false);
-let approveModalVisibility = ref(false);
 let disapproveModalVisibility = ref(false);
-
-const approve = () => {
-    form.put(
-        `/${page.props.user.role}/${props.linkName}/approve/${currentUpdatingUserID.value}`,
-        {
-            onSuccess: () => {
-                toast.success("Application approved successfully!");
-                hideApproveModal();
-                hideDisapproveModal();
-                form.reset();
-                clearErrors();
-            },
-        }
-    );
-};
 
 const disapprove = () => {
     form.put(
@@ -60,34 +48,12 @@ const disapprove = () => {
         {
             onSuccess: () => {
                 toast.success("Application disapproved successfully!");
-                hideApproveModal();
                 hideDisapproveModal();
                 form.reset();
                 clearErrors();
             },
         }
     );
-};
-
-// Approve Modal
-const showApproveModal = (id) => {
-    document.body.classList.remove("overflow-hidden");
-    viewInfoModalVisibility.value = false;
-
-    document.body.classList.add("overflow-hidden");
-
-    currentUpdatingUserID.value = id;
-
-    approveModalVisibility.value = true;
-};
-
-const hideApproveModal = () => {
-    document.body.classList.remove("overflow-hidden");
-
-    currentUpdatingUserID.value = null;
-
-    viewInfoModalVisibility.value = false;
-    approveModalVisibility.value = false;
 };
 
 // Disapprove Modal
@@ -167,13 +133,7 @@ watch(
     >
         <Teleport to="body">
             <div
-                v-if="approveModalVisibility"
-                @click="hideApproveModal"
-                class="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-30 transition duration-200"
-            ></div>
-
-            <div
-                v-else-if="disapproveModalVisibility"
+                v-if="disapproveModalVisibility"
                 @click="hideDisapproveModal"
                 class="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-30 transition duration-200"
             ></div>
@@ -468,14 +428,18 @@ watch(
                                         Disapprove
                                     </button>
 
-                                    <button
-                                        @click="showApproveModal(role.id)"
+                                    <Link
+                                        :href="
+                                            route(
+                                                `${currentUser}.appointments.index`
+                                            )
+                                        "
                                         type="button"
                                         id="approveUserButton"
-                                        class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:ring-green-300 dark:focus:ring-green-900"
+                                        class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900"
                                     >
-                                        Approve
-                                    </button>
+                                        Set Interview
+                                    </Link>
                                 </td>
                             </tr>
 
@@ -661,12 +625,12 @@ watch(
             </div>
 
             <div class="flex justify-center w-full py-4 space-x-4">
-                <button
-                    @click="showApproveModal(currentUpdatingUserID)"
-                    class="text-white w-full justify-center bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 disabled:bg-green-200 dark:disabled:bg-green-900"
+                <Link
+                    :href="route(`${currentUser}.appointments.index`)"
+                    class="text-white w-full justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:bg-blue-200 dark:disabled:bg-blue-900"
                 >
-                    Approve
-                </button>
+                    Set Interview
+                </Link>
 
                 <button
                     @click="showDisapproveModal(currentUpdatingUserID)"

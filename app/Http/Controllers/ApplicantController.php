@@ -154,7 +154,7 @@ class ApplicantController extends Controller
     {
         $applicantValidate = Request::validate([
             'first_name' => ['required', 'max:50'],
-            'middle_name' => ['required', 'max:50'],
+            'middle_name' => ['max:50'],
             'last_name' => ['required', 'max:50'],
             'gender' => ['required'],
             'email' => ['required', 'max:50', 'email'],
@@ -225,7 +225,7 @@ class ApplicantController extends Controller
     {
         $applicantValidate = Request::validate([
             'first_name' => ['required', 'max:50'],
-            'middle_name' => ['required', 'max:50'],
+            'middle_name' => ['max:50'],
             'last_name' => ['required', 'max:50'],
             'gender' => ['required'],
             'email' => ['required', 'max:50', 'email'],
@@ -304,7 +304,7 @@ class ApplicantController extends Controller
             ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
             ->log("Updated a Applicant account's email from {$user->email} to {$applicantValidate['email']}");
 
-            $applicant->email = $applicantValidate['email'];
+            $user->email = $applicantValidate['email'];
         }
 
         if($applicantValidate['contact_number'] !== $applicant->contact_number) {

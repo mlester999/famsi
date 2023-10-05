@@ -7,13 +7,16 @@ use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\BenefitController;
 use App\Http\Controllers\CompanyAssignmentController;
+use App\Http\Controllers\DisqualifiedController;
 use App\Http\Controllers\DocumentsController;
 use App\Http\Controllers\EmployeeTypeController;
+use App\Http\Controllers\HrStaffDashboardController;
 use App\Http\Controllers\HrManagerDashboardController;
 use App\Http\Controllers\IndustryController;
 use App\Http\Controllers\JobPositionController;
 use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\QualificationController;
+use App\Http\Controllers\QualifiedController;
 use App\Models\Applicant;
 use App\Models\HrManager;
 use App\Models\HrStaff;
@@ -54,6 +57,17 @@ Route::middleware([
     });
 
     Route::group(['middleware' => 'role:hr-staff', 'prefix' => 'hr-staff', 'as' => 'hr-staff.'], function () {
+
+        Route::group(['prefix' => 'appointments', 'as' => 'appointments.'], function() {
+            Route::get('/', HrStaffDashboardController::class)->name('index');
+
+            Route::post('/store', [HrStaffDashboardController::class, 'store'])->name('store');
+
+            Route::put('/update/{id}', [HrStaffDashboardController::class, 'update'])->name('update');
+
+            Route::delete('/delete/{id}', [HrStaffDashboardController::class, 'delete'])->name('delete');
+        });
+
         Route::group(['prefix' => 'applicants', 'as' => 'applicants.'], function() {
             Route::get('/', [ApplicantController::class, 'index'])->name('index');
 
@@ -92,7 +106,7 @@ Route::middleware([
     });
 
     Route::group(['middleware' => 'role:hr-manager', 'prefix' => 'hr-manager', 'as' => 'hr-manager.'], function () {
-        Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.'], function() {
+        Route::group(['prefix' => 'appointments', 'as' => 'appointments.'], function() {
             Route::get('/', HrManagerDashboardController::class)->name('index');
 
             Route::post('/store', [HrManagerDashboardController::class, 'store'])->name('store');
@@ -134,6 +148,18 @@ Route::middleware([
             Route::put('/approve/{id}', [ApplicationController::class, 'approve'])->name('approve');
 
             Route::put('/disapprove/{id}', [ApplicationController::class, 'disapprove'])->name('disapprove');
+        });
+
+        Route::group(['prefix' => 'qualified', 'as' => 'qualified.'], function() {
+            Route::get('/', [QualifiedController::class, 'index'])->name('index');
+
+            Route::put('/disapprove/{id}', [QualifiedController::class, 'disapprove'])->name('disapprove');
+        });
+
+        Route::group(['prefix' => 'disqualified', 'as' => 'disqualified.'], function() {
+            Route::get('/', [DisqualifiedController::class, 'index'])->name('index');
+
+            Route::put('/approve/{id}', [DisqualifiedController::class, 'approve'])->name('approve');
         });
 
         Route::group(['prefix' => 'documents', 'as' => 'documents.'], function() {
@@ -280,6 +306,18 @@ Route::middleware([
                 Route::put('/activate/{id}', [ApplicantController::class, 'activate'])->name('activate');
 
                 Route::put('/deactivate/{id}', [ApplicantController::class, 'deactivate'])->name('deactivate');
+            });
+
+            Route::group(['prefix' => 'qualified', 'as' => 'qualified.'], function() {
+                Route::get('/', [QualifiedController::class, 'index'])->name('index');
+
+                Route::put('/disapprove/{id}', [QualifiedController::class, 'disapprove'])->name('disapprove');
+            });
+
+            Route::group(['prefix' => 'disqualified', 'as' => 'disqualified.'], function() {
+                Route::get('/', [DisqualifiedController::class, 'index'])->name('index');
+
+                Route::put('/approve/{id}', [DisqualifiedController::class, 'approve'])->name('approve');
             });
 
             Route::group(['prefix' => 'applications', 'as' => 'applications.'], function() {

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Admin;
 use App\Models\Applicant;
-use App\Models\Application;
 use App\Models\Appointment;
 use App\Models\HrManager;
 use App\Models\HrStaff;
@@ -15,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Twilio\Rest\Client;
 
-class HrManagerDashboardController extends Controller
+class HrStaffDashboardController extends Controller
 {
     /**
      * Handle the incoming request.
@@ -23,9 +22,10 @@ class HrManagerDashboardController extends Controller
     public function __invoke(Request $request)
     {
         $events = [];
-        $authUser = HrManager::where('user_id', auth()->user()->id)->first();
-        $applicants = Application::where('status', 2)->with(['applicant'])->get();
-        $appointments = Appointment::with(['applicant', 'hrManager'])
+        $authUser = HrStaff::where('user_id', auth()->user()->id)->first();
+        $applicants = Applicant::all();
+
+        $appointments = Appointment::with(['applicant', 'hrStaff'])
         ->where('interviewer_id', $authUser->id)
         ->get();
 
@@ -40,7 +40,7 @@ class HrManagerDashboardController extends Controller
             ];
         }
 
-        return Inertia::render('HRManagerDashboard', [
+        return Inertia::render('HRStaffDashboard', [
             'events' => $events,
             'applicants' => $applicants
         ]);

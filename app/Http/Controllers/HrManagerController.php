@@ -156,7 +156,7 @@ class HrManagerController extends Controller
     {
         $hrManagerValidate = Request::validate([
             'first_name' => ['required', 'max:50'],
-            'middle_name' => ['required', 'max:50'],
+            'middle_name' => ['max:50'],
             'last_name' => ['required', 'max:50'],
             'gender' => ['required'],
             'email' => ['required', 'max:50', 'email'],
@@ -227,7 +227,7 @@ class HrManagerController extends Controller
     {
         $hrManagerValidate = Request::validate([
             'first_name' => ['required', 'max:50'],
-            'middle_name' => ['required', 'max:50'],
+            'middle_name' => ['max:50'],
             'last_name' => ['required', 'max:50'],
             'gender' => ['required'],
             'email' => ['required', 'max:50', 'email'],
@@ -306,7 +306,7 @@ class HrManagerController extends Controller
             ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
             ->log("Updated a HR Manager account's email from {$user->email} to {$hrManagerValidate['email']}");
 
-            $hrManager->email = $hrManagerValidate['email'];
+            $user->email = $hrManagerValidate['email'];
         }
 
         if($hrManagerValidate['contact_number'] !== $hrManager->contact_number) {
