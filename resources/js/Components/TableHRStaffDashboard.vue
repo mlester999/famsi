@@ -305,7 +305,7 @@ const handleEventResize = (arg) => {
 const calendarOptions = ref({
     plugins: [timeGridPlugin, interactionPlugin, dayGridPlugin],
     timezone: "local",
-    initialView: "timeGridWeek",
+    initialView: "dayGridMonth",
     allDaySlot: false,
     editable: true,
     selectable: true,

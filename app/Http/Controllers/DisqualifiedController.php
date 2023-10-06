@@ -193,9 +193,9 @@ class DisqualifiedController extends Controller
      */
     public function approve($id)
     {
-        $disqualified = Application::findOrFail($id)->user;
+        $disqualified = Application::findOrFail($id);
 
-        $disqualified->is_active = 2;
+        $disqualified->status = 2;
 
         $disqualified->save();
     }

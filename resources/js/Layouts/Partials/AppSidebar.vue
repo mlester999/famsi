@@ -99,7 +99,7 @@ const currentUser = computed(() => {
             </SidebarCategory>
 
             <SidebarCategory
-                name="Recruitments"
+                name="Users"
                 v-if="
                     $page.props.auth.user.user_type == users.admin ||
                     $page.props.auth.user.user_type == users.hr_manager ||
@@ -125,7 +125,18 @@ const currentUser = computed(() => {
                             <template #title> Applicants </template>
                         </SidebarTab>
                     </li>
+                </template>
+            </SidebarCategory>
 
+            <SidebarCategory
+                name="Recruitments"
+                v-if="
+                    $page.props.auth.user.user_type == users.admin ||
+                    $page.props.auth.user.user_type == users.hr_manager ||
+                    $page.props.auth.user.user_type == users.hr_staff
+                "
+            >
+                <template #tab>
                     <li>
                         <SidebarTab
                             :href="route(`${currentUser}.applications.index`)"
@@ -156,7 +167,7 @@ const currentUser = computed(() => {
                             <template #icon>
                                 <font-awesome-icon
                                     class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-                                    :icon="['fas', 'scroll']"
+                                    :icon="['fas', 'check']"
                                 />
                             </template>
 
@@ -175,7 +186,7 @@ const currentUser = computed(() => {
                             <template #icon>
                                 <font-awesome-icon
                                     class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-                                    :icon="['fas', 'scroll']"
+                                    :icon="['fas', 'x']"
                                 />
                             </template>
 
@@ -185,39 +196,20 @@ const currentUser = computed(() => {
 
                     <li>
                         <SidebarTab
-                            :href="route(`${currentUser}.appointments.index`)"
+                            :href="route(`${currentUser}.hired.index`)"
                             :class="[
-                                $page.url.includes('appointments') &&
+                                $page.url.includes('hired') &&
                                     'bg-gray-100 dark:bg-gray-700',
                             ]"
                         >
                             <template #icon>
                                 <font-awesome-icon
                                     class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-                                    :icon="['fas', 'gauge']"
+                                    :icon="['fas', 'certificate']"
                                 />
                             </template>
 
-                            <template #title> Appointments </template>
-                        </SidebarTab>
-                    </li>
-
-                    <li>
-                        <SidebarTab
-                            :href="route(`${currentUser}.documents.index`)"
-                            :class="[
-                                $page.url.includes('documents') &&
-                                    'bg-gray-100 dark:bg-gray-700',
-                            ]"
-                        >
-                            <template #icon>
-                                <font-awesome-icon
-                                    class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-                                    :icon="['fas', 'file']"
-                                />
-                            </template>
-
-                            <template #title> Documents </template>
+                            <template #title> Hired </template>
                         </SidebarTab>
                     </li>
                 </template>
@@ -383,6 +375,55 @@ const currentUser = computed(() => {
                             </template>
 
                             <template #title> Job Positions </template>
+                        </SidebarTab>
+                    </li>
+                </template>
+            </SidebarCategory>
+
+            <SidebarCategory
+                name="Interview Related"
+                v-if="
+                    $page.props.auth.user.user_type == users.admin ||
+                    $page.props.auth.user.user_type == users.hr_manager ||
+                    $page.props.auth.user.user_type == users.hr_staff
+                "
+            >
+                <template #tab>
+                    <li>
+                        <SidebarTab
+                            :href="route(`${currentUser}.appointments.index`)"
+                            :class="[
+                                $page.url.includes('appointments') &&
+                                    'bg-gray-100 dark:bg-gray-700',
+                            ]"
+                        >
+                            <template #icon>
+                                <font-awesome-icon
+                                    class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                    :icon="['fas', 'calendar-check']"
+                                />
+                            </template>
+
+                            <template #title> Appointments </template>
+                        </SidebarTab>
+                    </li>
+
+                    <li>
+                        <SidebarTab
+                            :href="route(`${currentUser}.documents.index`)"
+                            :class="[
+                                $page.url.includes('documents') &&
+                                    'bg-gray-100 dark:bg-gray-700',
+                            ]"
+                        >
+                            <template #icon>
+                                <font-awesome-icon
+                                    class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                    :icon="['fas', 'file']"
+                                />
+                            </template>
+
+                            <template #title> Documents </template>
                         </SidebarTab>
                     </li>
                 </template>

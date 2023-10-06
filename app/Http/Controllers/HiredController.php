@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
 
-class QualifiedController extends Controller
+class HiredController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -22,8 +22,8 @@ class QualifiedController extends Controller
         $filters = Request::only(['search']);
         $searchReq = Request::input('search');
 
-        $qualified = Application::query()
-        ->where('status', 2)
+        $hired = Application::query()
+        ->where('status', 3)
         ->with(['applicant', 'jobPosition'])
         ->when($searchReq, function($query, $search) {
             $query->where(function ($query) use ($search) {
@@ -53,31 +53,31 @@ class QualifiedController extends Controller
         ->orderBy('id', 'asc')
         ->paginate(10)
         ->withQueryString()
-        ->through(fn($qualify) => [
-            'id' => $qualify->id,
-            'first_name' => $qualify->applicant->first_name,
-            'middle_name' => $qualify->applicant->middle_name,
-            'last_name' => $qualify->applicant->last_name,
-            'gender' => $qualify->applicant->gender,
-            'email' => $qualify->applicant->user->email,
-            'contact_number' => $qualify->applicant->contact_number,
-            'is_active' => $qualify->applicant->user->is_active,
-            'created_at' => $qualify->created_at,
-            'file_name' => $qualify->file_name,
-            'file_path' => $qualify->file_path,
-            'job_id' => $qualify->jobPosition->id,
-            'title' => $qualify->jobPosition->title,
-            'location' => $qualify->jobPosition->location,
-            'schedule' => $qualify->jobPosition->schedule,
-            'status' => $qualify->status
+        ->through(fn($hire) => [
+            'id' => $hire->id,
+            'first_name' => $hire->applicant->first_name,
+            'middle_name' => $hire->applicant->middle_name,
+            'last_name' => $hire->applicant->last_name,
+            'gender' => $hire->applicant->gender,
+            'email' => $hire->applicant->user->email,
+            'contact_number' => $hire->applicant->contact_number,
+            'is_active' => $hire->applicant->user->is_active,
+            'created_at' => $hire->created_at,
+            'file_name' => $hire->file_name,
+            'file_path' => $hire->file_path,
+            'job_id' => $hire->jobPosition->id,
+            'title' => $hire->jobPosition->title,
+            'location' => $hire->jobPosition->location,
+            'schedule' => $hire->jobPosition->schedule,
+            'status' => $hire->status
         ]);
 
         if (empty($searchReq)) {
             unset($filters['search']);
         }
 
-        $currentPage = $qualified->currentPage();
-        $lastPage = $qualified->lastPage();
+        $currentPage = $hired->currentPage();
+        $lastPage = $hired->lastPage();
         $firstPage = 1;
 
         $previousPage = $currentPage - 1 > 0 ? $currentPage - 1 : null;
@@ -87,19 +87,19 @@ class QualifiedController extends Controller
 
         if ($previousPage !== null) {
             $links[] = [
-                'url' => $qualified->url($previousPage),
+                'url' => $hired->url($previousPage),
                 'label' => 'Previous',
             ];
         }
 
         $links[] = [
-            'url' => $qualified->url(1),
+            'url' => $hired->url(1),
             'label' => 1,
         ];
 
         if ($currentPage > 3) {
             $links[] = [
-                'url' => $qualified->url($currentPage - 1),
+                'url' => $hired->url($currentPage - 1),
                 'label' => '...',
             ];
         }
@@ -109,7 +109,7 @@ class QualifiedController extends Controller
 
         for ($i = $rangeStart; $i <= $rangeEnd; $i++) {
             $links[] = [
-                'url' => $qualified->url($i),
+                'url' => $hired->url($i),
                 'label' => $i,
             ];
         }
@@ -117,28 +117,28 @@ class QualifiedController extends Controller
 
         if ($currentPage < $lastPage - 2) {
             $links[] = [
-                'url' => $qualified->url($currentPage + 1),
+                'url' => $hired->url($currentPage + 1),
                 'label' => '...',
             ];
         }
 
         if ($firstPage !== $lastPage) {
             $links[] = [
-                'url' => $qualified->url($lastPage),
+                'url' => $hired->url($lastPage),
                 'label' => $lastPage,
             ];
         }
 
         if ($nextPage !== null) {
             $links[] = [
-                'url' => $qualified->url($nextPage),
+                'url' => $hired->url($nextPage),
                 'label' => 'Next',
             ];
         }
 
 
-        return Inertia::render('Qualified', [
-            'qualified' => $qualified,
+        return Inertia::render('Hired', [
+            'hired' => $hired,
             'filters' => $filters,
             'pagination' => [
                 'current_page' => $currentPage,
@@ -188,25 +188,4 @@ class QualifiedController extends Controller
         //
     }
 
-
-    /**
-     * Deactivate the specified resource.
-     */
-    public function disapprove($id)
-    {
-        $qualified = Application::findOrFail($id);
-
-        $qualified->status = 0;
-
-        $qualified->save();
-    }
-
-    public function hire($id)
-    {
-        $hire = Application::findOrFail($id);
-
-        $hire->status = 3;
-
-        $hire->save();
-    }
 }

@@ -23,6 +23,7 @@ class ApplicationController extends Controller
         $searchReq = Request::input('search');
 
         $applications = Application::query()
+        ->where('status', 1)
         ->with(['applicant', 'jobPosition'])
         ->when($searchReq, function($query, $search) {
             $query->where(function ($query) use ($search) {
@@ -192,9 +193,9 @@ class ApplicationController extends Controller
      */
     public function approve($id)
     {
-        $application = Application::findOrFail($id)->user;
+        $application = Application::findOrFail($id);
 
-        $application->is_active = 2;
+        $application->status = 2;
 
         $application->save();
     }
@@ -204,9 +205,9 @@ class ApplicationController extends Controller
      */
     public function disapprove($id)
     {
-        $application = Application::findOrFail($id)->user;
+        $application = Application::findOrFail($id);
 
-        $application->is_active = 0;
+        $application->status = 0;
 
         $application->save();
     }

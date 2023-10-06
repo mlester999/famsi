@@ -10,6 +10,7 @@ use App\Http\Controllers\CompanyAssignmentController;
 use App\Http\Controllers\DisqualifiedController;
 use App\Http\Controllers\DocumentsController;
 use App\Http\Controllers\EmployeeTypeController;
+use App\Http\Controllers\HiredController;
 use App\Http\Controllers\HrStaffDashboardController;
 use App\Http\Controllers\HrManagerDashboardController;
 use App\Http\Controllers\IndustryController;
@@ -90,6 +91,24 @@ Route::middleware([
             Route::put('/disapprove/{id}', [ApplicationController::class, 'disapprove'])->name('disapprove');
         });
 
+        Route::group(['prefix' => 'qualified', 'as' => 'qualified.'], function() {
+            Route::get('/', [QualifiedController::class, 'index'])->name('index');
+
+            Route::put('/hire/{id}', [QualifiedController::class, 'hire'])->name('hire');
+
+            Route::put('/disapprove/{id}', [QualifiedController::class, 'disapprove'])->name('disapprove');
+        });
+
+        Route::group(['prefix' => 'disqualified', 'as' => 'disqualified.'], function() {
+            Route::get('/', [DisqualifiedController::class, 'index'])->name('index');
+
+            Route::put('/approve/{id}', [DisqualifiedController::class, 'approve'])->name('approve');
+        });
+
+        Route::group(['prefix' => 'hired', 'as' => 'hired.'], function() {
+            Route::get('/', [HiredController::class, 'index'])->name('index');
+        });
+
         Route::group(['prefix' => 'documents', 'as' => 'documents.'], function() {
             Route::get('/', [DocumentsController::class, 'index'])->name('index');
 
@@ -153,6 +172,8 @@ Route::middleware([
         Route::group(['prefix' => 'qualified', 'as' => 'qualified.'], function() {
             Route::get('/', [QualifiedController::class, 'index'])->name('index');
 
+            Route::put('/hire/{id}', [QualifiedController::class, 'hire'])->name('hire');
+
             Route::put('/disapprove/{id}', [QualifiedController::class, 'disapprove'])->name('disapprove');
         });
 
@@ -160,6 +181,10 @@ Route::middleware([
             Route::get('/', [DisqualifiedController::class, 'index'])->name('index');
 
             Route::put('/approve/{id}', [DisqualifiedController::class, 'approve'])->name('approve');
+        });
+
+        Route::group(['prefix' => 'hired', 'as' => 'hired.'], function() {
+            Route::get('/', [HiredController::class, 'index'])->name('index');
         });
 
         Route::group(['prefix' => 'documents', 'as' => 'documents.'], function() {
@@ -311,6 +336,8 @@ Route::middleware([
             Route::group(['prefix' => 'qualified', 'as' => 'qualified.'], function() {
                 Route::get('/', [QualifiedController::class, 'index'])->name('index');
 
+                Route::put('/hire/{id}', [QualifiedController::class, 'hire'])->name('hire');
+
                 Route::put('/disapprove/{id}', [QualifiedController::class, 'disapprove'])->name('disapprove');
             });
 
@@ -318,6 +345,10 @@ Route::middleware([
                 Route::get('/', [DisqualifiedController::class, 'index'])->name('index');
 
                 Route::put('/approve/{id}', [DisqualifiedController::class, 'approve'])->name('approve');
+            });
+
+            Route::group(['prefix' => 'hired', 'as' => 'hired.'], function() {
+                Route::get('/', [HiredController::class, 'index'])->name('index');
             });
 
             Route::group(['prefix' => 'applications', 'as' => 'applications.'], function() {
