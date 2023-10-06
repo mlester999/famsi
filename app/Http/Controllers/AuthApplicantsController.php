@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Applicant;
+use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -29,6 +30,8 @@ class AuthApplicantsController extends Controller
             return response()->json(['error' => $validator->errors()], 422);
         }
 
+        $adminId = User::where('user_type', 3)->first();
+
         $user = User::create([
             'email' => $request->input('email'),
             'password' => Hash::make($request->input('password')),
@@ -43,6 +46,20 @@ class AuthApplicantsController extends Controller
             'last_name' => $request->input('lastName'),
             'gender' => $request->input('gender'),
             'contact_number' => $request->input('contact_number'),
+        ]);
+
+        Notification::create([
+            'title' => 'A new account for ' . $request->input('firstName') . ' ' . $request->input('lastName') . ' has been successfully created in our system.',
+            'user_id' => $adminId->id,
+            'author_id' => $user->id,
+            'status' => 0
+        ]);
+
+        Notification::create([
+            'title' => "Welcome to FAMSI Job Portal! Browse jobs and start applying today. Good luck!",
+            'user_id' => $user->id,
+            'author_id' => $adminId->id,
+            'status' => 0
         ]);
 
         $token = $user->createToken('Applicant Dashboard')->plainTextToken;

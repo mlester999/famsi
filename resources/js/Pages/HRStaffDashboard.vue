@@ -12,7 +12,7 @@ defineProps({
     <AppLayout title="Dashboard">
         <div class="px-4 pt-6">
             <TableHrStaffDashboard
-                linkName="dashboard"
+                linkName="appointments"
                 :events="events"
                 :applicants="applicants"
             >

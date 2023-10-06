@@ -6,6 +6,7 @@ use App\Models\Admin;
 use App\Models\Applicant;
 use App\Models\HrManager;
 use App\Models\HrStaff;
+use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -58,6 +59,12 @@ class HandleInertiaRequests extends Middleware
                             return Admin::where('user_id', $authUser->id)->first();
                         }
                     }
+                },
+
+                "notifications" => function () {
+                    $authUser = Auth::user();
+
+                    return Notification::where('user_id', $authUser->id)->get();
                 },
 
                 "role" => function () {

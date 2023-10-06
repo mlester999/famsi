@@ -131,7 +131,6 @@ const currentUser = computed(() => {
             <SidebarCategory
                 name="Recruitments"
                 v-if="
-                    $page.props.auth.user.user_type == users.admin ||
                     $page.props.auth.user.user_type == users.hr_manager ||
                     $page.props.auth.user.user_type == users.hr_staff
                 "
@@ -383,7 +382,6 @@ const currentUser = computed(() => {
             <SidebarCategory
                 name="Interview Related"
                 v-if="
-                    $page.props.auth.user.user_type == users.admin ||
                     $page.props.auth.user.user_type == users.hr_manager ||
                     $page.props.auth.user.user_type == users.hr_staff
                 "

@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class HrManagerController extends Controller
@@ -159,7 +160,7 @@ class HrManagerController extends Controller
             'middle_name' => ['max:50'],
             'last_name' => ['required', 'max:50'],
             'gender' => ['required'],
-            'email' => ['required', 'max:50', 'email'],
+            'email' => ['required', 'max:50', 'email', 'unique:users'],
             'contact_number' => ['required', 'digits:11'],
         ]);
 
@@ -230,7 +231,7 @@ class HrManagerController extends Controller
             'middle_name' => ['max:50'],
             'last_name' => ['required', 'max:50'],
             'gender' => ['required'],
-            'email' => ['required', 'max:50', 'email'],
+            'email' => ['required', 'max:50', 'email', Rule::unique('users')->ignore(HrManager::findOrFail($id)->user->id)],
             'contact_number' => ['required', 'digits:11'],
         ]);
 
