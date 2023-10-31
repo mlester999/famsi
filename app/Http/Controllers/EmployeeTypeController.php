@@ -52,6 +52,7 @@ class EmployeeTypeController extends Controller
             'job_type_id' => $employeeType->job_type_id,
             'title' => $employeeType->title,
             'description' => $employeeType->description,
+            'is_active' => $employeeType->is_active,
             'created_at' => $employeeType->created_at,
         ]);
 
@@ -244,13 +245,27 @@ class EmployeeTypeController extends Controller
         return redirect()->back();
     }
 
-    /**
-     * Remove the specified resource from storage.
+/**
+     * Activate the specified resource.
      */
-    public function destroy($id)
+    public function activate($id)
     {
         $employeeType = EmployeeType::findOrFail($id);
 
-        $employeeType->delete();
+        $employeeType->is_active = 1;
+
+        $employeeType->save();
+    }
+
+    /**
+     * Deactivate the specified resource.
+     */
+    public function deactivate($id)
+    {
+        $employeeType = EmployeeType::findOrFail($id);
+
+        $employeeType->is_active = 0;
+
+        $employeeType->save();
     }
 }

@@ -338,4 +338,28 @@ class JobPositionController extends Controller
 
         $jobPosition->delete();
     }
+
+          /**
+     * Activate the specified resource.
+     */
+    public function activate($id)
+    {
+        $jobPosition = JobPosition::findOrFail($id);
+
+        $jobPosition->is_active = 1;
+
+        $jobPosition->save();
+    }
+
+    /**
+     * Deactivate the specified resource.
+     */
+    public function deactivate($id)
+    {
+        $jobPosition = JobPosition::findOrFail($id);
+
+        $jobPosition->is_active = 0;
+
+        $jobPosition->save();
+    }
 }

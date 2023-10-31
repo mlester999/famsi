@@ -48,6 +48,7 @@ class CompanyAssignmentController extends Controller
             'id' => $companyAssignment->id,
             'title' => $companyAssignment->title,
             'description' => $companyAssignment->description,
+            'is_active' => $companyAssignment->is_active,
             'created_at' => $companyAssignment->created_at,
         ]);
 
@@ -233,5 +234,29 @@ class CompanyAssignmentController extends Controller
         $companyAssignment = CompanyAssignment::findOrFail($id);
 
         $companyAssignment->delete();
+    }
+
+       /**
+     * Activate the specified resource.
+     */
+    public function activate($id)
+    {
+        $companyAssignment = CompanyAssignment::findOrFail($id);
+
+        $companyAssignment->is_active = 1;
+
+        $companyAssignment->save();
+    }
+
+    /**
+     * Deactivate the specified resource.
+     */
+    public function deactivate($id)
+    {
+        $companyAssignment = CompanyAssignment::findOrFail($id);
+
+        $companyAssignment->is_active = 0;
+
+        $companyAssignment->save();
     }
 }

@@ -48,6 +48,7 @@ class IndustryController extends Controller
             'id' => $industry->id,
             'title' => $industry->title,
             'description' => $industry->description,
+            'is_active' => $industry->is_active,
             'created_at' => $industry->created_at,
         ]);
 
@@ -233,5 +234,29 @@ class IndustryController extends Controller
         $industry = Industry::findOrFail($id);
 
         $industry->delete();
+    }
+
+          /**
+     * Activate the specified resource.
+     */
+    public function activate($id)
+    {
+        $industry = Industry::findOrFail($id);
+
+        $industry->is_active = 1;
+
+        $industry->save();
+    }
+
+    /**
+     * Deactivate the specified resource.
+     */
+    public function deactivate($id)
+    {
+        $industry = Industry::findOrFail($id);
+
+        $industry->is_active = 0;
+
+        $industry->save();
     }
 }

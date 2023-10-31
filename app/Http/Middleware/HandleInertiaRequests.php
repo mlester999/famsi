@@ -64,7 +64,10 @@ class HandleInertiaRequests extends Middleware
                 "notifications" => function () {
                     $authUser = Auth::user();
 
-                    return Notification::where('user_id', $authUser->id)->get();
+                    if($authUser) {
+                        return Notification::where('user_id', $authUser->id)->get();
+                    }
+
                 },
 
                 "role" => function () {

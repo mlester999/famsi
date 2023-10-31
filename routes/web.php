@@ -220,7 +220,10 @@ Route::middleware([
 
             Route::put('/update/{id}', [QualificationController::class, 'update'])->name('update');
 
-            Route::delete('/destroy/{id}', [QualificationController::class, 'destroy'])->name('destroy');
+            
+            Route::put('/activate/{id}', [QualificationController::class, 'activate'])->name('activate');
+
+            Route::put('/deactivate/{id}', [QualificationController::class, 'deactivate'])->name('deactivate');
         });
 
         Route::group(['prefix' => 'benefits', 'as' => 'benefits.'], function() {
@@ -230,7 +233,10 @@ Route::middleware([
 
             Route::put('/update/{id}', [BenefitController::class, 'update'])->name('update');
 
-            Route::delete('/destroy/{id}', [BenefitController::class, 'destroy'])->name('destroy');
+            
+            Route::put('/activate/{id}', [BenefitController::class, 'activate'])->name('activate');
+
+            Route::put('/deactivate/{id}', [BenefitController::class, 'deactivate'])->name('deactivate');
         });
 
         Route::group(['prefix' => 'company-assignments', 'as' => 'company-assignments.'], function() {
@@ -240,7 +246,10 @@ Route::middleware([
 
             Route::put('/update/{id}', [CompanyAssignmentController::class, 'update'])->name('update');
 
-            Route::delete('/destroy/{id}', [CompanyAssignmentController::class, 'destroy'])->name('destroy');
+            
+            Route::put('/activate/{id}', [CompanyAssignmentController::class, 'activate'])->name('activate');
+
+            Route::put('/deactivate/{id}', [CompanyAssignmentController::class, 'deactivate'])->name('deactivate');
         });
 
         Route::group(['prefix' => 'job-types', 'as' => 'job-types.'], function() {
@@ -250,7 +259,10 @@ Route::middleware([
 
             Route::put('/update/{id}', [JobTypeController::class, 'update'])->name('update');
 
-            Route::delete('/destroy/{id}', [JobTypeController::class, 'destroy'])->name('destroy');
+            
+            Route::put('/activate/{id}', [JobTypeController::class, 'activate'])->name('activate');
+
+            Route::put('/deactivate/{id}', [JobTypeController::class, 'deactivate'])->name('deactivate');
         });
 
         Route::group(['prefix' => 'employee-types', 'as' => 'employee-types.'], function() {
@@ -260,7 +272,9 @@ Route::middleware([
 
             Route::put('/update/{id}', [EmployeeTypeController::class, 'update'])->name('update');
 
-            Route::delete('/destroy/{id}', [EmployeeTypeController::class, 'destroy'])->name('destroy');
+            Route::put('/activate/{id}', [EmployeeTypeController::class, 'activate'])->name('activate');
+
+            Route::put('/deactivate/{id}', [EmployeeTypeController::class, 'deactivate'])->name('deactivate');
         });
 
         Route::group(['prefix' => 'industries', 'as' => 'industries.'], function() {
@@ -270,7 +284,10 @@ Route::middleware([
 
             Route::put('/update/{id}', [IndustryController::class, 'update'])->name('update');
 
-            Route::delete('/destroy/{id}', [IndustryController::class, 'destroy'])->name('destroy');
+            
+            Route::put('/activate/{id}', [IndustryController::class, 'activate'])->name('activate');
+
+            Route::put('/deactivate/{id}', [IndustryController::class, 'deactivate'])->name('deactivate');
         });
 
         Route::group(['prefix' => 'job-positions', 'as' => 'job-positions.'], function() {

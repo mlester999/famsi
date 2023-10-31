@@ -1,7 +1,7 @@
 <script setup>
 import axios from "axios";
 import { router, usePage, useForm } from "@inertiajs/vue3";
-import { ref, computed, watch, Transition, Teleport } from "vue";
+import { ref, computed, watch, Transition, Teleport, reactive } from "vue";
 import debounce from "lodash.debounce";
 import vueFilePond from "vue-filepond";
 import { useToast } from "vue-toastification";
@@ -19,6 +19,13 @@ const page = usePage();
 const toast = useToast();
 
 const form = useForm({
+    title: "",
+    description: "",
+    filename: "",
+    path: "",
+});
+
+const addModalForm = reactive({
     title: "",
     description: "",
     filename: "",
@@ -218,10 +225,10 @@ const hideUpdateModal = () => {
 };
 
 const showAddModal = () => {
-    form.title = "";
-    form.description = "";
-    form.filename = "";
-    form.path = "";
+    form.title = addModalForm.title;
+    form.description = addModalForm.description;
+    form.filename = addModalForm.filename;
+    form.path = addModalForm.path;
 
     document.body.classList.add("overflow-hidden");
 
@@ -232,6 +239,11 @@ const hideAddModal = () => {
     document.body.classList.remove("overflow-hidden");
 
     addModalVisibility.value = false;
+
+    addModalForm.title = form.title;
+    addModalForm.description = form.description;
+    addModalForm.filename = form.filename;
+    addModalForm.path = form.path;
 
     form.reset();
     form.clearErrors();

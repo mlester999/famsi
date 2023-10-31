@@ -1,6 +1,14 @@
 <script setup>
 import { router, usePage, useForm } from "@inertiajs/vue3";
-import { ref, computed, watch, Transition, Teleport, provide } from "vue";
+import {
+    ref,
+    computed,
+    watch,
+    Transition,
+    Teleport,
+    provide,
+    reactive,
+} from "vue";
 import debounce from "lodash.debounce";
 import { useToast } from "vue-toastification";
 import Pagination from "../Partials/Table/Pagination.vue";
@@ -28,6 +36,17 @@ const props = defineProps({
 });
 
 const form = useForm({
+    title: "",
+    description: "",
+    company_profile: null,
+    location: "",
+    job_type_id: "",
+    employee_type_id: "",
+    industry_id: "",
+    schedule: "",
+});
+
+const addModalForm = reactive({
     title: "",
     description: "",
     company_profile: null,
@@ -197,14 +216,14 @@ const hideUpdateModal = () => {
 };
 
 const showAddModal = () => {
-    form.title = "";
-    form.description = "";
-    form.company_profile = "";
-    form.location = "";
-    form.job_type_id = "";
-    form.employee_type_id = "";
-    form.industry_id = "";
-    form.schedule = "";
+    form.title = addModalForm.title;
+    form.description = addModalForm.description;
+    form.company_profile = addModalForm.company_profile;
+    form.location = addModalForm.location;
+    form.job_type_id = addModalForm.job_type_id;
+    form.employee_type_id = addModalForm.employee_type_id;
+    form.industry_id = addModalForm.industry_id;
+    form.schedule = addModalForm.schedule;
 
     document.body.classList.add("overflow-hidden");
 
@@ -215,6 +234,15 @@ const hideAddModal = () => {
     document.body.classList.remove("overflow-hidden");
 
     addModalVisibility.value = false;
+
+    addModalForm.title = form.title;
+    addModalForm.description = form.description;
+    addModalForm.company_profile = form.company_profile;
+    addModalForm.location = form.location;
+    addModalForm.job_type_id = form.job_type_id;
+    addModalForm.employee_type_id = form.employee_type_id;
+    addModalForm.industry_id = form.industry_id;
+    addModalForm.schedule = form.schedule;
 
     form.reset();
     form.clearErrors();

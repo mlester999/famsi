@@ -48,6 +48,7 @@ class QualificationController extends Controller
             'id' => $qualification->id,
             'title' => $qualification->title,
             'description' => $qualification->description,
+            'is_active' => $qualification->is_active,
             'created_at' => $qualification->created_at,
         ]);
 
@@ -233,5 +234,29 @@ class QualificationController extends Controller
         $qualification = Qualification::findOrFail($id);
 
         $qualification->delete();
+    }
+
+/**
+     * Activate the specified resource.
+     */
+    public function activate($id)
+    {
+        $qualification = Qualification::findOrFail($id);
+
+        $qualification->is_active = 1;
+
+        $qualification->save();
+    }
+
+    /**
+     * Deactivate the specified resource.
+     */
+    public function deactivate($id)
+    {
+        $qualification = Qualification::findOrFail($id);
+
+        $qualification->is_active = 0;
+
+        $qualification->save();
     }
 }

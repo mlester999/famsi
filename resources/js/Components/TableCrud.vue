@@ -1,6 +1,6 @@
 <script setup>
 import { router, usePage, useForm } from "@inertiajs/vue3";
-import { ref, watch, Transition, Teleport } from "vue";
+import { ref, watch, Transition, Teleport, reactive } from "vue";
 import debounce from "lodash.debounce";
 import { useToast } from "vue-toastification";
 import Pagination from "../Partials/Table/Pagination.vue";
@@ -16,6 +16,15 @@ const props = defineProps({
 });
 
 const form = useForm({
+    first_name: "",
+    middle_name: "",
+    last_name: "",
+    gender: "",
+    email: "",
+    contact_number: "",
+});
+
+const addModalForm = reactive({
     first_name: "",
     middle_name: "",
     last_name: "",
@@ -211,12 +220,12 @@ const hideUpdateModal = () => {
 };
 
 const showAddModal = () => {
-    form.first_name = "";
-    form.middle_name = "";
-    form.last_name = "";
-    form.gender = "";
-    form.email = "";
-    form.contact_number = "";
+    form.first_name = addModalForm.first_name;
+    form.middle_name = addModalForm.middle_name;
+    form.last_name = addModalForm.last_name;
+    form.gender = addModalForm.gender;
+    form.email = addModalForm.email;
+    form.contact_number = addModalForm.contact_number;
 
     document.body.classList.add("overflow-hidden");
 
@@ -228,8 +237,14 @@ const hideAddModal = () => {
 
     addModalVisibility.value = false;
 
-    form.reset();
+    addModalForm.first_name = form.first_name;
+    addModalForm.middle_name = form.middle_name;
+    addModalForm.last_name = form.last_name;
+    addModalForm.gender = form.gender;
+    addModalForm.email = form.email;
+    addModalForm.contact_number = form.contact_number;
 
+    form.reset();
     form.clearErrors();
 };
 
