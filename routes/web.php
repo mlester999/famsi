@@ -297,7 +297,10 @@ Route::middleware([
 
             Route::put('/update/{id}', [JobPositionController::class, 'update'])->name('update');
 
-            Route::delete('/destroy/{id}', [JobPositionController::class, 'destroy'])->name('destroy');
+                        
+            Route::put('/activate/{id}', [JobPositionController::class, 'activate'])->name('activate');
+
+            Route::put('/deactivate/{id}', [JobPositionController::class, 'deactivate'])->name('deactivate');
         });
 
         // Route::get('/landing-page', function () {

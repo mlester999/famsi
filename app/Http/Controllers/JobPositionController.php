@@ -64,6 +64,7 @@ class JobPositionController extends Controller
             'company_profile' => $jobPosition->company_profile,
             'location' => $jobPosition->location,
             'schedule' => $jobPosition->schedule,
+            'is_active' => $jobPosition->is_active,
             'created_at' => $jobPosition->created_at,
         ]);
 
