@@ -50,14 +50,14 @@ class AuthApplicantsController extends Controller
 
         Notification::create([
             'title' => 'A new account for ' . $request->input('firstName') . ' ' . $request->input('lastName') . ' has been successfully created in our system.',
-            'user_id' => $adminId->id,
+            'user_id' => array_merge([$adminId->id]),
             'author_id' => $user->id,
             'status' => 0
         ]);
 
         Notification::create([
             'title' => "Welcome to FAMSI Job Portal! Browse jobs and start applying today. Good luck!",
-            'user_id' => $user->id,
+            'user_id' => array_merge([$user->id]),
             'author_id' => $adminId->id,
             'status' => 0
         ]);

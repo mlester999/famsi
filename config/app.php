@@ -169,7 +169,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\FortifyServiceProvider::class,
-        App\Providers\JetstreamServiceProvider::class,
+        App\Providers\JetstreamServiceProvider::class
+        // Humans\Semaphore\Laravel\ServiceProvider::class
     ])->toArray(),
 
     /*

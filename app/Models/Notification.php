@@ -9,6 +9,10 @@ class Notification extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'user_id' => 'array',
+    ];
+
     protected $fillable = [
         'title',
         'user_id',

@@ -1,4 +1,15 @@
 <?php return array (
+  'humans/semaphore-sms' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Humans\\Semaphore\\Laravel\\ServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Semaphore' => 'Humans\\Semaphore\\Laravel\\Facade',
+    ),
+  ),
   'inertiajs/inertia-laravel' => 
   array (
     'providers' => 

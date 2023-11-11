@@ -65,7 +65,7 @@ class HandleInertiaRequests extends Middleware
                     $authUser = Auth::user();
 
                     if($authUser) {
-                        return Notification::where('user_id', $authUser->id)->get();
+                        return Notification::whereJsonContains('user_id', $authUser->id)->get();
                     }
 
                 },

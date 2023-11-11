@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->foreignId('user_id')->references('id')->on('users');
+            $table->json('user_id');
             $table->foreignId('author_id')->references('id')->on('users');
             $table->boolean('status');
             $table->timestamps();
