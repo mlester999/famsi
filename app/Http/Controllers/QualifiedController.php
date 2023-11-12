@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Admin;
 use App\Models\Application;
+use App\Models\Applicant;
+use App\Models\JobPosition;
 use App\Models\HrManager;
 use App\Models\HrStaff;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
+use Humans\Semaphore\Laravel\Facade;
 
 class QualifiedController extends Controller
 {
@@ -196,7 +199,13 @@ class QualifiedController extends Controller
     {
         $qualified = Application::findOrFail($id);
 
+        $applicantUser = Applicant::findOrFail($qualified->applicant_id);
+
+        $jobPosition = JobPosition::findOrFail($qualified->job_position_id);
+
         $qualified->status = 0;
+
+        Facade::message()->send($applicantUser->contact_number, 'Hi, ' . $applicantUser->first_name . '. Thank you for your interest in the ' . $jobPosition->title . ' role. I appreciate your time and effort during the interview process. After careful consideration, we regret to inform you that we will not be moving forward with your application. Thank you for your interest, and best of luck in your job search.');
 
         $qualified->save();
     }
@@ -205,7 +214,13 @@ class QualifiedController extends Controller
     {
         $hire = Application::findOrFail($id);
 
+        $applicantUser = Applicant::findOrFail($hire->applicant_id);
+
+        $jobPosition = JobPosition::findOrFail($hire->job_position_id);
+
         $hire->status = 3;
+
+        Facade::message()->send($applicantUser->contact_number, 'Hi, ' . $applicantUser->first_name . '. Great news! You have passed the interview for the ' . $jobPosition->title . ' role. We will soon provide details about your start date. Stay tuned!');
 
         $hire->save();
     }

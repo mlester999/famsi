@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Admin;
 use App\Models\Application;
+use App\Models\Applicant;
+use App\Models\JobPosition;
 use App\Models\HrManager;
 use App\Models\HrStaff;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
+use Humans\Semaphore\Laravel\Facade;
 
 class ApplicationController extends Controller
 {
@@ -195,7 +198,13 @@ class ApplicationController extends Controller
     {
         $application = Application::findOrFail($id);
 
+        $applicantUser = Applicant::findOrFail($application->applicant_id);
+
+        $jobPosition = JobPosition::findOrFail($application->job_position_id);
+
         $application->status = 2;
+
+        Facade::message()->send($applicantUser->contact_number, 'Hi, ' . $applicantUser->first_name . '. Great news! After reviewing your resume, we find you qualified for the ' . $jobPosition->title . ' role. Please await further details for the interview schedule. We look forward to meeting with you.');
 
         $application->save();
     }
@@ -207,7 +216,13 @@ class ApplicationController extends Controller
     {
         $application = Application::findOrFail($id);
 
+        $applicantUser = Applicant::findOrFail($application->applicant_id);
+
+        $jobPosition = JobPosition::findOrFail($application->job_position_id);
+
         $application->status = 0;
+
+        Facade::message()->send($applicantUser->contact_number, 'Hi, ' . $applicantUser->first_name . '. Thank you for your interest in the ' . $jobPosition->title . ' role. After reviewing your resume, we regret to inform you that we are not able to proceed with your application at this time. We appreciate your time and wish you success in your job search.');
 
         $application->save();
     }

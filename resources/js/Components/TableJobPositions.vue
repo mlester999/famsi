@@ -1366,7 +1366,7 @@ watch(
                             <option value="" disabled selected hidden></option>
 
                             <option
-                                v-for="employeeType in employeeTypesList.filter(
+                                v-for="employeeType in employeeTypesList?.filter(
                                     (employee) => employee.is_active === 1
                                 )"
                                 :key="employeeType.id"
