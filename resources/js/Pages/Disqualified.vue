@@ -1,22 +1,22 @@
 <script setup>
-import TableDocuments from "@/Components/TableDocuments.vue";
+import TableDisqualified from "@/Components/TableDisqualified.vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
 
 defineProps({
-    documents: Object,
+    disqualified: Object,
     pagination: Object,
     filters: Object,
 });
 </script>
 
 <template>
-    <AppLayout title="Documents">
-        <TableDocuments
-            :roles="documents"
+    <AppLayout title="Disqualified">
+        <TableDisqualified
+            :roles="disqualified"
             :pagination="pagination"
             :filters="filters"
-            linkName="documents"
-            title="Document"
+            linkName="disqualified"
+            title="Disqualified"
         >
             <template #first-tab>
                 <p
@@ -26,16 +26,16 @@ defineProps({
                         class="w-5 h-5 mr-2.5"
                         :icon="['fas', 'house']"
                     />
-                    Interview Related
+                    Recruitments
                 </p>
             </template>
 
-            <template #second-tab> Documents </template>
+            <template #second-tab> Disqualified </template>
 
-            <template #title>Documents</template>
+            <template #title>Disqualified</template>
             <template #description
-                >This is the layout of the Documents of the website</template
+                >This section pertains to disqualified applicants.</template
             >
-        </TableDocuments>
+        </TableDisqualified>
     </AppLayout>
 </template>

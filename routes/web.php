@@ -7,13 +7,17 @@ use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\BenefitController;
 use App\Http\Controllers\CompanyAssignmentController;
+use App\Http\Controllers\DisqualifiedController;
 use App\Http\Controllers\DocumentsController;
 use App\Http\Controllers\EmployeeTypeController;
+use App\Http\Controllers\HiredController;
+use App\Http\Controllers\HrStaffDashboardController;
 use App\Http\Controllers\HrManagerDashboardController;
 use App\Http\Controllers\IndustryController;
 use App\Http\Controllers\JobPositionController;
 use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\QualificationController;
+use App\Http\Controllers\QualifiedController;
 use App\Models\Applicant;
 use App\Models\HrManager;
 use App\Models\HrStaff;
@@ -54,6 +58,17 @@ Route::middleware([
     });
 
     Route::group(['middleware' => 'role:hr-staff', 'prefix' => 'hr-staff', 'as' => 'hr-staff.'], function () {
+
+        Route::group(['prefix' => 'appointments', 'as' => 'appointments.'], function() {
+            Route::get('/', HrStaffDashboardController::class)->name('index');
+
+            Route::post('/store', [HrStaffDashboardController::class, 'store'])->name('store');
+
+            Route::put('/update/{id}', [HrStaffDashboardController::class, 'update'])->name('update');
+
+            Route::delete('/delete/{id}', [HrStaffDashboardController::class, 'delete'])->name('delete');
+        });
+
         Route::group(['prefix' => 'applicants', 'as' => 'applicants.'], function() {
             Route::get('/', [ApplicantController::class, 'index'])->name('index');
 
@@ -76,6 +91,24 @@ Route::middleware([
             Route::put('/disapprove/{id}', [ApplicationController::class, 'disapprove'])->name('disapprove');
         });
 
+        Route::group(['prefix' => 'qualified', 'as' => 'qualified.'], function() {
+            Route::get('/', [QualifiedController::class, 'index'])->name('index');
+
+            Route::put('/hire/{id}', [QualifiedController::class, 'hire'])->name('hire');
+
+            Route::put('/disapprove/{id}', [QualifiedController::class, 'disapprove'])->name('disapprove');
+        });
+
+        Route::group(['prefix' => 'disqualified', 'as' => 'disqualified.'], function() {
+            Route::get('/', [DisqualifiedController::class, 'index'])->name('index');
+
+            Route::put('/approve/{id}', [DisqualifiedController::class, 'approve'])->name('approve');
+        });
+
+        Route::group(['prefix' => 'hired', 'as' => 'hired.'], function() {
+            Route::get('/', [HiredController::class, 'index'])->name('index');
+        });
+
         Route::group(['prefix' => 'documents', 'as' => 'documents.'], function() {
             Route::get('/', [DocumentsController::class, 'index'])->name('index');
 
@@ -92,7 +125,7 @@ Route::middleware([
     });
 
     Route::group(['middleware' => 'role:hr-manager', 'prefix' => 'hr-manager', 'as' => 'hr-manager.'], function () {
-        Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.'], function() {
+        Route::group(['prefix' => 'appointments', 'as' => 'appointments.'], function() {
             Route::get('/', HrManagerDashboardController::class)->name('index');
 
             Route::post('/store', [HrManagerDashboardController::class, 'store'])->name('store');
@@ -136,6 +169,24 @@ Route::middleware([
             Route::put('/disapprove/{id}', [ApplicationController::class, 'disapprove'])->name('disapprove');
         });
 
+        Route::group(['prefix' => 'qualified', 'as' => 'qualified.'], function() {
+            Route::get('/', [QualifiedController::class, 'index'])->name('index');
+
+            Route::put('/hire/{id}', [QualifiedController::class, 'hire'])->name('hire');
+
+            Route::put('/disapprove/{id}', [QualifiedController::class, 'disapprove'])->name('disapprove');
+        });
+
+        Route::group(['prefix' => 'disqualified', 'as' => 'disqualified.'], function() {
+            Route::get('/', [DisqualifiedController::class, 'index'])->name('index');
+
+            Route::put('/approve/{id}', [DisqualifiedController::class, 'approve'])->name('approve');
+        });
+
+        Route::group(['prefix' => 'hired', 'as' => 'hired.'], function() {
+            Route::get('/', [HiredController::class, 'index'])->name('index');
+        });
+
         Route::group(['prefix' => 'documents', 'as' => 'documents.'], function() {
             Route::get('/', [DocumentsController::class, 'index'])->name('index');
 
@@ -169,7 +220,10 @@ Route::middleware([
 
             Route::put('/update/{id}', [QualificationController::class, 'update'])->name('update');
 
-            Route::delete('/destroy/{id}', [QualificationController::class, 'destroy'])->name('destroy');
+            
+            Route::put('/activate/{id}', [QualificationController::class, 'activate'])->name('activate');
+
+            Route::put('/deactivate/{id}', [QualificationController::class, 'deactivate'])->name('deactivate');
         });
 
         Route::group(['prefix' => 'benefits', 'as' => 'benefits.'], function() {
@@ -179,7 +233,10 @@ Route::middleware([
 
             Route::put('/update/{id}', [BenefitController::class, 'update'])->name('update');
 
-            Route::delete('/destroy/{id}', [BenefitController::class, 'destroy'])->name('destroy');
+            
+            Route::put('/activate/{id}', [BenefitController::class, 'activate'])->name('activate');
+
+            Route::put('/deactivate/{id}', [BenefitController::class, 'deactivate'])->name('deactivate');
         });
 
         Route::group(['prefix' => 'company-assignments', 'as' => 'company-assignments.'], function() {
@@ -189,7 +246,10 @@ Route::middleware([
 
             Route::put('/update/{id}', [CompanyAssignmentController::class, 'update'])->name('update');
 
-            Route::delete('/destroy/{id}', [CompanyAssignmentController::class, 'destroy'])->name('destroy');
+            
+            Route::put('/activate/{id}', [CompanyAssignmentController::class, 'activate'])->name('activate');
+
+            Route::put('/deactivate/{id}', [CompanyAssignmentController::class, 'deactivate'])->name('deactivate');
         });
 
         Route::group(['prefix' => 'job-types', 'as' => 'job-types.'], function() {
@@ -199,7 +259,10 @@ Route::middleware([
 
             Route::put('/update/{id}', [JobTypeController::class, 'update'])->name('update');
 
-            Route::delete('/destroy/{id}', [JobTypeController::class, 'destroy'])->name('destroy');
+            
+            Route::put('/activate/{id}', [JobTypeController::class, 'activate'])->name('activate');
+
+            Route::put('/deactivate/{id}', [JobTypeController::class, 'deactivate'])->name('deactivate');
         });
 
         Route::group(['prefix' => 'employee-types', 'as' => 'employee-types.'], function() {
@@ -209,7 +272,9 @@ Route::middleware([
 
             Route::put('/update/{id}', [EmployeeTypeController::class, 'update'])->name('update');
 
-            Route::delete('/destroy/{id}', [EmployeeTypeController::class, 'destroy'])->name('destroy');
+            Route::put('/activate/{id}', [EmployeeTypeController::class, 'activate'])->name('activate');
+
+            Route::put('/deactivate/{id}', [EmployeeTypeController::class, 'deactivate'])->name('deactivate');
         });
 
         Route::group(['prefix' => 'industries', 'as' => 'industries.'], function() {
@@ -219,7 +284,10 @@ Route::middleware([
 
             Route::put('/update/{id}', [IndustryController::class, 'update'])->name('update');
 
-            Route::delete('/destroy/{id}', [IndustryController::class, 'destroy'])->name('destroy');
+            
+            Route::put('/activate/{id}', [IndustryController::class, 'activate'])->name('activate');
+
+            Route::put('/deactivate/{id}', [IndustryController::class, 'deactivate'])->name('deactivate');
         });
 
         Route::group(['prefix' => 'job-positions', 'as' => 'job-positions.'], function() {
@@ -229,7 +297,10 @@ Route::middleware([
 
             Route::put('/update/{id}', [JobPositionController::class, 'update'])->name('update');
 
-            Route::delete('/destroy/{id}', [JobPositionController::class, 'destroy'])->name('destroy');
+                        
+            Route::put('/activate/{id}', [JobPositionController::class, 'activate'])->name('activate');
+
+            Route::put('/deactivate/{id}', [JobPositionController::class, 'deactivate'])->name('deactivate');
         });
 
         // Route::get('/landing-page', function () {
@@ -280,6 +351,24 @@ Route::middleware([
                 Route::put('/activate/{id}', [ApplicantController::class, 'activate'])->name('activate');
 
                 Route::put('/deactivate/{id}', [ApplicantController::class, 'deactivate'])->name('deactivate');
+            });
+
+            Route::group(['prefix' => 'qualified', 'as' => 'qualified.'], function() {
+                Route::get('/', [QualifiedController::class, 'index'])->name('index');
+
+                Route::put('/hire/{id}', [QualifiedController::class, 'hire'])->name('hire');
+
+                Route::put('/disapprove/{id}', [QualifiedController::class, 'disapprove'])->name('disapprove');
+            });
+
+            Route::group(['prefix' => 'disqualified', 'as' => 'disqualified.'], function() {
+                Route::get('/', [DisqualifiedController::class, 'index'])->name('index');
+
+                Route::put('/approve/{id}', [DisqualifiedController::class, 'approve'])->name('approve');
+            });
+
+            Route::group(['prefix' => 'hired', 'as' => 'hired.'], function() {
+                Route::get('/', [HiredController::class, 'index'])->name('index');
             });
 
             Route::group(['prefix' => 'applications', 'as' => 'applications.'], function() {

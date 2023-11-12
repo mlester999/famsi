@@ -3,6 +3,7 @@
 use App\Http\Controllers\ApiApplicationController;
 use App\Http\Controllers\ApiJobPositionController;
 use App\Http\Controllers\ApiJobRelatedController;
+use App\Http\Controllers\ApiUserApplicationsController;
 use App\Http\Controllers\AuthApplicantsController;
 use App\Models\JobPosition;
 use Illuminate\Http\Request;
@@ -20,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    $user = $request->user()->load('applicant'); // Eager load the 'applicant' relationship
+    $user = $request->user()->load(['applicant', 'applicant.applications']); // Eager load the 'applicant' relationship
     return response()->json($user);
 });
 
@@ -48,5 +49,6 @@ Route::get('job-positions/details/{id}/{slug}', [ApiJobPositionController::class
 Route::get('job-positions/related-jobs/{id}', [ApiJobPositionController::class, 'findRelatedJobs']);
 
 Route::post('application', [ApiApplicationController::class, 'application']);
+Route::get('my-applications/{id}', [ApiUserApplicationsController::class, 'myApplications']);
 
 

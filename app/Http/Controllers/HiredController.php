@@ -4,17 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Admin;
 use App\Models\Application;
-use App\Models\Applicant;
-use App\Models\JobPosition;
 use App\Models\HrManager;
 use App\Models\HrStaff;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
-use Humans\Semaphore\Laravel\Facade;
 
-class ApplicationController extends Controller
+class HiredController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -25,8 +22,8 @@ class ApplicationController extends Controller
         $filters = Request::only(['search']);
         $searchReq = Request::input('search');
 
-        $applications = Application::query()
-        ->where('status', 1)
+        $hired = Application::query()
+        ->where('status', 3)
         ->with(['applicant', 'jobPosition'])
         ->when($searchReq, function($query, $search) {
             $query->where(function ($query) use ($search) {
@@ -56,31 +53,31 @@ class ApplicationController extends Controller
         ->orderBy('id', 'asc')
         ->paginate(10)
         ->withQueryString()
-        ->through(fn($application) => [
-            'id' => $application->id,
-            'first_name' => $application->applicant->first_name,
-            'middle_name' => $application->applicant->middle_name,
-            'last_name' => $application->applicant->last_name,
-            'gender' => $application->applicant->gender,
-            'email' => $application->applicant->user->email,
-            'contact_number' => $application->applicant->contact_number,
-            'is_active' => $application->applicant->user->is_active,
-            'created_at' => $application->created_at,
-            'file_name' => $application->file_name,
-            'file_path' => $application->file_path,
-            'job_id' => $application->jobPosition->id,
-            'title' => $application->jobPosition->title,
-            'location' => $application->jobPosition->location,
-            'schedule' => $application->jobPosition->schedule,
-            'status' => $application->status
+        ->through(fn($hire) => [
+            'id' => $hire->id,
+            'first_name' => $hire->applicant->first_name,
+            'middle_name' => $hire->applicant->middle_name,
+            'last_name' => $hire->applicant->last_name,
+            'gender' => $hire->applicant->gender,
+            'email' => $hire->applicant->user->email,
+            'contact_number' => $hire->applicant->contact_number,
+            'is_active' => $hire->applicant->user->is_active,
+            'created_at' => $hire->created_at,
+            'file_name' => $hire->file_name,
+            'file_path' => $hire->file_path,
+            'job_id' => $hire->jobPosition->id,
+            'title' => $hire->jobPosition->title,
+            'location' => $hire->jobPosition->location,
+            'schedule' => $hire->jobPosition->schedule,
+            'status' => $hire->status
         ]);
 
         if (empty($searchReq)) {
             unset($filters['search']);
         }
 
-        $currentPage = $applications->currentPage();
-        $lastPage = $applications->lastPage();
+        $currentPage = $hired->currentPage();
+        $lastPage = $hired->lastPage();
         $firstPage = 1;
 
         $previousPage = $currentPage - 1 > 0 ? $currentPage - 1 : null;
@@ -90,19 +87,19 @@ class ApplicationController extends Controller
 
         if ($previousPage !== null) {
             $links[] = [
-                'url' => $applications->url($previousPage),
+                'url' => $hired->url($previousPage),
                 'label' => 'Previous',
             ];
         }
 
         $links[] = [
-            'url' => $applications->url(1),
+            'url' => $hired->url(1),
             'label' => 1,
         ];
 
         if ($currentPage > 3) {
             $links[] = [
-                'url' => $applications->url($currentPage - 1),
+                'url' => $hired->url($currentPage - 1),
                 'label' => '...',
             ];
         }
@@ -112,7 +109,7 @@ class ApplicationController extends Controller
 
         for ($i = $rangeStart; $i <= $rangeEnd; $i++) {
             $links[] = [
-                'url' => $applications->url($i),
+                'url' => $hired->url($i),
                 'label' => $i,
             ];
         }
@@ -120,28 +117,28 @@ class ApplicationController extends Controller
 
         if ($currentPage < $lastPage - 2) {
             $links[] = [
-                'url' => $applications->url($currentPage + 1),
+                'url' => $hired->url($currentPage + 1),
                 'label' => '...',
             ];
         }
 
         if ($firstPage !== $lastPage) {
             $links[] = [
-                'url' => $applications->url($lastPage),
+                'url' => $hired->url($lastPage),
                 'label' => $lastPage,
             ];
         }
 
         if ($nextPage !== null) {
             $links[] = [
-                'url' => $applications->url($nextPage),
+                'url' => $hired->url($nextPage),
                 'label' => 'Next',
             ];
         }
 
 
-        return Inertia::render('Applications', [
-            'applications' => $applications,
+        return Inertia::render('Hired', [
+            'hired' => $hired,
             'filters' => $filters,
             'pagination' => [
                 'current_page' => $currentPage,
@@ -191,39 +188,4 @@ class ApplicationController extends Controller
         //
     }
 
-    /**
-     * Activate the specified resource.
-     */
-    public function approve($id)
-    {
-        $application = Application::findOrFail($id);
-
-        $applicantUser = Applicant::findOrFail($application->applicant_id);
-
-        $jobPosition = JobPosition::findOrFail($application->job_position_id);
-
-        $application->status = 2;
-
-        Facade::message()->send($applicantUser->contact_number, 'Hi, ' . $applicantUser->first_name . '. Great news! After reviewing your resume, we find you qualified for the ' . $jobPosition->title . ' role. Please await further details for the interview schedule. We look forward to meeting with you.');
-
-        $application->save();
-    }
-
-    /**
-     * Deactivate the specified resource.
-     */
-    public function disapprove($id)
-    {
-        $application = Application::findOrFail($id);
-
-        $applicantUser = Applicant::findOrFail($application->applicant_id);
-
-        $jobPosition = JobPosition::findOrFail($application->job_position_id);
-
-        $application->status = 0;
-
-        Facade::message()->send($applicantUser->contact_number, 'Hi, ' . $applicantUser->first_name . '. Thank you for your interest in the ' . $jobPosition->title . ' role. After reviewing your resume, we regret to inform you that we are not able to proceed with your application at this time. We appreciate your time and wish you success in your job search.');
-
-        $application->save();
-    }
 }

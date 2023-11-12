@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('appointments', function (Blueprint $table) {
+        Schema::create('notifications', function (Blueprint $table) {
             $table->id();
-            $table->datetime('start_time');
-            $table->datetime('finish_time');
-            $table->longText('comments')->nullable();
-            $table->foreignId('applicant_id')->constrained();
-            $table->foreignId('interviewer_id')->constrained();
+            $table->string('title');
+            $table->json('user_id');
+            $table->foreignId('author_id')->references('id')->on('users');
+            $table->boolean('status');
             $table->timestamps();
         });
     }
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('appointments');
+        Schema::dropIfExists('notifications');
     }
 };

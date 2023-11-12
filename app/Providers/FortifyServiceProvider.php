@@ -41,7 +41,7 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::authenticateUsing(function (Request $request){
             $user = User::where(['email' => $request->email])->first();
 
-            if ($user && $user->is_active && Hash::check($request->password, $user->password)) {
+            if ($user && $user->user_type !== 0 && $user->is_active && Hash::check($request->password, $user->password)) {
 
                 return $user;
             }

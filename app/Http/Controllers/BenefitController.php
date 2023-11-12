@@ -48,6 +48,7 @@ class BenefitController extends Controller
             'id' => $benefit->id,
             'title' => $benefit->title,
             'description' => $benefit->description,
+            'is_active' => $benefit->is_active,
             'created_at' => $benefit->created_at,
         ]);
 
@@ -233,5 +234,29 @@ class BenefitController extends Controller
         $benefit = Benefit::findOrFail($id);
 
         $benefit->delete();
+    }
+
+    /**
+     * Activate the specified resource.
+     */
+    public function activate($id)
+    {
+        $benefit = Benefit::findOrFail($id);
+
+        $benefit->is_active = 1;
+
+        $benefit->save();
+    }
+
+    /**
+     * Deactivate the specified resource.
+     */
+    public function deactivate($id)
+    {
+        $benefit = Benefit::findOrFail($id);
+
+        $benefit->is_active = 0;
+
+        $benefit->save();
     }
 }

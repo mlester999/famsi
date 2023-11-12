@@ -880,11 +880,11 @@ const calendarOptions = ref({
                             <option value="" disabled selected hidden></option>
                             <option
                                 v-for="applicant in applicants"
-                                :key="applicant.applicant.id"
-                                :value="applicant.applicant.id"
+                                :key="applicant.id"
+                                :value="applicant.id"
                             >
-                                {{ applicant.applicant.first_name }}
-                                {{ applicant.applicant.last_name }}
+                                {{ applicant.first_name }}
+                                {{ applicant.last_name }}
                             </option>
                         </SelectInput>
                     </div>

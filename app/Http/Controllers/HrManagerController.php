@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class HrManagerController extends Controller
@@ -156,10 +157,10 @@ class HrManagerController extends Controller
     {
         $hrManagerValidate = Request::validate([
             'first_name' => ['required', 'max:50'],
-            'middle_name' => ['required', 'max:50'],
+            'middle_name' => ['max:50'],
             'last_name' => ['required', 'max:50'],
             'gender' => ['required'],
-            'email' => ['required', 'max:50', 'email'],
+            'email' => ['required', 'max:50', 'email', 'unique:users'],
             'contact_number' => ['required', 'digits:11'],
         ]);
 
@@ -227,10 +228,10 @@ class HrManagerController extends Controller
     {
         $hrManagerValidate = Request::validate([
             'first_name' => ['required', 'max:50'],
-            'middle_name' => ['required', 'max:50'],
+            'middle_name' => ['max:50'],
             'last_name' => ['required', 'max:50'],
             'gender' => ['required'],
-            'email' => ['required', 'max:50', 'email'],
+            'email' => ['required', 'max:50', 'email', Rule::unique('users')->ignore(HrManager::findOrFail($id)->user->id)],
             'contact_number' => ['required', 'digits:11'],
         ]);
 
@@ -306,7 +307,7 @@ class HrManagerController extends Controller
             ->withProperties(['ipAddress' => request()->ip(), 'user' => $userInfo->first_name . ' ' . $userInfo->last_name, 'role' => $userRole])
             ->log("Updated a HR Manager account's email from {$user->email} to {$hrManagerValidate['email']}");
 
-            $hrManager->email = $hrManagerValidate['email'];
+            $user->email = $hrManagerValidate['email'];
         }
 
         if($hrManagerValidate['contact_number'] !== $hrManager->contact_number) {

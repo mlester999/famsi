@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Admin;
 use App\Models\Applicant;
-use App\Models\Application;
 use App\Models\Appointment;
 use App\Models\HrManager;
 use App\Models\HrStaff;
@@ -14,9 +13,8 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Twilio\Rest\Client;
-use Humans\Semaphore\Laravel\Facade;
 
-class HrManagerDashboardController extends Controller
+class HrStaffDashboardController extends Controller
 {
     /**
      * Handle the incoming request.
@@ -24,9 +22,10 @@ class HrManagerDashboardController extends Controller
     public function __invoke(Request $request)
     {
         $events = [];
-        $authUser = HrManager::where('user_id', auth()->user()->id)->first();
-        $applicants = Application::where('status', 2)->with(['applicant'])->get();
-        $appointments = Appointment::with(['applicant', 'hrManager'])
+        $authUser = HrStaff::where('user_id', auth()->user()->id)->first();
+        $applicants = Applicant::all();
+
+        $appointments = Appointment::with(['applicant', 'hrStaff'])
         ->where('interviewer_id', $authUser->id)
         ->get();
 
@@ -41,7 +40,7 @@ class HrManagerDashboardController extends Controller
             ];
         }
 
-        return Inertia::render('HRManagerDashboard', [
+        return Inertia::render('HRStaffDashboard', [
             'events' => $events,
             'applicants' => $applicants
         ]);
@@ -66,7 +65,7 @@ class HrManagerDashboardController extends Controller
         $startDateTime = Carbon::createFromFormat('Y-m-d\TH:i:sP', $scheduleValidate['startTimeDate']);
         $endDateTime = Carbon::createFromFormat('Y-m-d\TH:i:sP', $scheduleValidate['endTimeDate']);
 
-        $createdAppointment = Appointment::create([
+        Appointment::create([
             'start_time' => $startDateTime,
             'finish_time' => $endDateTime,
             'comments' => $scheduleValidate['title'],
@@ -74,17 +73,19 @@ class HrManagerDashboardController extends Controller
             'interviewer_id' => $authUser->id
         ]);
 
-        // Parse the date using Carbon
-        $startDateTime = Carbon::parse($startDateTime);
-        $endDateTime = Carbon::parse($endDateTime);
+        // Your Account SID and Auth Token from twilio.com/console
+        // $sid    = env("TWILIO_SID");
+        // $token  = env("TWILIO_TOKEN");
+        // $twilio = new Client($sid, $token);
 
-        // Format the date as per your requirements
-        $formattedStartDate = $startDateTime->format('F d, Y h:i A');
-        $formattedEndDate = $endDateTime->format('F d, Y h:i A');
-
-        $applicantUser = Applicant::where('id', $scheduleValidate['applicant'])->first();
-
-        Facade::message()->send($applicantUser->contact_number, 'Hi, ' . $applicantUser->first_name . '. I just want to remind you that your interview is set from ' . $formattedStartDate . ' to ' . $formattedEndDate . '. Good luck!');
+        // $message = $twilio->messages
+        //                   ->create(
+        //                       "+639763386980", // Text this number
+        //                       [
+        //                           "body" => "Hello applicant! Thanks for your application.",
+        //                           "from" => env("TWILIO_FROM") // Your Twilio number
+        //                       ]
+        //                   );
 
         return redirect()->back();
     }

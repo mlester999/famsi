@@ -64,6 +64,7 @@ class JobPositionController extends Controller
             'company_profile' => $jobPosition->company_profile,
             'location' => $jobPosition->location,
             'schedule' => $jobPosition->schedule,
+            'is_active' => $jobPosition->is_active,
             'created_at' => $jobPosition->created_at,
         ]);
 
@@ -337,5 +338,29 @@ class JobPositionController extends Controller
         $jobPosition = JobPosition::findOrFail($id);
 
         $jobPosition->delete();
+    }
+
+          /**
+     * Activate the specified resource.
+     */
+    public function activate($id)
+    {
+        $jobPosition = JobPosition::findOrFail($id);
+
+        $jobPosition->is_active = 1;
+
+        $jobPosition->save();
+    }
+
+    /**
+     * Deactivate the specified resource.
+     */
+    public function deactivate($id)
+    {
+        $jobPosition = JobPosition::findOrFail($id);
+
+        $jobPosition->is_active = 0;
+
+        $jobPosition->save();
     }
 }

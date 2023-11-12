@@ -1,22 +1,22 @@
 <script setup>
-import TableDocuments from "@/Components/TableDocuments.vue";
+import TableHired from "@/Components/TableHired.vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
 
 defineProps({
-    documents: Object,
+    hired: Object,
     pagination: Object,
     filters: Object,
 });
 </script>
 
 <template>
-    <AppLayout title="Documents">
-        <TableDocuments
-            :roles="documents"
+    <AppLayout title="Hired">
+        <TableHired
+            :roles="hired"
             :pagination="pagination"
             :filters="filters"
-            linkName="documents"
-            title="Document"
+            linkName="hired"
+            title="Hired"
         >
             <template #first-tab>
                 <p
@@ -26,16 +26,16 @@ defineProps({
                         class="w-5 h-5 mr-2.5"
                         :icon="['fas', 'house']"
                     />
-                    Interview Related
+                    Recruitments
                 </p>
             </template>
 
-            <template #second-tab> Documents </template>
+            <template #second-tab> Hired </template>
 
-            <template #title>Documents</template>
+            <template #title>Hired</template>
             <template #description
-                >This is the layout of the Documents of the website</template
+                >This section pertains to hired applicants.</template
             >
-        </TableDocuments>
+        </TableHired>
     </AppLayout>
 </template>

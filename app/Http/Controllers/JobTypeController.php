@@ -48,6 +48,7 @@ class JobTypeController extends Controller
             'id' => $jobType->id,
             'title' => $jobType->title,
             'description' => $jobType->description,
+            'is_active' => $jobType->is_active,
             'created_at' => $jobType->created_at,
         ]);
 
@@ -233,5 +234,29 @@ class JobTypeController extends Controller
         $jobType = JobType::findOrFail($id);
 
         $jobType->delete();
+    }
+
+          /**
+     * Activate the specified resource.
+     */
+    public function activate($id)
+    {
+        $jobType = JobType::findOrFail($id);
+
+        $jobType->is_active = 1;
+
+        $jobType->save();
+    }
+
+    /**
+     * Deactivate the specified resource.
+     */
+    public function deactivate($id)
+    {
+        $jobType = JobType::findOrFail($id);
+
+        $jobType->is_active = 0;
+
+        $jobType->save();
     }
 }
