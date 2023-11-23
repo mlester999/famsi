@@ -274,12 +274,12 @@ watch(
                                     Application Status
                                 </th>
 
-                                <!-- <th
+                                 <th
                                     scope="col"
                                     class="px-2 py-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                 >
                                     Actions
-                                </th> -->
+                                </th>
                             </tr>
                         </thead>
                         <tbody
@@ -416,7 +416,7 @@ watch(
                                     </div>
                                 </td>
 
-                                <!-- <td
+                                <td
                                     class="px-2 py-4 space-x-2 whitespace-nowrap"
                                 >
                                     <button
@@ -427,12 +427,12 @@ watch(
                                     >
                                         Approve
                                     </button>
-                                </td> -->
+                                </td>
                             </tr>
 
                             <tr v-if="roles.data.length === 0">
                                 <td
-                                    colspan="9"
+                                    colspan="10"
                                     class="max-w-sm text-center p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
                                 >
                                     <div
@@ -611,14 +611,14 @@ watch(
                 </div>
             </div>
 
-            <!-- <div class="flex justify-center w-full py-4 space-x-4">
+           <div class="flex justify-center w-full py-4 space-x-4">
                 <button
                     @click="showApproveModal(currentUpdatingUserID)"
                     class="text-white w-full justify-center bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 disabled:bg-green-200 dark:disabled:bg-green-900"
                 >
                     Approve
                 </button>
-            </div> -->
+            </div>
         </div>
     </Transition>
 

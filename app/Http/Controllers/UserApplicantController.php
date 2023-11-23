@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
-class ApplicantController extends Controller
+class UserApplicantController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -25,9 +25,6 @@ class ApplicantController extends Controller
 
         $applicants = Applicant::query()
         ->with(['user', 'applications'])
-        ->whereHas('applications', function ($query) {
-            $query->where('status', 5);
-        })
         ->when($searchReq, function($query, $search) {
             $query->where(function ($query) use ($search) {
                 $query->whereHas('user', function ($query) use ($search) {
@@ -132,7 +129,7 @@ class ApplicantController extends Controller
         }
 
 
-        return Inertia::render('HiredEmployees', [
+        return Inertia::render('Applicants', [
             'applicants' => $applicants,
             'filters' => $filters,
             'pagination' => [

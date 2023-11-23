@@ -10,6 +10,8 @@ use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Notifications\ApplicantVerifyEmailAddress;
+use Illuminate\Support\Facades\URL;
 
 class AuthApplicantsController extends Controller
 {
@@ -84,9 +86,11 @@ class AuthApplicantsController extends Controller
     if (Auth::attempt($credentials)) {
         $user = Auth::user();
 
-        if ($user->user_type === 0) {
+        if ($user->user_type === 0 && $user->email_verifed_at) {
             $token = $user->createToken('Applicant Dashboard')->plainTextToken;
             return response()->json(['token' => $token], 200);
+        } else if ($user->user_type === 0 && !$user->email_verifed_at) {
+            return response()->json(['error' => 'You need to verify your email first.', 'title' => "Before continuing, could you verify your email address by clicking on the link we just emailed to you? If you didn't receive the email, we will gladly send you another.", 'message' => "Before continuing, could you verify your email address by clicking on the link we just emailed to you? If you didn't receive the email, we will gladly send you another."], 401);
         } else {
             return response()->json(['error' => 'These credentials do not match our records.'], 401);
         }
@@ -94,6 +98,64 @@ class AuthApplicantsController extends Controller
         return response()->json(['error' => 'These credentials do not match our records.'], 401);
     }
 }
+
+    // VerifyEmail
+    public function verifyEmail(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+
+        $userVerifyingEmail = User::where('email', $request->input('email'))->first();
+
+           // Check if the user with the provided email exists
+        if ($userVerifyingEmail && $userVerifyingEmail->user_type === 0) {
+        // Check if the user has already verified their email
+        if (!$userVerifyingEmail->hasVerifiedEmail()) {
+            // Send the custom verification email
+            $userVerifyingEmail->notify(new ApplicantVerifyEmailAddress);
+
+            return response()->json(['message' => 'A verification link has been sent to your email address.']);
+        } else {
+            return response()->json(['message' => 'The email the you provided is already verified.'], 404);
+        }
+        } else {
+            return response()->json(['message' => 'User not found with the provided email.'], 404);
+        }
+    }
+
+    public function checkEmailVerification(Request $request)
+    {
+        $data = $request->all();
+
+        $user = User::where('id', $data['id'])->first();
+
+        // Check if the user exists
+        if (!$user) {
+            return response()->json(['message' => 'User not found.'], 404);
+        }
+
+
+        // Check if the link has expired
+        $expires = $request->input('expires');
+
+        if (time() <= $expires) {
+            // Link is valid and not expired
+            // Perform any additional verification logic here
+
+            // Update the user's email_verified_at field
+            $user->markEmailAsVerified();
+
+            return response()->json(['message' => 'Email verification successful.']);
+        } else {
+            // Link has expired
+            return response()->json(['message' => 'Email verification link has expired.'], 403);
+        }
+    }
 
     // Log out a user
     public function logout(Request $request)

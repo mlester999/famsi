@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
 use Humans\Semaphore\Laravel\Facade;
 
-class QualifiedController extends Controller
+class InProgressController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -25,8 +25,8 @@ class QualifiedController extends Controller
         $filters = Request::only(['search']);
         $searchReq = Request::input('search');
 
-        $qualified = Application::query()
-        ->where('status', 4)
+        $applications = Application::query()
+        ->where('status', 3)
         ->with(['applicant', 'jobPosition'])
         ->when($searchReq, function($query, $search) {
             $query->where(function ($query) use ($search) {
@@ -56,31 +56,31 @@ class QualifiedController extends Controller
         ->orderBy('id', 'asc')
         ->paginate(10)
         ->withQueryString()
-        ->through(fn($qualify) => [
-            'id' => $qualify->id,
-            'first_name' => $qualify->applicant->first_name,
-            'middle_name' => $qualify->applicant->middle_name,
-            'last_name' => $qualify->applicant->last_name,
-            'gender' => $qualify->applicant->gender,
-            'email' => $qualify->applicant->user->email,
-            'contact_number' => $qualify->applicant->contact_number,
-            'is_active' => $qualify->applicant->user->is_active,
-            'created_at' => $qualify->created_at,
-            'file_name' => $qualify->file_name,
-            'file_path' => $qualify->file_path,
-            'job_id' => $qualify->jobPosition->id,
-            'title' => $qualify->jobPosition->title,
-            'location' => $qualify->jobPosition->location,
-            'schedule' => $qualify->jobPosition->schedule,
-            'status' => $qualify->status
+        ->through(fn($application) => [
+            'id' => $application->id,
+            'first_name' => $application->applicant->first_name,
+            'middle_name' => $application->applicant->middle_name,
+            'last_name' => $application->applicant->last_name,
+            'gender' => $application->applicant->gender,
+            'email' => $application->applicant->user->email,
+            'contact_number' => $application->applicant->contact_number,
+            'is_active' => $application->applicant->user->is_active,
+            'created_at' => $application->created_at,
+            'file_name' => $application->file_name,
+            'file_path' => $application->file_path,
+            'job_id' => $application->jobPosition->id,
+            'title' => $application->jobPosition->title,
+            'location' => $application->jobPosition->location,
+            'schedule' => $application->jobPosition->schedule,
+            'status' => $application->status
         ]);
 
         if (empty($searchReq)) {
             unset($filters['search']);
         }
 
-        $currentPage = $qualified->currentPage();
-        $lastPage = $qualified->lastPage();
+        $currentPage = $applications->currentPage();
+        $lastPage = $applications->lastPage();
         $firstPage = 1;
 
         $previousPage = $currentPage - 1 > 0 ? $currentPage - 1 : null;
@@ -90,19 +90,19 @@ class QualifiedController extends Controller
 
         if ($previousPage !== null) {
             $links[] = [
-                'url' => $qualified->url($previousPage),
+                'url' => $applications->url($previousPage),
                 'label' => 'Previous',
             ];
         }
 
         $links[] = [
-            'url' => $qualified->url(1),
+            'url' => $applications->url(1),
             'label' => 1,
         ];
 
         if ($currentPage > 3) {
             $links[] = [
-                'url' => $qualified->url($currentPage - 1),
+                'url' => $applications->url($currentPage - 1),
                 'label' => '...',
             ];
         }
@@ -112,7 +112,7 @@ class QualifiedController extends Controller
 
         for ($i = $rangeStart; $i <= $rangeEnd; $i++) {
             $links[] = [
-                'url' => $qualified->url($i),
+                'url' => $applications->url($i),
                 'label' => $i,
             ];
         }
@@ -120,28 +120,28 @@ class QualifiedController extends Controller
 
         if ($currentPage < $lastPage - 2) {
             $links[] = [
-                'url' => $qualified->url($currentPage + 1),
+                'url' => $applications->url($currentPage + 1),
                 'label' => '...',
             ];
         }
 
         if ($firstPage !== $lastPage) {
             $links[] = [
-                'url' => $qualified->url($lastPage),
+                'url' => $applications->url($lastPage),
                 'label' => $lastPage,
             ];
         }
 
         if ($nextPage !== null) {
             $links[] = [
-                'url' => $qualified->url($nextPage),
+                'url' => $applications->url($nextPage),
                 'label' => 'Next',
             ];
         }
 
 
-        return Inertia::render('Qualified', [
-            'qualified' => $qualified,
+        return Inertia::render('InProgress', [
+            'applications' => $applications,
             'filters' => $filters,
             'pagination' => [
                 'current_page' => $currentPage,
@@ -191,37 +191,39 @@ class QualifiedController extends Controller
         //
     }
 
+    /**
+     * Activate the specified resource.
+     */
+    public function approve($id)
+    {
+        $application = Application::findOrFail($id);
+
+        $applicantUser = Applicant::findOrFail($application->applicant_id);
+
+        $jobPosition = JobPosition::findOrFail($application->job_position_id);
+
+        $application->status = 4;
+
+        Facade::message()->send($applicantUser->contact_number, 'Hi, ' . $applicantUser->first_name . '. I hope this message finds you well. Following a thorough review of your requirements, we are pleased to inform you that you have successfully passed this stage of the application process. Your application status is already for deployment and is ready to be hired. Congratulations!');
+
+        $application->save();
+    }
 
     /**
      * Deactivate the specified resource.
      */
     public function disapprove($id)
     {
-        $qualified = Application::findOrFail($id);
+        $application = Application::findOrFail($id);
 
-        $applicantUser = Applicant::findOrFail($qualified->applicant_id);
+        $applicantUser = Applicant::findOrFail($application->applicant_id);
 
-        $jobPosition = JobPosition::findOrFail($qualified->job_position_id);
+        $jobPosition = JobPosition::findOrFail($application->job_position_id);
 
-        $qualified->status = 0;
+        $application->status = 0;
 
-        Facade::message()->send($applicantUser->contact_number, 'Hi, ' . $applicantUser->first_name . '. Thank you for your interest in the ' . $jobPosition->title . ' role. I appreciate your time and effort during the interview process. After careful consideration, we regret to inform you that we will not be moving forward with your application. Thank you for your interest, and best of luck in your job search.');
+        Facade::message()->send($applicantUser->contact_number, 'Hi, ' . $applicantUser->first_name . '. After a careful review of your requirements, we regret to inform you that we are unable to proceed with your application at this time. We appreciate the effort you put into the application process and value the time you spent discussing your qualifications with us.');
 
-        $qualified->save();
-    }
-
-    public function hire($id)
-    {
-        $hire = Application::findOrFail($id);
-
-        $applicantUser = Applicant::findOrFail($hire->applicant_id);
-
-        $jobPosition = JobPosition::findOrFail($hire->job_position_id);
-
-        $hire->status = 5;
-
-        Facade::message()->send($applicantUser->contact_number, 'Hi, ' . $applicantUser->first_name . '. We are thrilled to officially welcome you to our company! Following a comprehensive review of your resume and a successful interview process, we are delighted to inform you that you have been selected for the position of ' . $jobPosition->title .'. We look forward to working together and achieving great success!');
-
-        $hire->save();
+        $application->save();
     }
 }

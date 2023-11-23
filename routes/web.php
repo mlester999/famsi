@@ -4,6 +4,7 @@ use App\Http\Controllers\ActivityLogsController;
 use App\Http\Controllers\HrManagerController;
 use App\Http\Controllers\HrStaffController;
 use App\Http\Controllers\ApplicantController;
+use App\Http\Controllers\UserApplicantController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\BenefitController;
 use App\Http\Controllers\CompanyAssignmentController;
@@ -18,10 +19,22 @@ use App\Http\Controllers\JobPositionController;
 use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\QualificationController;
 use App\Http\Controllers\QualifiedController;
+use App\Http\Controllers\ForInterviewController;
+use App\Http\Controllers\InProgressController;
 use App\Models\Applicant;
+use App\Models\Application;
 use App\Models\HrManager;
 use App\Models\HrStaff;
-use Illuminate\Foundation\Application;
+use App\Models\Qualification;
+use App\Models\Benefit;
+use App\Models\CompanyAssignment;
+use App\Models\JobType;
+use App\Models\EmployeeType;
+use App\Models\Industry;
+use App\Models\JobPosition;
+use App\Models\Document;
+use Spatie\Activitylog\Models\Activity;
+// use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -58,6 +71,19 @@ Route::middleware([
     });
 
     Route::group(['middleware' => 'role:hr-staff', 'prefix' => 'hr-staff', 'as' => 'hr-staff.'], function () {
+        Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.'], function() {
+            Route::get('/', function () {
+                return Inertia::render('Dashboard', [
+                    'totalUserApplicants' => Applicant::count(),
+                    'totalDisqualified' => Application::where('status', 0)->count(),
+                    'totalApplications' => Application::where('status', 1)->count(),
+                    'totalForInterview' => Application::where('status', 2)->count(),
+                    'totalInProgress' => Application::where('status', 3)->count(),
+                    'totalQualified' => Application::where('status', 4)->count(),
+                    'totalHired' => Application::where('status', 5)->count(),
+                ]);
+            })->name('index');
+        });
 
         Route::group(['prefix' => 'appointments', 'as' => 'appointments.'], function() {
             Route::get('/', HrStaffDashboardController::class)->name('index');
@@ -70,15 +96,15 @@ Route::middleware([
         });
 
         Route::group(['prefix' => 'applicants', 'as' => 'applicants.'], function() {
-            Route::get('/', [ApplicantController::class, 'index'])->name('index');
+            Route::get('/', [UserApplicantController::class, 'index'])->name('index');
 
-            Route::post('/store', [ApplicantController::class, 'store'])->name('store');
+            Route::post('/store', [UserApplicantController::class, 'store'])->name('store');
 
-            Route::put('/update/{id}', [ApplicantController::class, 'update'])->name('update');
+            Route::put('/update/{id}', [UserApplicantController::class, 'update'])->name('update');
 
-            Route::put('/activate/{id}', [ApplicantController::class, 'activate'])->name('activate');
+            Route::put('/activate/{id}', [UserApplicantController::class, 'activate'])->name('activate');
 
-            Route::put('/deactivate/{id}', [ApplicantController::class, 'deactivate'])->name('deactivate');
+            Route::put('/deactivate/{id}', [UserApplicantController::class, 'deactivate'])->name('deactivate');
         });
 
         Route::group(['prefix' => 'applications', 'as' => 'applications.'], function() {
@@ -89,6 +115,26 @@ Route::middleware([
             Route::put('/approve/{id}', [ApplicationController::class, 'approve'])->name('approve');
 
             Route::put('/disapprove/{id}', [ApplicationController::class, 'disapprove'])->name('disapprove');
+        });
+
+        Route::group(['prefix' => 'for-interview', 'as' => 'for-interview.'], function() {
+            Route::get('/', [ForInterviewController::class, 'index'])->name('index');
+
+            Route::post('/store', [ForInterviewController::class, 'store'])->name('store');
+
+            Route::put('/approve/{id}', [ForInterviewController::class, 'approve'])->name('approve');
+
+            Route::put('/disapprove/{id}', [ForInterviewController::class, 'disapprove'])->name('disapprove');
+        });
+
+        Route::group(['prefix' => 'in-progress', 'as' => 'in-progress.'], function() {
+            Route::get('/', [InProgressController::class, 'index'])->name('index');
+
+            Route::post('/store', [InProgressController::class, 'store'])->name('store');
+
+            Route::put('/approve/{id}', [InProgressController::class, 'approve'])->name('approve');
+
+            Route::put('/disapprove/{id}', [InProgressController::class, 'disapprove'])->name('disapprove');
         });
 
         Route::group(['prefix' => 'qualified', 'as' => 'qualified.'], function() {
@@ -125,6 +171,22 @@ Route::middleware([
     });
 
     Route::group(['middleware' => 'role:hr-manager', 'prefix' => 'hr-manager', 'as' => 'hr-manager.'], function () {
+        Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.'], function() {
+            Route::get('/', function () {
+                return Inertia::render('Dashboard', [
+                    'totalHrStaffs' => HrStaff::count(),
+                    'totalUserApplicants' => Applicant::count(),
+                    'totalDisqualified' => Application::where('status', 0)->count(),
+                    'totalApplications' => Application::where('status', 1)->count(),
+                    'totalForInterview' => Application::where('status', 2)->count(),
+                    'totalInProgress' => Application::where('status', 3)->count(),
+                    'totalQualified' => Application::where('status', 4)->count(),
+                    'totalHired' => Application::where('status', 5)->count(),
+                    'totalDocuments' => Document::count(),
+                ]);
+            })->name('index');
+        });
+
         Route::group(['prefix' => 'appointments', 'as' => 'appointments.'], function() {
             Route::get('/', HrManagerDashboardController::class)->name('index');
 
@@ -148,15 +210,15 @@ Route::middleware([
         });
 
         Route::group(['prefix' => 'applicants', 'as' => 'applicants.'], function() {
-            Route::get('/', [ApplicantController::class, 'index'])->name('index');
+            Route::get('/', [UserApplicantController::class, 'index'])->name('index');
 
-            Route::post('/store', [ApplicantController::class, 'store'])->name('store');
+            Route::post('/store', [UserApplicantController::class, 'store'])->name('store');
 
-            Route::put('/update/{id}', [ApplicantController::class, 'update'])->name('update');
+            Route::put('/update/{id}', [UserApplicantController::class, 'update'])->name('update');
 
-            Route::put('/activate/{id}', [ApplicantController::class, 'activate'])->name('activate');
+            Route::put('/activate/{id}', [UserApplicantController::class, 'activate'])->name('activate');
 
-            Route::put('/deactivate/{id}', [ApplicantController::class, 'deactivate'])->name('deactivate');
+            Route::put('/deactivate/{id}', [UserApplicantController::class, 'deactivate'])->name('deactivate');
         });
 
         Route::group(['prefix' => 'applications', 'as' => 'applications.'], function() {
@@ -167,6 +229,26 @@ Route::middleware([
             Route::put('/approve/{id}', [ApplicationController::class, 'approve'])->name('approve');
 
             Route::put('/disapprove/{id}', [ApplicationController::class, 'disapprove'])->name('disapprove');
+        });
+
+        Route::group(['prefix' => 'for-interview', 'as' => 'for-interview.'], function() {
+            Route::get('/', [ForInterviewController::class, 'index'])->name('index');
+
+            Route::post('/store', [ForInterviewController::class, 'store'])->name('store');
+
+            Route::put('/approve/{id}', [ForInterviewController::class, 'approve'])->name('approve');
+
+            Route::put('/disapprove/{id}', [ForInterviewController::class, 'disapprove'])->name('disapprove');
+        });
+
+        Route::group(['prefix' => 'in-progress', 'as' => 'in-progress.'], function() {
+            Route::get('/', [InProgressController::class, 'index'])->name('index');
+
+            Route::post('/store', [InProgressController::class, 'store'])->name('store');
+
+            Route::put('/approve/{id}', [InProgressController::class, 'approve'])->name('approve');
+
+            Route::put('/disapprove/{id}', [InProgressController::class, 'disapprove'])->name('disapprove');
         });
 
         Route::group(['prefix' => 'qualified', 'as' => 'qualified.'], function() {
@@ -206,9 +288,17 @@ Route::middleware([
         Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.'], function() {
             Route::get('/', function () {
                 return Inertia::render('Dashboard', [
-                    'totalApplicants' => Applicant::count(),
+                    'totalApplicants' => Application::where('status', 3)->count(),
                     'totalHrStaffs' => HrStaff::count(),
-                    'totalHrManagers' => HrManager::count()
+                    'totalHrManagers' => HrManager::count(),
+                    'totalQualifications' => Qualification::count(),
+                    'totalBenefits' => Benefit::count(),
+                    'totalCompanyAssignments' => CompanyAssignment::count(),
+                    'totalJobTypes' => JobType::count(),
+                    'totalEmployeeTypes' => EmployeeType::count(),
+                    'totalIndustries' => Industry::count(),
+                    'totalJobPositions' => JobPosition::count(),
+                    'totalActivityLogs' => Activity::count(),
                 ]);
             })->name('index');
         });

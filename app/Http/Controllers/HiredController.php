@@ -23,7 +23,7 @@ class HiredController extends Controller
         $searchReq = Request::input('search');
 
         $hired = Application::query()
-        ->where('status', 3)
+        ->where('status', 5)
         ->with(['applicant', 'jobPosition'])
         ->when($searchReq, function($query, $search) {
             $query->where(function ($query) use ($search) {

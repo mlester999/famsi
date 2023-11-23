@@ -421,14 +421,14 @@ watch(
                                 <td
                                     class="px-2 py-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white"
                                 >
-                                    <div
+                                <div
                                         v-if="role.status === 1"
                                         class="flex items-center"
                                     >
                                         <div
                                             class="h-2.5 w-2.5 rounded-full bg-gray-400 mr-2"
                                         ></div>
-                                        In Progress
+                                        Pending
                                     </div>
 
                                     <div
@@ -436,13 +436,33 @@ watch(
                                         class="flex items-center"
                                     >
                                         <div
-                                            class="h-2.5 w-2.5 rounded-full bg-green-400 mr-2"
+                                            class="h-2.5 w-2.5 rounded-full bg-yellow-400 mr-2"
+                                        ></div>
+                                        For Interview
+                                    </div>
+
+                                    <div
+                                        v-else-if="role.status === 3"
+                                        class="flex items-center"
+                                    >
+                                        <div
+                                            class="h-2.5 w-2.5 rounded-full bg-orange-400 mr-2"
+                                        ></div>
+                                        In Progress
+                                    </div>
+
+                                    <div
+                                        v-else-if="role.status === 4"
+                                        class="flex items-center"
+                                    >
+                                        <div
+                                            class="h-2.5 w-2.5 rounded-full bg-blue-400 mr-2"
                                         ></div>
                                         Qualified
                                     </div>
 
                                     <div
-                                        v-else-if="role.status === 3"
+                                        v-else-if="role.status === 5"
                                         class="flex items-center"
                                     >
                                         <div
@@ -484,7 +504,7 @@ watch(
 
                             <tr v-if="roles.data.length === 0">
                                 <td
-                                    colspan="9"
+                                    colspan="10"
                                     class="max-w-sm text-center p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
                                 >
                                     <div

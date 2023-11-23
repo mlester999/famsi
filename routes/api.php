@@ -33,6 +33,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Authenticating and signing up user
 Route::post('login', [AuthApplicantsController::class, 'login']);
 Route::post('register', [AuthApplicantsController::class, 'register']);
+Route::post('verify-email', [AuthApplicantsController::class, 'verifyEmail']);
+Route::post('check-email-verification', [AuthApplicantsController::class, 'checkEmailVerification']);
 Route::post('logout', [AuthApplicantsController::class, 'logout']);
 Route::post('refresh', [AuthApplicantsController::class, 'refresh']);
 Route::get('details', [AuthApplicantsController::class, 'details']);

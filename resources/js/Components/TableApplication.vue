@@ -425,7 +425,7 @@ watch(
                                         <div
                                             class="h-2.5 w-2.5 rounded-full bg-gray-400 mr-2"
                                         ></div>
-                                        In Progress
+                                        Pending
                                     </div>
 
                                     <div
@@ -433,13 +433,33 @@ watch(
                                         class="flex items-center"
                                     >
                                         <div
-                                            class="h-2.5 w-2.5 rounded-full bg-green-400 mr-2"
+                                            class="h-2.5 w-2.5 rounded-full bg-yellow-400 mr-2"
+                                        ></div>
+                                        For Interview
+                                    </div>
+
+                                    <div
+                                        v-else-if="role.status === 3"
+                                        class="flex items-center"
+                                    >
+                                        <div
+                                            class="h-2.5 w-2.5 rounded-full bg-orange-400 mr-2"
+                                        ></div>
+                                        In Progress
+                                    </div>
+
+                                    <div
+                                        v-else-if="role.status === 4"
+                                        class="flex items-center"
+                                    >
+                                        <div
+                                            class="h-2.5 w-2.5 rounded-full bg-blue-400 mr-2"
                                         ></div>
                                         Qualified
                                     </div>
 
                                     <div
-                                        v-else-if="role.status === 3"
+                                        v-else-if="role.status === 5"
                                         class="flex items-center"
                                     >
                                         <div

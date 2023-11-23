@@ -58,6 +58,7 @@ class HrStaffController extends Controller
             'last_name' => $hrStaff->last_name,
             'gender' => $hrStaff->gender,
             'email' => $hrStaff->user->email,
+            'email_verified_at' => $hrStaff->user->email_verified_at,
             'contact_number' => $hrStaff->contact_number,
             'is_active' => $hrStaff->user->is_active,
             'created_at' => $hrStaff->created_at,
@@ -164,7 +165,7 @@ class HrStaffController extends Controller
         $user = User::create([
             'email' => $hrStaffValidate['email'],
             'password' => Hash::make('12345678'),
-            'user_type' => 2,
+            'user_type' => 1,
             'is_active' => 1
         ]);
 

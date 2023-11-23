@@ -25,7 +25,9 @@ const currentUser = computed(() => {
             class="relative flex flex-col flex-1 min-h-0 py-5 overflow-y-auto bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700"
         >
             <SidebarCategory
-                v-if="$page.props.auth.user.user_type == users.admin"
+                v-if="$page.props.auth.user.user_type == users.admin ||
+                $page.props.auth.user.user_type == users.hr_manager ||
+                $page.props.auth.user.user_type == users.hr_staff"
                 name="Menu"
             >
                 <template #tab>
@@ -99,9 +101,36 @@ const currentUser = computed(() => {
             </SidebarCategory>
 
             <SidebarCategory
+                name="Applicants"
+                v-if="
+                    $page.props.auth.user.user_type == users.admin
+                "
+            >
+                <template #tab>
+                    <li>
+                        <SidebarTab
+                            :href="route(`${currentUser}.applicants.index`)"
+                            :class="[
+                                $page.url.includes('applicants') &&
+                                    'bg-gray-100 dark:bg-gray-700',
+                            ]"
+                        >
+                            <template #icon>
+                                <font-awesome-icon
+                                    class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                    :icon="['fas', 'user-check']"
+                                />
+                            </template>
+
+                            <template #title> Hired Employees </template>
+                        </SidebarTab>
+                    </li>
+                </template>
+            </SidebarCategory>
+
+            <SidebarCategory
                 name="Users"
                 v-if="
-                    $page.props.auth.user.user_type == users.admin ||
                     $page.props.auth.user.user_type == users.hr_manager ||
                     $page.props.auth.user.user_type == users.hr_staff
                 "
@@ -152,6 +181,44 @@ const currentUser = computed(() => {
                             </template>
 
                             <template #title> Applications </template>
+                        </SidebarTab>
+                    </li>
+
+                    <li>
+                        <SidebarTab
+                            :href="route(`${currentUser}.for-interview.index`)"
+                            :class="[
+                                $page.url.includes('/for-interview') &&
+                                    'bg-gray-100 dark:bg-gray-700',
+                            ]"
+                        >
+                            <template #icon>
+                                <font-awesome-icon
+                                    class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                    :icon="['fas', 'clipboard-question']"
+                                />
+                            </template>
+
+                            <template #title> For Interview </template>
+                        </SidebarTab>
+                    </li>
+
+                    <li>
+                        <SidebarTab
+                            :href="route(`${currentUser}.in-progress.index`)"
+                            :class="[
+                                $page.url.includes('/in-progress') &&
+                                    'bg-gray-100 dark:bg-gray-700',
+                            ]"
+                        >
+                            <template #icon>
+                                <font-awesome-icon
+                                    class="w-6 h-6 mr-3 text-gray-500 transition duration-0 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                    :icon="['fas', 'bars-progress']"
+                                />
+                            </template>
+
+                            <template #title> In Progress </template>
                         </SidebarTab>
                     </li>
 

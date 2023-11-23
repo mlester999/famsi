@@ -35,6 +35,8 @@ import {
     faCheck,
     faCertificate,
     faCalendarCheck,
+    faClipboardQuestion,
+    faBarsProgress
 } from "@fortawesome/free-solid-svg-icons";
 
 /* add icons to the library */
@@ -50,6 +52,8 @@ library.add(faX);
 library.add(faCheck);
 library.add(faCertificate);
 library.add(faCalendarCheck);
+library.add(faClipboardQuestion);
+library.add(faBarsProgress);
 
 const appName =
     window.document.getElementsByTagName("title")[0]?.innerText || "FAMSI";

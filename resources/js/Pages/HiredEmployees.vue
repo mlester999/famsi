@@ -26,15 +26,15 @@ defineProps({
                         class="w-5 h-5 mr-2.5"
                         :icon="['fas', 'house']"
                     />
-                    Users
+                    Applicants
                 </p>
             </template>
 
-            <template #second-tab> Aplicants </template>
+            <template #second-tab> Hired Employees </template>
 
-            <template #title>Aplicants</template>
+            <template #title>Hired Employees</template>
             <template #description
-                >This section pertains to Aplicants accounts.</template
+                >This section pertains to Hired Employees accounts.</template
             >
         </TableCrud>
     </AppLayout>
